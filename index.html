@@ -8,6 +8,21 @@
   <meta name="description"
     content="No Farol, conectamos marcas a um ecossistema exclusivo com os principais talentos para co-criar histórias que engajam e inspiram." />
   <link rel="stylesheet" href="/assets/css/output.css" />
+  <style>
+    /* ── Smart header ──────────────────────────────────────── */
+    #site-header {
+      transition: transform 0.38s cubic-bezier(0.33, 1, 0.68, 1),
+                  background-color 0.3s ease,
+                  box-shadow 0.3s ease;
+    }
+    #site-header.header-visible {
+      background-color: #FFF2E7;
+      box-shadow: 0 1px 12px rgba(0,0,0,0.07);
+    }
+    #site-header.header-hidden { transform: translateY(-110%); }
+    /* Anchor scroll clearance */
+    section[id] { scroll-margin-top: 4.5rem; }
+  </style>
 </head>
 
 <body class="bg-brand-beige text-brand-black font-sans overflow-x-hidden">
@@ -18,7 +33,7 @@
   <!-- ================================================================
        HEADER / NAV — Issue 13
        ================================================================ -->
-  <header role="banner" class="fixed top-0 left-0 right-0 z-40 bg-brand-beige">
+  <header id="site-header" role="banner" class="fixed top-0 left-0 right-0 z-40">
     <nav aria-label="Navegação principal"
       class="max-w-screen-xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
       <a href="/" aria-label="Grupo Farol — Página inicial" class="flex-shrink-0 flex items-center gap-2">
@@ -83,24 +98,24 @@
   <!-- ================================================================
        MAIN
        ================================================================ -->
-  <main id="main-content" class="pt-16">
+  <main id="main-content">
 
     <!-- ============================================================
          HERO — Issue 14
          ============================================================ -->
     <section id="hero" aria-labelledby="hero-heading"
-      class="relative min-h-[calc(100vh-4rem)] overflow-hidden flex items-center">
+      class="relative min-h-screen overflow-hidden flex items-center">
 
       <!-- Fundo laranja com cantos arredondados na base (fiel ao Figma) -->
       <div aria-hidden="true" class="pointer-events-none select-none absolute inset-x-0 top-0"
-        style="bottom: 0; background: #E8722A; border-bottom-left-radius: 3rem; border-bottom-right-radius: 3rem; z-index: 0;"></div>
+        style="bottom: 0; background: #E5A545; border-bottom-left-radius: 3rem; border-bottom-right-radius: 3rem; z-index: 0;"></div>
 
-      <!-- Feixe de luz — origem na janela da lanterna do farol -->
-      <div aria-hidden="true" class="pointer-events-none select-none absolute inset-0"
-        style="z-index: 1; background: rgba(255,255,255,0.38); clip-path: polygon(8% 14%, 100% 0%, 100% 55%);"></div>
+      <!-- light-beam clip-path is set dynamically by JS below -->
+      <div id="light-beam" aria-hidden="true" class="pointer-events-none select-none absolute inset-0"
+        style="z-index: 1; background: #FFF2E7;"></div>
 
       <!-- Lighthouse (decorativa) -->
-      <div class="hidden lg:block absolute left-0 top-0 bottom-0 w-56 xl:w-64 pointer-events-none select-none"
+      <div id="lighthouse-container" class="hidden lg:block absolute left-0 top-0 bottom-0 w-56 xl:w-64 pointer-events-none select-none"
         style="z-index: 2;" aria-hidden="true">
         <img src="/assets/images/lighthouse.svg" alt="" role="presentation"
           class="w-full h-full object-contain object-bottom" />
@@ -115,7 +130,7 @@
       </div>
 
       <!-- Conteúdo -->
-      <div class="relative w-full px-6 md:px-12 lg:pl-72 xl:pl-80 lg:pr-10 py-20 md:py-28" style="z-index: 4;">
+      <div class="relative w-full px-6 md:px-12 lg:pl-72 xl:pl-80 lg:pr-10" style="z-index: 4; padding-top: 8rem; padding-bottom: 5rem;">
 
         <!-- Skeleton loader -->
         <div id="hero-skeleton" class="animate-pulse space-y-4 text-right" aria-hidden="true">
@@ -620,6 +635,94 @@
 
   <!-- Data loading + rendering -->
   <script src="/assets/js/main.js"></script>
+
+  <!-- Smart header + dynamic light beam -->
+  <script>
+    // ─── Smart sticky header ──────────────────────────────────────
+    (function () {
+      var header = document.getElementById('site-header');
+      var lastY = 0;
+      var ticking = false;
+
+      function onScroll() {
+        var y = window.scrollY || window.pageYOffset;
+        if (y < 8) {
+          // At very top: fully transparent
+          header.classList.remove('header-visible', 'header-hidden');
+        } else if (y > lastY && y > 80) {
+          // Scrolling down past threshold: hide
+          header.classList.add('header-hidden');
+          header.classList.remove('header-visible');
+        } else if (y < lastY) {
+          // Scrolling up: reveal with beige bg
+          header.classList.remove('header-hidden');
+          header.classList.add('header-visible');
+        }
+        lastY = y;
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', function () {
+        if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+      }, { passive: true });
+    })();
+
+    // ─── Dynamic light beam anchored to lighthouse lantern window ─
+    (function () {
+      function updateBeam() {
+        var beam = document.getElementById('light-beam');
+        var lh   = document.getElementById('lighthouse-container');
+        var hero = document.getElementById('hero');
+        if (!beam || !lh || !hero) return;
+
+        // If lighthouse is hidden (mobile), remove clip-path
+        if (getComputedStyle(lh).display === 'none') {
+          beam.style.clipPath = 'none';
+          return;
+        }
+
+        // SVG viewBox dimensions
+        var svgW = 374, svgH = 915;
+        // Container is always positioned at left-0, top-0 of hero
+        var cW = lh.offsetWidth;
+        var cH = lh.offsetHeight;
+
+        // xMinYMax meet: scale by smallest ratio, anchor to bottom-left
+        var scale  = Math.min(cW / svgW, cH / svgH);
+        var rendH  = svgH * scale;
+        var topOff = cH - rendH; // px from container-top to rendered SVG top
+
+        // Centre of the 3 windows in SVG space
+        var winSvgX = (111.533 + 260.377) / 2; // ≈ 185.96
+        var winSvgY = (171.969 + 237.490) / 2;  // ≈ 204.73
+
+        // Convert to px within the hero (container is at 0,0 of hero)
+        var winPxX = winSvgX * scale;
+        var winPxY = topOff + winSvgY * scale;
+
+        // Hero pixel dimensions → percentages
+        var heroW = hero.offsetWidth;
+        var heroH = hero.offsetHeight;
+        var pctX  = (winPxX / heroW * 100).toFixed(2);
+        var pctY  = (winPxY / heroH * 100).toFixed(2);
+
+        beam.style.clipPath =
+          'polygon(' + pctX + '% ' + pctY + '%, 100% 0%, 100% 62%)';
+      }
+
+      // Run on load and every resize
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateBeam);
+      } else {
+        updateBeam();
+      }
+      window.addEventListener('load', updateBeam);
+      window.addEventListener('resize', function () {
+        clearTimeout(window._beamTimer);
+        window._beamTimer = setTimeout(updateBeam, 60);
+      });
+    })();
+  </script>
 
 </body>
 
