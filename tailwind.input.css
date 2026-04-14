@@ -74,10 +74,28 @@
   font-display: swap;
 }
 
-/* ── Agharti Bold Condensed — seção Sobre ────────────────── */
+/* ── Agharti Bold Condensed — seção Sobre "GRUPO FAROL" ─── */
 @font-face {
   font-family: 'Agharti BC';
   src: url('/assets/fonts/Agharti-BoldCondensed.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Agharti Light Semi-Condensed — "SoMos o" ────────────── */
+@font-face {
+  font-family: 'Agharti LSC';
+  src: url('/assets/fonts/Agharti-LightSemiCondensed.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Agharti Thin Semi-Condensed — "Centenas de comunidades" */
+@font-face {
+  font-family: 'Agharti TSC';
+  src: url('/assets/fonts/Agharti-ThinSemiCondensed.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
