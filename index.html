@@ -22,6 +22,13 @@
     #site-header.header-hidden { transform: translateY(-110%); }
     /* Anchor scroll clearance */
     section[id] { scroll-margin-top: 4.5rem; }
+    /* Hero content left pad — must clear the lighthouse at all breakpoints */
+    @media (min-width: 1024px) {
+      #hero-content-pad {
+        /* 34vw ≈ 490px at 1440px (lighthouse right edge ≈ 431-464px + buffer) */
+        padding-left: clamp(340px, 34vw, 560px);
+      }
+    }
   </style>
 </head>
 
@@ -118,21 +125,22 @@
       <!-- left: clamp(32px, 4.9vw, 96px) → ≈71px at Figma's 1440px canvas, scales proportionally -->
       <div id="lighthouse-container" class="hidden lg:block absolute bottom-0 pointer-events-none select-none"
         style="z-index: 2; left: clamp(32px, 4.9vw, 96px);" aria-hidden="true">
+        <!-- height: min(98vh,900px) → roof nearly touches header, matches Figma -->
         <img id="lighthouse-img" src="/assets/images/lighthouse.svg" alt="" role="presentation"
-          style="height: min(70vh, 630px); width: auto; display: block; max-width: none;" />
+          style="height: min(98vh, 900px); width: auto; display: block; max-width: none;" />
       </div>
 
       <!-- Asterisco flutuante (entre farol e texto) -->
       <!-- Positioned just to the right of lighthouse at any resolution -->
       <div class="hidden lg:block absolute pointer-events-none select-none"
-        style="left: clamp(260px, 20vw, 420px); top: 22%; z-index: 3; width: 3.25rem; height: 3.25rem;"
+        style="left: clamp(380px, 34vw, 560px); top: 22%; z-index: 3; width: 3.25rem; height: 3.25rem;"
         aria-hidden="true">
         <img src="/assets/images/logo.svg" alt="" role="presentation"
           style="width: 100%; height: 100%; display: block;" />
       </div>
 
       <!-- Conteúdo -->
-      <div class="relative w-full px-6 md:px-12 lg:pl-72 xl:pl-80 lg:pr-10" style="z-index: 4; padding-top: 8rem; padding-bottom: 5rem;">
+      <div id="hero-content-pad" class="relative w-full px-6 md:px-12 lg:pr-10" style="z-index: 4; padding-top: 8rem; padding-bottom: 5rem;">
 
         <!-- Skeleton loader -->
         <div id="hero-skeleton" class="animate-pulse space-y-4 text-right" aria-hidden="true">
