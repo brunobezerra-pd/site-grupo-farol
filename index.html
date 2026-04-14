@@ -115,10 +115,10 @@
         style="z-index: 1; background: #FFF2E7;"></div>
 
       <!-- Lighthouse (decorativa) -->
-      <div id="lighthouse-container" class="hidden lg:block absolute left-0 top-0 bottom-0 w-56 xl:w-64 pointer-events-none select-none"
+      <div id="lighthouse-container" class="hidden lg:block absolute left-0 bottom-0 pointer-events-none select-none"
         style="z-index: 2;" aria-hidden="true">
-        <img src="/assets/images/lighthouse.svg" alt="" role="presentation"
-          class="w-full h-full object-contain object-bottom" />
+        <img id="lighthouse-img" src="/assets/images/lighthouse.svg" alt="" role="presentation"
+          style="height: min(70vh, 630px); width: auto; display: block; max-width: none;" />
       </div>
 
       <!-- Asterisco flutuante (entre farol e texto) -->
@@ -667,50 +667,43 @@
       }, { passive: true });
     })();
 
-    // ─── Dynamic light beam anchored to lighthouse lantern window ─
+    // ─── Dynamic light beam — pixel-perfect via getBoundingClientRect ─
     (function () {
       function updateBeam() {
-        var beam = document.getElementById('light-beam');
-        var lh   = document.getElementById('lighthouse-container');
-        var hero = document.getElementById('hero');
-        if (!beam || !lh || !hero) return;
+        var beam  = document.getElementById('light-beam');
+        var lhImg = document.getElementById('lighthouse-img');
+        var hero  = document.getElementById('hero');
+        if (!beam || !lhImg || !hero) return;
 
-        // If lighthouse is hidden (mobile), remove clip-path
-        if (getComputedStyle(lh).display === 'none') {
+        // On mobile the container is display:none — clear the clip
+        if (getComputedStyle(lhImg.parentElement).display === 'none') {
           beam.style.clipPath = 'none';
           return;
         }
 
-        // SVG viewBox dimensions
-        var svgW = 374, svgH = 915;
-        // Container is always positioned at left-0, top-0 of hero
-        var cW = lh.offsetWidth;
-        var cH = lh.offsetHeight;
+        // getBoundingClientRect values are viewport-relative.
+        // Subtracting the hero rect makes them scroll-invariant and
+        // relative to the hero coordinate system (same as clip-path %).
+        var imgRect  = lhImg.getBoundingClientRect();
+        var heroRect = hero.getBoundingClientRect();
 
-        // xMinYMax meet: scale by smallest ratio, anchor to bottom-left
-        var scale  = Math.min(cW / svgW, cH / svgH);
-        var rendH  = svgH * scale;
-        var topOff = cH - rendH; // px from container-top to rendered SVG top
+        // Window centre as fraction of the SVG viewBox (374 × 915)
+        // Windows span x=111.533–260.377, y=171.969–237.49
+        var winRelX = (111.533 + 260.377) / 2 / 374; // ≈ 0.4973
+        var winRelY = (171.969 + 237.490) / 2 / 915; // ≈ 0.2238
 
-        // Centre of the 3 windows in SVG space
-        var winSvgX = (111.533 + 260.377) / 2; // ≈ 185.96
-        var winSvgY = (171.969 + 237.490) / 2;  // ≈ 204.73
+        // Actual pixel position relative to hero top-left
+        var winX = (imgRect.left - heroRect.left) + winRelX * imgRect.width;
+        var winY = (imgRect.top  - heroRect.top)  + winRelY * imgRect.height;
 
-        // Convert to px within the hero (container is at 0,0 of hero)
-        var winPxX = winSvgX * scale;
-        var winPxY = topOff + winSvgY * scale;
-
-        // Hero pixel dimensions → percentages
-        var heroW = hero.offsetWidth;
-        var heroH = hero.offsetHeight;
-        var pctX  = (winPxX / heroW * 100).toFixed(2);
-        var pctY  = (winPxY / heroH * 100).toFixed(2);
+        var pctX = (winX / heroRect.width  * 100).toFixed(2);
+        var pctY = (winY / heroRect.height * 100).toFixed(2);
 
         beam.style.clipPath =
           'polygon(' + pctX + '% ' + pctY + '%, 100% 0%, 100% 62%)';
       }
 
-      // Run on load and every resize
+      // Fire immediately after layout, then on every resize (debounced)
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', updateBeam);
       } else {
