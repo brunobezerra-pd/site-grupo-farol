@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dashboard — Grupo Farol</title>
+  <link rel="stylesheet" href="/assets/css/output.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body class="min-h-screen bg-gray-50 font-sans text-brand-black">
+
+  <!-- ── Toast notification ─────────────────────────────────── -->
+  <div
+    id="toast"
+    role="status"
+    aria-live="polite"
+    class="fixed top-4 right-4 z-50 hidden max-w-xs rounded-xl px-5 py-3 text-sm font-medium shadow-lg transition-all"
+  ></div>
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 flex items-center justify-between h-14">
+      <span class="font-bold text-lg tracking-tight">Grupo Farol <span class="text-gray-400 font-normal text-sm">/ Admin</span></span>
+      <button
+        id="signout-btn"
+        type="button"
+        class="text-sm text-gray-500 hover:text-brand-red focus:outline-none focus:underline transition"
+      >
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────────── -->
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-6">
+
+    <!-- Tab navigation -->
+    <nav aria-label="Seções do painel">
+      <div
+        role="tablist"
+        aria-label="Seções do painel"
+        class="flex gap-1 border-b border-gray-200 overflow-x-auto pb-px"
+      >
+        <button role="tab" data-tab="hero"     aria-selected="true"  aria-controls="panel-hero"     id="tab-hero"     class="tab-btn tab-active"  >Hero</button>
+        <button role="tab" data-tab="about"    aria-selected="false" aria-controls="panel-about"    id="tab-about"    class="tab-btn tab-inactive">Sobre</button>
+        <button role="tab" data-tab="talents"  aria-selected="false" aria-controls="panel-talents"  id="tab-talents"  class="tab-btn tab-inactive">Talentos</button>
+        <button role="tab" data-tab="partners" aria-selected="false" aria-controls="panel-partners" id="tab-partners" class="tab-btn tab-inactive">Parceiros</button>
+        <button role="tab" data-tab="cta"      aria-selected="false" aria-controls="panel-cta"      id="tab-cta"      class="tab-btn tab-inactive">CTA Final</button>
+        <button role="tab" data-tab="settings" aria-selected="false" aria-controls="panel-settings" id="tab-settings" class="tab-btn tab-inactive">Configurações</button>
+      </div>
+    </nav>
+
+    <!-- Tab panels -->
+    <main id="main-content" class="mt-6">
+
+      <!-- ── Hero ── -->
+      <section id="panel-hero" role="tabpanel" aria-labelledby="tab-hero" tabindex="0" class="tab-panel">
+        <h2 class="text-base font-semibold mb-6">Seção Hero</h2>
+        <form id="form-hero" class="space-y-5 max-w-2xl" novalidate>
+
+          <div>
+            <label for="hero_headline" class="block text-sm font-medium text-gray-700 mb-1">Headline</label>
+            <input id="hero_headline" name="hero_headline" type="text"
+              placeholder="A Maior Agência de Creators da América Latina"
+              class="admin-input" />
+          </div>
+
+          <div>
+            <label for="hero_subheadline" class="block text-sm font-medium text-gray-700 mb-1">Subheadline</label>
+            <input id="hero_subheadline" name="hero_subheadline" type="text"
+              placeholder="Conectamos marcas e talentos…"
+              class="admin-input" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="hero_cta1_text" class="block text-sm font-medium text-gray-700 mb-1">Botão 1 — Texto</label>
+              <input id="hero_cta1_text" name="hero_cta1_text" type="text"
+                placeholder="Conheça Nossos Creators"
+                class="admin-input" />
+            </div>
+            <div>
+              <label for="hero_cta1_url" class="block text-sm font-medium text-gray-700 mb-1">Botão 1 — URL</label>
+              <input id="hero_cta1_url" name="hero_cta1_url" type="text"
+                placeholder="#creators"
+                class="admin-input" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="hero_cta2_text" class="block text-sm font-medium text-gray-700 mb-1">Botão 2 — Texto</label>
+              <input id="hero_cta2_text" name="hero_cta2_text" type="text"
+                placeholder="Fale com o Farol"
+                class="admin-input" />
+            </div>
+            <div>
+              <label for="hero_cta2_url" class="block text-sm font-medium text-gray-700 mb-1">Botão 2 — URL</label>
+              <input id="hero_cta2_url" name="hero_cta2_url" type="text"
+                placeholder="https://wa.me/…"
+                class="admin-input" />
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="admin-btn-primary" id="btn-save-hero">Salvar Hero</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ── Sobre ── -->
+      <section id="panel-about" role="tabpanel" aria-labelledby="tab-about" tabindex="0" class="tab-panel hidden">
+        <h2 class="text-base font-semibold mb-6">Seção Sobre</h2>
+        <form id="form-about" class="space-y-5 max-w-2xl" novalidate>
+
+          <div>
+            <label for="about_text" class="block text-sm font-medium text-gray-700 mb-1">Texto institucional</label>
+            <textarea id="about_text" name="about_text" rows="4"
+              placeholder="O Grupo Farol é a maior agência de creators…"
+              class="admin-input resize-y"></textarea>
+          </div>
+
+          <fieldset>
+            <legend class="text-sm font-medium text-gray-700 mb-3">Números em destaque</legend>
+            <div class="space-y-4">
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="about_stat1_value" class="block text-sm text-gray-600 mb-1">Número 1 — Valor</label>
+                  <input id="about_stat1_value" name="about_stat1_value" type="text"
+                    placeholder="+200" class="admin-input" />
+                </div>
+                <div>
+                  <label for="about_stat1_label" class="block text-sm text-gray-600 mb-1">Número 1 — Label</label>
+                  <input id="about_stat1_label" name="about_stat1_label" type="text"
+                    placeholder="Creators no Casting" class="admin-input" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="about_stat2_value" class="block text-sm text-gray-600 mb-1">Número 2 — Valor</label>
+                  <input id="about_stat2_value" name="about_stat2_value" type="text"
+                    placeholder="+1000" class="admin-input" />
+                </div>
+                <div>
+                  <label for="about_stat2_label" class="block text-sm text-gray-600 mb-1">Número 2 — Label</label>
+                  <input id="about_stat2_label" name="about_stat2_label" type="text"
+                    placeholder="Projetos Realizados" class="admin-input" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="about_stat3_value" class="block text-sm text-gray-600 mb-1">Número 3 — Valor</label>
+                  <input id="about_stat3_value" name="about_stat3_value" type="text"
+                    placeholder="+1000" class="admin-input" />
+                </div>
+                <div>
+                  <label for="about_stat3_label" class="block text-sm text-gray-600 mb-1">Número 3 — Label</label>
+                  <input id="about_stat3_label" name="about_stat3_label" type="text"
+                    placeholder="Clientes Atendidos" class="admin-input" />
+                </div>
+              </div>
+
+            </div>
+          </fieldset>
+
+          <div class="pt-2">
+            <button type="submit" class="admin-btn-primary" id="btn-save-about">Salvar Sobre</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ── Talentos ── -->
+      <section id="panel-talents" role="tabpanel" aria-labelledby="tab-talents" tabindex="0" class="tab-panel hidden">
+
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-base font-semibold">Talentos</h2>
+          <button id="btn-add-creator" type="button" class="admin-btn-primary">+ Adicionar Creator</button>
+        </div>
+
+        <!-- Inline form (hidden by default) -->
+        <div id="creator-form-wrap" class="hidden mb-8 rounded-xl border border-gray-200 bg-white p-6">
+          <h3 id="creator-form-title" class="text-sm font-semibold mb-5">Novo Creator</h3>
+          <form id="form-creator" novalidate class="space-y-4">
+            <input type="hidden" id="creator-id" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="creator-name" class="block text-sm font-medium text-gray-700 mb-1">Nome <span aria-hidden="true">*</span></label>
+                <input id="creator-name" type="text" required placeholder="Nome do creator" class="admin-input" />
+              </div>
+              <div>
+                <label for="creator-category" class="block text-sm font-medium text-gray-700 mb-1">Categoria <span aria-hidden="true">*</span></label>
+                <input id="creator-category" type="text" required placeholder="ex: Humor & Criatividade" class="admin-input" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="creator-instagram" class="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
+                <input id="creator-instagram" type="url" placeholder="https://instagram.com/…" class="admin-input" />
+              </div>
+              <div>
+                <label for="creator-youtube" class="block text-sm font-medium text-gray-700 mb-1">YouTube URL</label>
+                <input id="creator-youtube" type="url" placeholder="https://youtube.com/…" class="admin-input" />
+              </div>
+              <div>
+                <label for="creator-tiktok" class="block text-sm font-medium text-gray-700 mb-1">TikTok URL</label>
+                <input id="creator-tiktok" type="url" placeholder="https://tiktok.com/@…" class="admin-input" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="creator-position" class="block text-sm font-medium text-gray-700 mb-1">Posição (ordem)</label>
+                <input id="creator-position" type="number" min="0" placeholder="0" class="admin-input" />
+              </div>
+            </div>
+
+            <!-- Photo upload -->
+            <div>
+              <label for="creator-photo" class="block text-sm font-medium text-gray-700 mb-1">Foto <span aria-hidden="true">*</span></label>
+              <div class="flex items-start gap-4">
+                <img id="creator-photo-preview" src="" alt="Preview da foto" class="hidden h-20 w-20 rounded-lg object-cover border border-gray-200" />
+                <div class="flex-1">
+                  <input id="creator-photo" type="file" accept="image/*" aria-describedby="creator-photo-hint" class="block w-full text-sm text-gray-500 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-red file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-red-700" />
+                  <p id="creator-photo-hint" class="mt-1 text-xs text-gray-400">JPG, PNG ou WebP · máx. 2 MB</p>
+                  <p id="creator-photo-error" class="hidden mt-1 text-xs text-red-600" role="alert"></p>
+                  <input type="hidden" id="creator-photo-url" />
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 pt-2">
+              <button type="submit" id="btn-save-creator" class="admin-btn-primary">Salvar</button>
+              <button type="button" id="btn-cancel-creator" class="text-sm text-gray-500 hover:text-gray-700 focus:outline-none focus:underline">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Creators list -->
+        <div id="creators-list" class="space-y-2">
+          <p class="text-gray-400 text-sm">Carregando…</p>
+        </div>
+
+      </section>
+
+      <!-- ── Parceiros ── -->
+      <section id="panel-partners" role="tabpanel" aria-labelledby="tab-partners" tabindex="0" class="tab-panel hidden">
+
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-base font-semibold">Parceiros</h2>
+          <button id="btn-add-partner" type="button" class="admin-btn-primary">+ Adicionar Parceiro</button>
+        </div>
+
+        <!-- Add partner form (hidden by default) -->
+        <div id="partner-form-wrap" class="hidden mb-8 rounded-xl border border-gray-200 bg-white p-6 max-w-md">
+          <h3 class="text-sm font-semibold mb-4">Novo Parceiro</h3>
+          <form id="form-partner" novalidate class="space-y-4">
+            <div>
+              <label for="partner-name" class="block text-sm font-medium text-gray-700 mb-1">Nome da marca <span aria-hidden="true">*</span></label>
+              <input id="partner-name" type="text" required placeholder="Ex: Nike" class="admin-input" />
+            </div>
+            <div>
+              <label for="partner-logo" class="block text-sm font-medium text-gray-700 mb-1">Logo <span aria-hidden="true">*</span></label>
+              <div class="space-y-2">
+                <img id="partner-logo-preview" src="" alt="Preview do logo" class="hidden h-16 w-32 rounded-lg object-contain border border-gray-200 bg-gray-50 p-2" />
+                <input id="partner-logo" type="file" accept="image/*" aria-describedby="partner-logo-hint"
+                  class="block w-full text-sm text-gray-500 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-red file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-red-700" />
+                <p id="partner-logo-hint" class="text-xs text-gray-400">PNG ou SVG preferencialmente · máx. 2 MB</p>
+                <p id="partner-logo-error" class="hidden text-xs text-red-600" role="alert"></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 pt-1">
+              <button type="submit" id="btn-save-partner" class="admin-btn-primary">Salvar</button>
+              <button type="button" id="btn-cancel-partner" class="text-sm text-gray-500 hover:text-gray-700 focus:outline-none focus:underline">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Partners grid -->
+        <div id="partners-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <p class="text-gray-400 text-sm col-span-full">Carregando…</p>
+        </div>
+
+      </section>
+
+      <!-- ── CTA Final ── -->
+      <section id="panel-cta" role="tabpanel" aria-labelledby="tab-cta" tabindex="0" class="tab-panel hidden">
+        <h2 class="text-base font-semibold mb-6">CTA Final</h2>
+        <form id="form-cta" class="space-y-5 max-w-2xl" novalidate>
+
+          <div>
+            <label for="cta_final_text" class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+            <input id="cta_final_text" name="cta_final_text" type="text"
+              placeholder="Pronto para criar algo incrível?" class="admin-input" />
+          </div>
+
+          <div>
+            <label for="cta_final_subtext" class="block text-sm font-medium text-gray-700 mb-1">Subtexto</label>
+            <textarea id="cta_final_subtext" name="cta_final_subtext" rows="3"
+              placeholder="Fale com nossa equipe…" class="admin-input resize-y"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="cta_final_btn_text" class="block text-sm font-medium text-gray-700 mb-1">Texto do botão</label>
+              <input id="cta_final_btn_text" name="cta_final_btn_text" type="text"
+                placeholder="Fale com o Farol" class="admin-input" />
+            </div>
+            <div>
+              <label for="cta_final_btn_url" class="block text-sm font-medium text-gray-700 mb-1">URL do botão</label>
+              <input id="cta_final_btn_url" name="cta_final_btn_url" type="text"
+                placeholder="https://wa.me/…" class="admin-input" />
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" id="btn-save-cta" class="admin-btn-primary">Salvar CTA Final</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ── Configurações ── -->
+      <section id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" tabindex="0" class="tab-panel hidden">
+        <h2 class="text-base font-semibold mb-6">Configurações</h2>
+        <form id="form-settings" class="space-y-5 max-w-lg" novalidate>
+
+          <div>
+            <label for="contact_url" class="block text-sm font-medium text-gray-700 mb-1">
+              URL do botão "Fale com o Farol"
+            </label>
+            <input id="contact_url" name="contact_url" type="text"
+              placeholder="https://wa.me/5511999999999 ou mailto:contato@grupofarol.com"
+              class="admin-input"
+              aria-describedby="contact_url-hint" />
+            <p id="contact_url-hint" class="mt-1 text-xs text-gray-400">
+              Aceita link do WhatsApp, endereço de e-mail (mailto:) ou URL externa.
+            </p>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" id="btn-save-settings" class="admin-btn-primary">Salvar Configurações</button>
+          </div>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ── Shared styles ─────────────────────────────────────── -->
+  <style>
+    .tab-btn      { white-space:nowrap; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
+    .tab-btn:focus{ outline: 2px solid #C0392B; outline-offset: 2px; border-radius: 2px; }
+    .tab-active   { color: #C0392B; border-bottom-color: #C0392B; }
+    .tab-inactive { color: #6b7280; }
+    .tab-inactive:hover { color: #1A1A1A; }
+    .admin-input  { display:block; width:100%; border-radius:0.5rem; border:1px solid #d1d5db; padding:0.5rem 0.75rem; font-size:0.875rem; color:#1A1A1A; transition: border-color .15s, box-shadow .15s; }
+    .admin-input:focus { outline: none; border-color: #C0392B; box-shadow: 0 0 0 3px rgba(192,57,43,.15); }
+    .admin-btn-primary { display:inline-flex; align-items:center; gap:0.5rem; border-radius:0.5rem; background:#C0392B; padding:0.5rem 1.25rem; font-size:0.875rem; font-weight:600; color:#fff; transition: background .15s; }
+    .admin-btn-primary:hover { background:#a93226; }
+    .admin-btn-primary:focus { outline: 2px solid #C0392B; outline-offset: 2px; }
+    .admin-btn-primary:disabled { opacity:.6; cursor:not-allowed; }
+  </style>
+
+  <script>
+    /* ── Shared state ──────────────────────────────────────── */
+    let supabase
+    let authToken
+
+    /* ── Toast ─────────────────────────────────────────────── */
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast')
+      toast.textContent = message
+      toast.className = [
+        'fixed top-4 right-4 z-50 max-w-xs rounded-xl px-5 py-3 text-sm font-medium shadow-lg transition-all',
+        type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white',
+      ].join(' ')
+      toast.classList.remove('hidden')
+      clearTimeout(toast._timer)
+      toast._timer = setTimeout(() => toast.classList.add('hidden'), 4000)
+    }
+
+    /* ── Tab switching ─────────────────────────────────────── */
+    function activateTab(name) {
+      document.querySelectorAll('[role="tab"]').forEach(btn => {
+        const active = btn.dataset.tab === name
+        btn.setAttribute('aria-selected', String(active))
+        btn.classList.toggle('tab-active', active)
+        btn.classList.toggle('tab-inactive', !active)
+      })
+      document.querySelectorAll('[role="tabpanel"]').forEach(panel => {
+        panel.classList.toggle('hidden', panel.id !== `panel-${name}`)
+      })
+    }
+
+    document.querySelectorAll('[role="tab"]').forEach(btn => {
+      btn.addEventListener('click', () => activateTab(btn.dataset.tab))
+      // Arrow key navigation within tablist
+      btn.addEventListener('keydown', e => {
+        const tabs = [...document.querySelectorAll('[role="tab"]')]
+        const idx  = tabs.indexOf(e.currentTarget)
+        if (e.key === 'ArrowRight') { e.preventDefault(); tabs[(idx + 1) % tabs.length].focus() }
+        if (e.key === 'ArrowLeft')  { e.preventDefault(); tabs[(idx - 1 + tabs.length) % tabs.length].focus() }
+      })
+    })
+
+    /* ── Boot ──────────────────────────────────────────────── */
+    ;(async () => {
+      const cfg = await fetch('/api/config').then(r => r.json())
+      supabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey)
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { location.href = '/admin/index.html'; return }
+      authToken = session.access_token
+
+      // Sign out
+      document.getElementById('signout-btn').addEventListener('click', async () => {
+        await supabase.auth.signOut()
+        location.href = '/admin/index.html'
+      })
+
+      // Refresh token silently so long sessions don't expire
+      supabase.auth.onAuthStateChange((event, sess) => {
+        if (event === 'SIGNED_OUT') { location.href = '/admin/index.html'; return }
+        if (sess) authToken = sess.access_token
+      })
+
+      // Signal that auth is ready (ISSUE 10–12 panels listen for this)
+      document.dispatchEvent(new CustomEvent('admin:ready', { detail: { supabase, getToken: () => authToken } }))
+
+      // ── Pre-fill Hero and About from /api/content ──────────
+      const content = await fetch('/api/content').then(r => r.json()).catch(() => ({}))
+      const HERO_KEYS     = ['hero_headline','hero_subheadline','hero_cta1_text','hero_cta1_url','hero_cta2_text','hero_cta2_url']
+      const ABOUT_KEYS    = ['about_text','about_stat1_value','about_stat1_label','about_stat2_value','about_stat2_label','about_stat3_value','about_stat3_label']
+      const CTA_KEYS      = ['cta_final_text','cta_final_subtext','cta_final_btn_text','cta_final_btn_url']
+      const SETTINGS_KEYS = ['contact_url']
+      ;[...HERO_KEYS, ...ABOUT_KEYS, ...CTA_KEYS, ...SETTINGS_KEYS].forEach(key => {
+        const el = document.getElementById(key)
+        if (el && content[key] !== undefined) el.value = content[key]
+      })
+    })()
+  /* ── Talents ───────────────────────────────────────────────── */
+  function renderCreatorsList(creators) {
+    const list = document.getElementById('creators-list')
+    if (!creators.length) {
+      list.innerHTML = '<p class="text-gray-400 text-sm">Nenhum creator cadastrado ainda.</p>'
+      return
+    }
+    list.innerHTML = creators.map(c => `
+      <div class="flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-4 py-3">
+        <img src="${c.photo_url}" alt="Foto de ${c.name}" class="h-12 w-12 rounded-full object-cover border border-gray-200 flex-shrink-0" />
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium truncate">${c.name}</p>
+          <p class="text-xs text-gray-500 truncate">${c.category} · posição ${c.position}</p>
+        </div>
+        <div class="flex gap-2 flex-shrink-0">
+          <button
+            type="button"
+            class="text-xs font-medium text-gray-600 hover:text-brand-red focus:outline-none focus:underline"
+            data-action="edit-creator" data-id="${c.id}"
+            aria-label="Editar ${c.name}"
+          >Editar</button>
+          <button
+            type="button"
+            class="text-xs font-medium text-red-500 hover:text-red-700 focus:outline-none focus:underline"
+            data-action="delete-creator" data-id="${c.id}" data-name="${c.name}"
+            aria-label="Remover ${c.name}"
+          >Remover</button>
+        </div>
+      </div>
+    `).join('')
+  }
+
+  async function loadCreators() {
+    const res = await fetch('/api/creators').catch(() => null)
+    if (!res || !res.ok) { showToast('Erro ao carregar creators', 'error'); return }
+    const creators = await res.json()
+    renderCreatorsList(creators)
+    return creators
+  }
+
+  function openCreatorForm(creator = null) {
+    const wrap  = document.getElementById('creator-form-wrap')
+    const title = document.getElementById('creator-form-title')
+    const preview = document.getElementById('creator-photo-preview')
+
+    document.getElementById('creator-id').value         = creator?.id ?? ''
+    document.getElementById('creator-name').value       = creator?.name ?? ''
+    document.getElementById('creator-category').value   = creator?.category ?? ''
+    document.getElementById('creator-position').value   = creator?.position ?? 0
+    document.getElementById('creator-instagram').value  = creator?.instagram_url ?? ''
+    document.getElementById('creator-youtube').value    = creator?.youtube_url ?? ''
+    document.getElementById('creator-tiktok').value     = creator?.tiktok_url ?? ''
+    document.getElementById('creator-photo-url').value  = creator?.photo_url ?? ''
+    document.getElementById('creator-photo').value      = ''
+    document.getElementById('creator-photo-error').classList.add('hidden')
+
+    if (creator?.photo_url) {
+      preview.src = creator.photo_url
+      preview.classList.remove('hidden')
+    } else {
+      preview.src = ''
+      preview.classList.add('hidden')
+    }
+
+    title.textContent = creator ? `Editar: ${creator.name}` : 'Novo Creator'
+    wrap.classList.remove('hidden')
+    document.getElementById('creator-name').focus()
+  }
+
+  function closeCreatorForm() {
+    document.getElementById('creator-form-wrap').classList.add('hidden')
+    document.getElementById('form-creator').reset()
+  }
+
+  // Photo preview + 2MB validation
+  document.getElementById('creator-photo').addEventListener('change', function () {
+    const file     = this.files[0]
+    const errorEl  = document.getElementById('creator-photo-error')
+    const preview  = document.getElementById('creator-photo-preview')
+    errorEl.classList.add('hidden')
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) {
+      errorEl.textContent = 'A imagem deve ter no máximo 2 MB.'
+      errorEl.classList.remove('hidden')
+      this.value = ''
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = e => { preview.src = e.target.result; preview.classList.remove('hidden') }
+    reader.readAsDataURL(file)
+  })
+
+  document.getElementById('btn-add-creator').addEventListener('click', () => openCreatorForm())
+  document.getElementById('btn-cancel-creator').addEventListener('click', closeCreatorForm)
+
+  // Edit / Delete via event delegation
+  document.getElementById('creators-list').addEventListener('click', async e => {
+    const editBtn   = e.target.closest('[data-action="edit-creator"]')
+    const deleteBtn = e.target.closest('[data-action="delete-creator"]')
+
+    if (editBtn) {
+      const res = await fetch('/api/creators').then(r => r.json())
+      const creator = res.find(c => c.id === editBtn.dataset.id)
+      if (creator) openCreatorForm(creator)
+    }
+
+    if (deleteBtn) {
+      const name = deleteBtn.dataset.name
+      if (!confirm(`Remover "${name}"? Esta ação não pode ser desfeita.`)) return
+      deleteBtn.disabled = true
+      const res = await fetch('/api/creators', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+        body: JSON.stringify({ id: deleteBtn.dataset.id }),
+      })
+      if (res.ok) { showToast('Creator removido.', 'success'); loadCreators() }
+      else        { showToast('Erro ao remover creator.', 'error'); deleteBtn.disabled = false }
+    }
+  })
+
+  // Save (add or edit)
+  document.getElementById('form-creator').addEventListener('submit', async e => {
+    e.preventDefault()
+    const btn = document.getElementById('btn-save-creator')
+    btn.disabled = true
+    btn.textContent = 'Salvando…'
+
+    try {
+      // Upload photo if a new file was selected
+      const fileInput = document.getElementById('creator-photo')
+      let photoUrl = document.getElementById('creator-photo-url').value
+
+      if (fileInput.files[0]) {
+        const fd = new FormData()
+        fd.append('file', fileInput.files[0])
+        fd.append('bucket', 'creators')
+        const upRes = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${authToken}` }, body: fd })
+        const upJson = await upRes.json()
+        if (!upRes.ok) throw new Error(upJson.error || 'Erro no upload')
+        photoUrl = upJson.url
+      }
+
+      if (!photoUrl) throw new Error('Foto é obrigatória')
+
+      const id = document.getElementById('creator-id').value
+      const payload = {
+        name:          document.getElementById('creator-name').value.trim(),
+        category:      document.getElementById('creator-category').value.trim(),
+        position:      parseInt(document.getElementById('creator-position').value, 10) || 0,
+        photo_url:     photoUrl,
+        instagram_url: document.getElementById('creator-instagram').value.trim(),
+        youtube_url:   document.getElementById('creator-youtube').value.trim(),
+        tiktok_url:    document.getElementById('creator-tiktok').value.trim(),
+      }
+
+      const isEdit = !!id
+      const res = await fetch('/api/creators', {
+        method:  isEdit ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+        body:    JSON.stringify(isEdit ? { id, ...payload } : payload),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Erro desconhecido')
+
+      showToast(isEdit ? 'Creator atualizado!' : 'Creator adicionado!', 'success')
+      closeCreatorForm()
+      loadCreators()
+    } catch (err) {
+      showToast(`Erro: ${err.message}`, 'error')
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Salvar'
+    }
+  })
+
+  // Load on tab activation
+  document.querySelector('[data-tab="talents"]').addEventListener('click', loadCreators)
+  document.addEventListener('admin:ready', loadCreators)
+
+  /* ── Partners ──────────────────────────────────────────────── */
+  function renderPartnersGrid(partners) {
+    const grid = document.getElementById('partners-grid')
+    if (!partners.length) {
+      grid.innerHTML = '<p class="text-gray-400 text-sm col-span-full">Nenhum parceiro cadastrado ainda.</p>'
+      return
+    }
+    grid.innerHTML = partners.map(p => `
+      <div class="relative rounded-xl border border-gray-200 bg-white p-4 flex flex-col items-center gap-3">
+        <img src="${p.logo_url}" alt="Logo ${p.name}" class="h-14 w-full object-contain" />
+        <p class="text-xs text-gray-600 text-center truncate w-full">${p.name}</p>
+        <button
+          type="button"
+          data-action="delete-partner" data-id="${p.id}" data-name="${p.name}"
+          aria-label="Remover ${p.name}"
+          class="text-xs text-red-500 hover:text-red-700 focus:outline-none focus:underline"
+        >Remover</button>
+      </div>
+    `).join('')
+  }
+
+  async function loadPartners() {
+    const res = await fetch('/api/partners').catch(() => null)
+    if (!res || !res.ok) { showToast('Erro ao carregar parceiros', 'error'); return }
+    renderPartnersGrid(await res.json())
+  }
+
+  // Add partner form toggle
+  document.getElementById('btn-add-partner').addEventListener('click', () => {
+    document.getElementById('partner-form-wrap').classList.remove('hidden')
+    document.getElementById('partner-name').focus()
+  })
+  document.getElementById('btn-cancel-partner').addEventListener('click', () => {
+    document.getElementById('partner-form-wrap').classList.add('hidden')
+    document.getElementById('form-partner').reset()
+    document.getElementById('partner-logo-preview').classList.add('hidden')
+    document.getElementById('partner-logo-error').classList.add('hidden')
+  })
+
+  // Logo preview + 2MB validation
+  document.getElementById('partner-logo').addEventListener('change', function () {
+    const file    = this.files[0]
+    const errorEl = document.getElementById('partner-logo-error')
+    const preview = document.getElementById('partner-logo-preview')
+    errorEl.classList.add('hidden')
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) {
+      errorEl.textContent = 'A imagem deve ter no máximo 2 MB.'
+      errorEl.classList.remove('hidden')
+      this.value = ''
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = e => { preview.src = e.target.result; preview.classList.remove('hidden') }
+    reader.readAsDataURL(file)
+  })
+
+  // Delete via event delegation
+  document.getElementById('partners-grid').addEventListener('click', async e => {
+    const btn = e.target.closest('[data-action="delete-partner"]')
+    if (!btn) return
+    if (!confirm(`Remover "${btn.dataset.name}"?`)) return
+    btn.disabled = true
+    const res = await fetch('/api/partners', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify({ id: btn.dataset.id }),
+    })
+    if (res.ok) { showToast('Parceiro removido.', 'success'); loadPartners() }
+    else        { showToast('Erro ao remover parceiro.', 'error'); btn.disabled = false }
+  })
+
+  // Save new partner
+  document.getElementById('form-partner').addEventListener('submit', async e => {
+    e.preventDefault()
+    const btn = document.getElementById('btn-save-partner')
+    btn.disabled = true
+    btn.textContent = 'Salvando…'
+    try {
+      const fileInput = document.getElementById('partner-logo')
+      if (!fileInput.files[0]) throw new Error('Logo é obrigatório')
+
+      const fd = new FormData()
+      fd.append('file', fileInput.files[0])
+      fd.append('bucket', 'partners')
+      const upRes  = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${authToken}` }, body: fd })
+      const upJson = await upRes.json()
+      if (!upRes.ok) throw new Error(upJson.error || 'Erro no upload')
+
+      const res = await fetch('/api/partners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+        body: JSON.stringify({ name: document.getElementById('partner-name').value.trim(), logo_url: upJson.url }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Erro desconhecido')
+
+      showToast('Parceiro adicionado!', 'success')
+      document.getElementById('btn-cancel-partner').click()
+      loadPartners()
+    } catch (err) {
+      showToast(`Erro: ${err.message}`, 'error')
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Salvar'
+    }
+  })
+
+  document.querySelector('[data-tab="partners"]').addEventListener('click', loadPartners)
+  document.addEventListener('admin:ready', loadPartners)
+
+  /* ── Generic content save helper ──────────────────────────── */
+  async function saveContent(keys, btnId) {
+    const btn = document.getElementById(btnId)
+    const body = {}
+    keys.forEach(k => { body[k] = document.getElementById(k)?.value ?? '' })
+    btn.disabled = true
+    const prev = btn.textContent
+    btn.textContent = 'Salvando…'
+    try {
+      const res = await fetch('/api/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+        body: JSON.stringify(body),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Erro desconhecido')
+      showToast('Salvo com sucesso!', 'success')
+    } catch (err) {
+      showToast(`Erro ao salvar: ${err.message}`, 'error')
+    } finally {
+      btn.disabled = false
+      btn.textContent = prev
+    }
+  }
+
+  /* ── CTA Final form ────────────────────────────────────────── */
+  document.getElementById('form-cta').addEventListener('submit', e => {
+    e.preventDefault()
+    saveContent(['cta_final_text','cta_final_subtext','cta_final_btn_text','cta_final_btn_url'], 'btn-save-cta')
+  })
+
+  /* ── Settings form ──────────────────────────────────────────── */
+  document.getElementById('form-settings').addEventListener('submit', e => {
+    e.preventDefault()
+    saveContent(['contact_url'], 'btn-save-settings')
+  })
+
+  /* ── Hero form ─────────────────────────────────────────────── */
+  document.getElementById('form-hero').addEventListener('submit', e => {
+    e.preventDefault()
+    saveContent(
+      ['hero_headline','hero_subheadline','hero_cta1_text','hero_cta1_url','hero_cta2_text','hero_cta2_url'],
+      'btn-save-hero'
+    )
+  })
+
+  /* ── About form ────────────────────────────────────────────── */
+  document.getElementById('form-about').addEventListener('submit', e => {
+    e.preventDefault()
+    saveContent(
+      ['about_text','about_stat1_value','about_stat1_label','about_stat2_value','about_stat2_label','about_stat3_value','about_stat3_label'],
+      'btn-save-about'
+    )
+  })
+  </script>
+
+</body>
+</html>

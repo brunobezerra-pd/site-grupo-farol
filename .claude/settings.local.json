@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Skill(update-config)",
+      "Bash(file /Users/brunobezerra/Desktop/ai-projects/site-grupo-farol/*)",
+      "Bash(head -50 /Users/brunobezerra/Desktop/ai-projects/site-grupo-farol/admin/*)",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__list_tables",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('mcpServers', {}\\), indent=2\\)\\)\")",
+      "mcp__plugin_figma_figma__get_design_context",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/cd2e34f7-3bc5-42fa-8300-5714b41bc264\" -o assets/images/logo.png)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/2623efa4-61c0-4061-87da-d11337f8c381\" -o assets/images/lighthouse.svg)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/7f15eacb-5c85-4808-8716-c9fc68908076\" -o assets/images/hero-deco.png)",
+      "Bash(npx --yes serve . -p 3333)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3333/index.html)",
+      "Bash(curl:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grupo Farol — A Maior Agência de Creators da América Latina</title>
+  <meta name="description" content="No Farol, conectamos marcas a um ecossistema exclusivo com os principais talentos para co-criar histórias que engajam e inspiram." />
+  <link rel="stylesheet" href="/assets/css/output.css" />
+</head>
+<body class="bg-brand-beige text-brand-black font-sans overflow-x-hidden">
+
+  <!-- Skip link -->
+  <a href="#main-content" class="skip-link" data-i18n="skip_to_content">Ir para o conteúdo</a>
+
+  <!-- ================================================================
+       HEADER / NAV — Issue 13
+       ================================================================ -->
+  <header role="banner" class="fixed top-0 left-0 right-0 z-40 bg-brand-beige">
+    <nav
+      aria-label="Navegação principal"
+      class="max-w-screen-xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between"
+    >
+      <a href="/" aria-label="Grupo Farol — Página inicial" class="flex-shrink-0 flex items-center gap-2">
+        <img src="/assets/images/logo.svg" alt="" role="presentation" class="h-8 w-8" />
+        <span class="font-agharti font-black text-xl uppercase text-brand-black tracking-wide">Grupo Farol</span>
+      </a>
+
+      <ul class="hidden md:flex items-center gap-6 lg:gap-8" role="list">
+        <li><a href="#sobre"           class="font-foun text-brand-black text-lg hover:text-brand-red transition-colors duration-200" data-i18n="nav_sobre">SoBre</a></li>
+        <li><a href="#talentos"        class="font-foun text-brand-black text-lg hover:text-brand-red transition-colors duration-200" data-i18n="nav_talentos">TALENTOS</a></li>
+        <li><a href="#como-trabalhamos" class="font-foun text-brand-black text-lg hover:text-brand-red transition-colors duration-200" data-i18n="nav_como">Como TrAbALHAMOS</a></li>
+        <li><a href="#parceiros"       class="font-foun text-brand-black text-lg hover:text-brand-red transition-colors duration-200" data-i18n="nav_parceiros">cONtatos</a></li>
+        <li><a href="#cta-final"       class="font-foun text-brand-black text-lg hover:text-brand-red transition-colors duration-200" data-i18n="nav_fale">FAle conOsco</a></li>
+      </ul>
+
+      <button
+        id="nav-toggle"
+        type="button"
+        class="md:hidden p-2 -mr-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-red"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Abrir menu"
+      >
+        <svg id="icon-hamburger" class="w-6 h-6 text-brand-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="icon-close" class="w-6 h-6 text-brand-black hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </nav>
+
+    <div id="mobile-menu" class="nav-mobile md:hidden bg-brand-beige border-t border-brand-black/10" aria-label="Menu mobile">
+      <ul class="flex flex-col px-6 py-5 gap-3" role="list">
+        <li><a href="#sobre"            class="font-foun text-brand-black text-2xl block py-1 hover:text-brand-red transition-colors" data-i18n="nav_sobre">SoBre</a></li>
+        <li><a href="#talentos"         class="font-foun text-brand-black text-2xl block py-1 hover:text-brand-red transition-colors" data-i18n="nav_talentos">TALENTOS</a></li>
+        <li><a href="#como-trabalhamos" class="font-foun text-brand-black text-2xl block py-1 hover:text-brand-red transition-colors" data-i18n="nav_como">Como TrAbALHAMOS</a></li>
+        <li><a href="#parceiros"        class="font-foun text-brand-black text-2xl block py-1 hover:text-brand-red transition-colors" data-i18n="nav_parceiros">cONtatos</a></li>
+        <li><a href="#cta-final"        class="font-foun text-brand-black text-2xl block py-1 hover:text-brand-red transition-colors" data-i18n="nav_fale">FAle conOsco</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ================================================================
+       MAIN
+       ================================================================ -->
+  <main id="main-content" class="pt-16">
+
+    <!-- ============================================================
+         HERO — Issue 14
+         ============================================================ -->
+    <section id="hero" aria-labelledby="hero-heading" class="relative min-h-[calc(100vh-4rem)] overflow-hidden flex items-center">
+
+      <!-- Lighthouse (decorativa) -->
+      <div class="hidden lg:block absolute left-0 top-0 bottom-0 w-64 xl:w-80 pointer-events-none select-none" aria-hidden="true">
+        <img src="/assets/images/lighthouse.svg" alt="" role="presentation" class="w-full h-full object-contain object-left-bottom" />
+      </div>
+
+      <!-- Conteúdo -->
+      <div class="relative w-full px-6 md:px-12 lg:pl-72 xl:pl-96 lg:pr-16 py-20 md:py-28">
+
+        <!-- Skeleton loader -->
+        <div id="hero-skeleton" class="animate-pulse space-y-4 text-right" aria-hidden="true">
+          <div class="h-20 md:h-28 lg:h-36 bg-brand-black/10 rounded-xl w-full"></div>
+          <div class="h-20 md:h-28 lg:h-36 bg-brand-black/10 rounded-xl w-4/5 ml-auto"></div>
+          <div class="h-5 bg-brand-black/10 rounded w-3/5 ml-auto mt-6"></div>
+          <div class="h-5 bg-brand-black/10 rounded w-2/3 ml-auto"></div>
+          <div class="flex gap-4 justify-end mt-8">
+            <div class="h-14 w-56 bg-brand-black/10 rounded-full"></div>
+            <div class="h-14 w-44 bg-brand-black/10 rounded-full"></div>
+          </div>
+        </div>
+
+        <!-- Conteúdo dinâmico -->
+        <div id="hero-content" class="hidden text-right">
+          <h1 id="hero-heading" class="font-agharti font-black uppercase leading-none text-brand-black text-5xl md:text-7xl lg:text-8xl xl:text-9xl">
+            <span id="hero-headline"></span>
+          </h1>
+          <p id="hero-subheadline" class="font-serif italic text-lg md:text-xl lg:text-2xl text-brand-black mt-6 max-w-2xl ml-auto leading-snug"></p>
+          <div class="flex flex-wrap gap-4 justify-end mt-8 md:mt-10">
+            <a id="hero-cta1" href="#" class="font-agharti text-brand-black text-lg md:text-xl lg:text-2xl tracking-wide px-7 md:px-10 py-3 md:py-5 rounded-full bg-brand-red inline-block hover:opacity-90 transition-opacity">
+              <span id="hero-cta1-text"></span>
+            </a>
+            <a id="hero-cta2" href="#" class="font-agharti text-brand-black text-lg md:text-xl lg:text-2xl tracking-wide px-7 md:px-10 py-3 md:py-5 rounded-full bg-brand-blue inline-block hover:opacity-90 transition-opacity">
+              <span id="hero-cta2-text"></span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Fallback (exibido se a API falhar) -->
+        <div id="hero-fallback" class="hidden text-right">
+          <h1 id="hero-heading" class="font-agharti font-black uppercase leading-none text-brand-black text-5xl md:text-7xl lg:text-8xl xl:text-9xl" data-i18n="hero_fallback_headline">
+            A maior agência de creators da América Latina
+          </h1>
+          <div class="flex flex-wrap gap-4 justify-end mt-8">
+            <a href="#talentos" class="font-agharti text-brand-black text-xl tracking-wide px-10 py-5 rounded-full bg-brand-red inline-block hover:opacity-90 transition-opacity" data-i18n="hero_fallback_cta">
+              Conheça nossos Creators
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SOBRE — Issue 15
+         ============================================================ -->
+    <section id="sobre" aria-labelledby="about-heading" class="py-20 md:py-28 px-6 md:px-12 lg:px-16 xl:px-24 max-w-screen-xl mx-auto">
+
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+
+        <!-- Coluna esquerda: heading + texto -->
+        <div>
+          <!-- Skeleton -->
+          <div id="about-skeleton-left" class="animate-pulse space-y-4" aria-hidden="true">
+            <div class="h-16 bg-brand-black/10 rounded-xl w-4/5"></div>
+            <div class="h-24 bg-brand-black/10 rounded-xl w-full"></div>
+            <div class="space-y-2 mt-4">
+              <div class="h-4 bg-brand-black/10 rounded w-full"></div>
+              <div class="h-4 bg-brand-black/10 rounded w-5/6"></div>
+              <div class="h-4 bg-brand-black/10 rounded w-4/5"></div>
+              <div class="h-4 bg-brand-black/10 rounded w-full"></div>
+            </div>
+          </div>
+
+          <!-- Conteúdo -->
+          <div id="about-content" class="hidden">
+            <h2 id="about-heading" class="font-agharti uppercase leading-none text-brand-black">
+              <span class="block font-light text-4xl md:text-5xl lg:text-6xl" data-i18n="about_somos">SoMos o</span>
+              <span class="block font-black text-6xl md:text-7xl lg:text-8xl">GRUPO FAROL</span>
+            </h2>
+            <div id="about-text" class="mt-8 font-sans italic text-base md:text-lg lg:text-xl text-brand-black leading-relaxed space-y-4"></div>
+          </div>
+        </div>
+
+        <!-- Coluna direita: imagem decorativa + stats -->
+        <div class="flex flex-col gap-6">
+
+          <!-- Imagem decorativa -->
+          <div class="hidden lg:block rounded-2xl overflow-hidden w-full aspect-[16/9] bg-brand-black/10" aria-hidden="true">
+            <img src="/assets/images/hero-deco.svg" alt="" role="presentation" class="w-full h-full object-cover" />
+          </div>
+
+          <!-- Stats -->
+          <div id="about-stats-skeleton" class="animate-pulse flex gap-4" aria-hidden="true">
+            <div class="h-52 flex-1 bg-brand-black/10 rounded-2xl"></div>
+            <div class="h-52 flex-1 bg-brand-black/10 rounded-2xl"></div>
+            <div class="h-52 flex-1 bg-brand-black/10 rounded-2xl"></div>
+          </div>
+
+          <div id="about-stats" class="hidden flex gap-4">
+            <div class="flex-1 rounded-[1.65rem] bg-brand-yellow flex flex-col items-center justify-center py-8 px-4 text-center">
+              <p class="font-agharti font-black text-4xl md:text-5xl leading-none" id="about-stat1-value"></p>
+              <p class="font-foun text-2xl md:text-3xl leading-snug mt-2" id="about-stat1-label"></p>
+            </div>
+            <div class="flex-1 rounded-[1.65rem] bg-brand-blue flex flex-col items-center justify-center py-8 px-4 text-center">
+              <p class="font-agharti font-black text-4xl md:text-5xl leading-none" id="about-stat2-value"></p>
+              <p class="font-foun text-2xl md:text-3xl leading-snug mt-2" id="about-stat2-label"></p>
+            </div>
+            <div class="flex-1 rounded-[1.65rem] bg-brand-pink flex flex-col items-center justify-center py-8 px-4 text-center">
+              <p class="font-agharti font-black text-4xl md:text-5xl leading-none" id="about-stat3-value"></p>
+              <p class="font-foun text-2xl md:text-3xl leading-snug mt-2" id="about-stat3-label"></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         MAIS DE 200 CREATORS — Issue 16
+         ============================================================ -->
+    <section id="creators" aria-labelledby="creators-heading" class="py-16 md:py-24 px-6 overflow-hidden">
+
+      <!-- "MAIS DE" + headline + sub -->
+      <div class="max-w-screen-xl mx-auto">
+        <p class="font-casual text-3xl md:text-4xl text-brand-black mb-2" data-i18n="creators_mais">MAIS DE</p>
+
+        <div class="flex flex-wrap items-baseline gap-x-6">
+          <h2 id="creators-heading" class="font-agharti font-black text-7xl md:text-9xl lg:text-[10rem] xl:text-[12rem] leading-none text-brand-black uppercase" data-i18n="creators_headline">
+            200 CREATORS.
+          </h2>
+          <p class="font-agharti font-thin text-3xl md:text-5xl lg:text-6xl leading-none text-brand-black uppercase" data-i18n="creators_sub">
+            Centenas de comunidades.
+          </p>
+        </div>
+
+        <p class="font-serif italic text-lg md:text-xl lg:text-2xl text-brand-black mt-6 max-w-3xl" data-i18n="creators_desc">
+          Nosso casting reúne talentos que construíram comunidades reais em diferentes
+          <strong class="font-bold">territórios</strong> da cultura digital.
+        </p>
+      </div>
+
+      <!-- Tags de categorias -->
+      <div class="mt-10 md:mt-14 max-w-screen-xl mx-auto">
+        <ul class="flex flex-wrap gap-3 md:gap-4" role="list" aria-label="Categorias de creators">
+          <li>
+            <span class="creator-tag" data-i18n="tag_humor">HUMOR &amp; CRIATIVIDADE</span>
+          </li>
+          <li>
+            <span class="creator-tag" style="--tag-rotate: -1.5deg" data-i18n="tag_gastro">GASTRONOMIA</span>
+          </li>
+          <li>
+            <span class="creator-tag" style="--tag-rotate: 2deg" data-i18n="tag_esportes">ESPORTES &amp; GAMES</span>
+          </li>
+          <li>
+            <span class="creator-tag" style="--tag-rotate: -2.5deg" data-i18n="tag_moda">MODA &amp; BELEZA</span>
+          </li>
+          <li>
+            <span class="creator-tag" style="--tag-rotate: 1deg" data-i18n="tag_lifestyle">LIFESTYLE</span>
+          </li>
+          <li>
+            <span class="creator-tag" style="--tag-rotate: -1deg" data-i18n="tag_paginas">PÁGINAS &amp; COMUNIDADES</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         TALENTOS EM DESTAQUE — Issue 17
+         ============================================================ -->
+    <section
+      id="talentos"
+      aria-labelledby="talents-heading"
+      role="region"
+      aria-label="Talentos em destaque"
+      class="py-16 md:py-24 overflow-hidden"
+    >
+      <!-- Heading -->
+      <div class="px-6 md:px-12 lg:px-16">
+        <h2 id="talents-heading" class="font-agharti font-black text-5xl md:text-7xl lg:text-8xl xl:text-[9rem] leading-none text-brand-black uppercase" data-i18n="talents_heading">
+          TALENTOS EM DESTAQUE
+        </h2>
+        <p class="font-casual text-lg md:text-2xl text-brand-black mt-3 mb-10" data-i18n="talents_sub">
+          Conheça alguns dos creators que fazem parte da nossa curadoria.
+        </p>
+      </div>
+
+      <!-- Slider -->
+      <div
+        id="slider-region"
+        class="relative px-6 md:px-12 lg:px-16"
+        aria-live="polite"
+        aria-atomic="false"
+      >
+        <!-- Skeleton -->
+        <div id="slider-skeleton" class="animate-pulse flex gap-6" aria-hidden="true">
+          <div class="flex-none w-full md:w-1/2 lg:w-1/3 aspect-[3/4] bg-brand-black/10 rounded-2xl"></div>
+          <div class="hidden md:block flex-none w-1/2 lg:w-1/3 aspect-[3/4] bg-brand-black/10 rounded-2xl"></div>
+          <div class="hidden lg:block flex-none w-1/3 aspect-[3/4] bg-brand-black/10 rounded-2xl"></div>
+        </div>
+
+        <!-- Slider wrapper — preenchido por slider.js -->
+        <div id="slider-viewport" class="hidden overflow-hidden">
+          <div id="slider-track" class="flex transition-transform duration-400 ease-in-out will-change-transform"></div>
+        </div>
+
+        <!-- Fallback -->
+        <p id="slider-fallback" class="hidden font-serif italic text-lg text-brand-black py-12" data-i18n="talents_fallback">
+          Talentos em breve.
+        </p>
+      </div>
+
+      <!-- Navegação -->
+      <div class="flex items-center justify-between mt-8 px-6 md:px-12 lg:px-16">
+        <!-- Setas -->
+        <div class="flex gap-4">
+          <button
+            id="slider-prev"
+            type="button"
+            aria-label="Creator anterior"
+            class="w-14 h-14 rounded-full border-2 border-brand-black flex items-center justify-center hover:bg-brand-black hover:text-brand-beige transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            id="slider-next"
+            type="button"
+            aria-label="Próximo creator"
+            class="w-14 h-14 rounded-full border-2 border-brand-black flex items-center justify-center hover:bg-brand-black hover:text-brand-beige transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- CTA ver todos -->
+        <a
+          id="talents-cta"
+          href="#"
+          class="font-agharti text-brand-black text-base md:text-lg tracking-wide px-6 md:px-8 py-3 md:py-4 rounded-full bg-brand-red inline-block hover:opacity-90 transition-opacity"
+          data-i18n="talents_cta"
+        >
+          CONHEÇA TODOS OS NOSSOS TALENTOS
+        </a>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         COMO TRABALHAMOS — Issue 18
+         ============================================================ -->
+    <section id="como-trabalhamos" aria-labelledby="how-heading" class="py-16 md:py-24 px-6 md:px-12 lg:px-16 xl:px-24">
+
+      <div class="max-w-screen-xl mx-auto">
+        <!-- Heading -->
+        <p class="font-casual text-2xl md:text-3xl text-brand-black mb-1" data-i18n="how_label">COMO TRABALHAMOS</p>
+        <h2 id="how-heading" class="font-agharti font-semibold text-6xl md:text-8xl lg:text-[9rem] xl:text-[10rem] leading-none text-brand-black uppercase mb-4" data-i18n="how_heading">
+          COM MARCAS
+        </h2>
+        <p class="font-serif italic text-lg md:text-xl lg:text-2xl text-brand-black max-w-3xl" data-i18n="how_sub">
+          Um processo estruturado que combina
+          <strong class="font-bold">curadoria humana, visão estratégica e execução impecável.</strong>
+        </p>
+
+        <!-- 4 blocos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 md:mt-16">
+
+          <article class="how-block" aria-labelledby="how-1-title">
+            <h3 id="how-1-title" class="font-agharti font-semibold text-2xl md:text-3xl uppercase mb-4 tracking-tight" data-i18n="how_1_title">
+              ESTRATÉGIA &amp; INTELIGÊNCIA
+            </h3>
+            <p class="font-sans italic text-base md:text-lg text-brand-black leading-relaxed" data-i18n="how_1_text">
+              Atuamos como uma consultoria criativa que identifica territórios culturais e constrói narrativas onde o talento faz parte da ideia desde o começo. Em vez de fórmulas prontas,
+              <strong class="font-bold">desenvolvemos caminhos estratégicos para que a marca se torne parte orgânica da conversa.</strong>
+            </p>
+          </article>
+
+          <article class="how-block" aria-labelledby="how-2-title">
+            <h3 id="how-2-title" class="font-agharti font-semibold text-2xl md:text-3xl uppercase mb-4 tracking-tight" data-i18n="how_2_title">
+              CONEXÕES &amp; PARCERIAS
+            </h3>
+            <p class="font-sans italic text-base md:text-lg text-brand-black leading-relaxed" data-i18n="how_2_text">
+              <strong class="font-bold">Articulamos relações verdadeiras entre marcas e talentos,</strong>
+              fugindo da lógica de "mídia de prateleira". Focamos na construção de
+              <strong class="font-bold">parcerias de longo prazo</strong>
+              onde a co-autoria garante a autenticidade do conteúdo.
+            </p>
+          </article>
+
+          <article class="how-block" aria-labelledby="how-3-title">
+            <h3 id="how-3-title" class="font-agharti font-semibold text-2xl md:text-3xl uppercase mb-4 tracking-tight" data-i18n="how_3_title">
+              PROJETOS ESPECIAIS
+            </h3>
+            <p class="font-sans italic text-base md:text-lg text-brand-black leading-relaxed" data-i18n="how_3_text">
+              Desenvolvemos formatos e narrativas proprietárias que
+              <strong class="font-bold">transformam briefings em histórias que permanecem.</strong>
+              Criamos projetos sob medida onde a conexão entre marca e criador é o que
+              <strong class="font-bold">gera impacto real no público.</strong>
+            </p>
+          </article>
+
+          <article class="how-block" aria-labelledby="how-4-title">
+            <h3 id="how-4-title" class="font-agharti font-semibold text-2xl md:text-3xl uppercase mb-4 tracking-tight" data-i18n="how_4_title">
+              EXCELÊNCIA NO CRAFT
+            </h3>
+            <p class="font-sans italic text-base md:text-lg text-brand-black leading-relaxed" data-i18n="how_4_text">
+              Nossa execução une
+              <strong class="font-bold">técnica audiovisual e alma criativa.</strong>
+              Cuidamos de todo o processo, do roteiro à direção, garantindo que o resultado final tenha o
+              <strong class="font-bold">rigor técnico e a sensibilidade narrativa</strong>
+              que o mercado de conteúdo exige.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         PARCEIROS — Issue 19
+         ============================================================ -->
+    <section id="parceiros" aria-labelledby="partners-heading" class="py-16 md:py-24 px-6 md:px-12 lg:px-16 xl:px-24">
+
+      <div class="max-w-screen-xl mx-auto">
+        <h2 id="partners-heading" class="font-agharti font-black text-4xl md:text-6xl lg:text-7xl xl:text-8xl leading-none text-brand-black uppercase mb-12" data-i18n="partners_heading">
+          DE QUEM SOMOS PARCEIROS
+        </h2>
+
+        <!-- Skeleton -->
+        <div id="partners-skeleton" class="animate-pulse grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6" aria-hidden="true">
+          <div class="h-20 bg-brand-black/10 rounded-xl"></div>
+          <div class="h-20 bg-brand-black/10 rounded-xl"></div>
+          <div class="h-20 bg-brand-black/10 rounded-xl"></div>
+          <div class="h-20 bg-brand-black/10 rounded-xl"></div>
+          <div class="h-20 bg-brand-black/10 rounded-xl"></div>
+          <div class="h-20 bg-brand-black/10 rounded-xl"></div>
+        </div>
+
+        <!-- Grid de logos (preenchida por main.js) -->
+        <div
+          id="partners-grid"
+          class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center"
+          aria-label="Logos dos parceiros"
+        ></div>
+
+        <!-- Fallback vazio -->
+        <p id="partners-empty" class="hidden font-serif italic text-lg text-brand-black py-8" data-i18n="partners_empty">
+          Em breve nossos parceiros.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CTA FINAL — Issue 20
+         ============================================================ -->
+    <section id="cta-final" aria-labelledby="cta-heading" class="py-16 md:py-24 px-6 md:px-12 lg:px-16 xl:px-24 overflow-hidden">
+
+      <div class="max-w-screen-xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+
+        <!-- Coluna esquerda: texto + botão -->
+        <div>
+          <!-- Skeleton -->
+          <div id="cta-skeleton" class="animate-pulse space-y-4" aria-hidden="true">
+            <div class="h-12 bg-brand-black/10 rounded-xl w-4/5"></div>
+            <div class="h-6 bg-brand-black/10 rounded w-full"></div>
+            <div class="h-6 bg-brand-black/10 rounded w-3/4"></div>
+            <div class="h-14 w-56 bg-brand-black/10 rounded-full mt-6"></div>
+          </div>
+
+          <!-- Conteúdo -->
+          <div id="cta-content" class="hidden">
+            <p class="font-casual font-bold text-3xl md:text-4xl lg:text-5xl text-brand-black mb-1" data-i18n="cta_label">VAMOS CO-CRIAR JUNTOS?</p>
+            <h2 id="cta-heading" class="sr-only" data-i18n="cta_heading">Vamos co-criar juntos?</h2>
+            <p id="cta-text" class="font-serif italic text-xl md:text-2xl text-brand-black mt-2 mb-2 leading-snug"></p>
+            <p id="cta-subtext" class="font-serif text-base md:text-lg text-brand-black mb-8 leading-relaxed"></p>
+            <a
+              id="cta-btn"
+              href="#"
+              class="font-agharti text-brand-black text-lg md:text-2xl tracking-wide px-8 md:px-12 py-4 md:py-5 rounded-full bg-brand-red inline-flex items-center gap-3 hover:opacity-90 transition-opacity"
+            >
+              <span id="cta-btn-text"></span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Fallback -->
+          <div id="cta-fallback" class="hidden">
+            <p class="font-casual font-bold text-3xl md:text-5xl text-brand-black mb-4" data-i18n="cta_fallback_label">VAMOS CO-CRIAR JUNTOS?</p>
+            <a href="#" class="font-agharti text-brand-black text-xl tracking-wide px-10 py-5 rounded-full bg-brand-red inline-block hover:opacity-90 transition-opacity" data-i18n="cta_fallback_btn">
+              FALE COM O FAROL
+            </a>
+          </div>
+        </div>
+
+        <!-- Coluna direita: imagem decorativa -->
+        <div class="hidden lg:block rounded-2xl overflow-hidden aspect-[4/3] bg-brand-black/10" aria-hidden="true">
+          <img src="/assets/images/hero-deco.svg" alt="" role="presentation" class="w-full h-full object-cover" />
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================================================================
+       FOOTER — Issue 20
+       ================================================================ -->
+  <footer role="contentinfo" class="bg-brand-black text-brand-beige py-10 px-6 md:px-12 lg:px-16 xl:px-24 mt-4">
+    <div class="max-w-screen-xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-2">
+        <img src="/assets/images/logo.svg" alt="" role="presentation" class="h-7 w-7 brightness-0 invert" />
+        <span class="font-agharti font-black text-lg uppercase text-brand-beige tracking-wide">Grupo Farol</span>
+      </div>
+      <p class="font-sans text-sm text-brand-beige/70" data-i18n="footer_copy">
+        &copy; 2025 Grupo Farol. Todos os direitos reservados.
+      </p>
+      <nav aria-label="Links do rodapé" class="flex gap-6">
+        <a href="#sobre"            class="font-foun text-brand-beige/80 hover:text-brand-beige transition-colors text-sm" data-i18n="nav_sobre">SoBre</a>
+        <a href="#talentos"         class="font-foun text-brand-beige/80 hover:text-brand-beige transition-colors text-sm" data-i18n="nav_talentos">TALENTOS</a>
+        <a href="#como-trabalhamos" class="font-foun text-brand-beige/80 hover:text-brand-beige transition-colors text-sm" data-i18n="nav_como">Como TrAbALHAMOS</a>
+        <a id="footer-contact-link" href="#" class="font-foun text-brand-beige/80 hover:text-brand-beige transition-colors text-sm" data-i18n="nav_fale">FAle conOsco</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- ================================================================
+       SCRIPTS
+       ================================================================ -->
+
+  <!-- Nav mobile toggle -->
+  <script>
+    (function () {
+      var toggle = document.getElementById('nav-toggle');
+      var menu   = document.getElementById('mobile-menu');
+      var iconH  = document.getElementById('icon-hamburger');
+      var iconC  = document.getElementById('icon-close');
+
+      function openMenu() {
+        menu.style.maxHeight = menu.scrollHeight + 'px';
+        menu.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Fechar menu');
+        iconH.classList.add('hidden');
+        iconC.classList.remove('hidden');
+        var first = menu.querySelector('a');
+        if (first) first.focus();
+      }
+
+      function closeMenu() {
+        menu.style.maxHeight = '0';
+        menu.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Abrir menu');
+        iconH.classList.remove('hidden');
+        iconC.classList.add('hidden');
+      }
+
+      toggle.addEventListener('click', function () {
+        toggle.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+          closeMenu();
+          toggle.focus();
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (toggle.getAttribute('aria-expanded') === 'true' && !toggle.contains(e.target) && !menu.contains(e.target)) {
+          closeMenu();
+        }
+      });
+
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', closeMenu);
+      });
+    })();
+  </script>
+
+  <!-- Data loading + rendering -->
+  <script src="/assets/js/main.js"></script>
+
+</body>
+</html>
