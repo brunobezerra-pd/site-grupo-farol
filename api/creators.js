@@ -26,6 +26,7 @@ export default async function handler(req, res) {
 
   // GET — return creators ordered by position ASC
   if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
     const { data, error } = await supabase
       .from('creators')
       .select('*')

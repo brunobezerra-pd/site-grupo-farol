@@ -10,12 +10,19 @@
 </head>
 <body class="min-h-screen bg-gray-50 font-sans text-brand-black">
 
+  <!-- ── Init error banner (hidden by default) ─────────────── -->
+  <div
+    id="init-error"
+    role="alert"
+    class="hidden fixed inset-x-0 top-0 z-50 bg-red-600 text-white text-sm font-medium px-4 py-3 text-center"
+  ></div>
+
   <!-- ── Toast notification ─────────────────────────────────── -->
   <div
     id="toast"
     role="status"
     aria-live="polite"
-    class="fixed top-4 right-4 z-50 hidden max-w-xs rounded-xl px-5 py-3 text-sm font-medium shadow-lg transition-all"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden max-w-sm w-full mx-4 rounded-xl px-5 py-4 text-sm font-semibold shadow-2xl text-center"
   ></div>
 
   <!-- ── Header ─────────────────────────────────────────────── -->
@@ -376,12 +383,11 @@
       const toast = document.getElementById('toast')
       toast.textContent = message
       toast.className = [
-        'fixed top-4 right-4 z-50 max-w-xs rounded-xl px-5 py-3 text-sm font-medium shadow-lg transition-all',
+        'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-sm w-auto rounded-xl px-6 py-4 text-sm font-semibold shadow-2xl text-center',
         type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white',
       ].join(' ')
-      toast.classList.remove('hidden')
       clearTimeout(toast._timer)
-      toast._timer = setTimeout(() => toast.classList.add('hidden'), 4000)
+      toast._timer = setTimeout(() => toast.classList.add('hidden'), 6000)
     }
 
     /* ── Tab switching ─────────────────────────────────────── */
@@ -410,10 +416,13 @@
 
     /* ── Boot ──────────────────────────────────────────────── */
     ;(async () => {
+      try {
       const cfg = await fetch('/api/config').then(r => r.json())
+      if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) throw new Error('Configuração do Supabase não encontrada. Verifique as variáveis de ambiente na Vercel.')
       supabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey)
 
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) throw new Error('Erro ao verificar sessão: ' + sessionError.message)
       if (!session) { location.href = '/admin/index.html'; return }
       authToken = session.access_token
 
@@ -442,6 +451,12 @@
         const el = document.getElementById(key)
         if (el && content[key] !== undefined) el.value = content[key]
       })
+      } catch (initErr) {
+        const banner = document.getElementById('init-error')
+        banner.textContent = 'Erro ao inicializar painel: ' + initErr.message
+        banner.classList.remove('hidden')
+        console.error('[admin boot]', initErr)
+      }
     })()
   /* ── Talents ───────────────────────────────────────────────── */
   function renderCreatorsList(creators) {

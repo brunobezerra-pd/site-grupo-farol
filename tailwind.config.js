@@ -33,5 +33,11 @@ module.exports = {
       },
     },
   },
+  safelist: [
+    'bg-green-600',
+    'bg-red-600',
+    'text-white',
+    '-translate-x-1/2',
+  ],
   plugins: [],
 }

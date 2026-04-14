@@ -26,6 +26,7 @@ export default async function handler(req, res) {
 
   // GET — return partners ordered by created_at ASC
   if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
     const { data, error } = await supabase
       .from('partners')
       .select('*')

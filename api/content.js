@@ -26,6 +26,7 @@ export default async function handler(req, res) {
 
   // GET — return all content keys as { key: value }
   if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
     const { data, error } = await supabase.from('content').select('key, value')
     if (error) return res.status(500).json({ error: error.message })
     const result = {}
