@@ -375,7 +375,7 @@
 
   <script>
     /* ── Shared state ──────────────────────────────────────── */
-    let supabase
+    let sbClient
     let authToken
 
     /* ── Toast ─────────────────────────────────────────────── */
@@ -419,27 +419,27 @@
       try {
       const cfg = await fetch('/api/config').then(r => r.json())
       if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) throw new Error('Configuração do Supabase não encontrada. Verifique as variáveis de ambiente na Vercel.')
-      supabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey)
+      sbClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey)
 
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await sbClient.auth.getSession()
       if (sessionError) throw new Error('Erro ao verificar sessão: ' + sessionError.message)
       if (!session) { location.href = '/admin/index.html'; return }
       authToken = session.access_token
 
       // Sign out
       document.getElementById('signout-btn').addEventListener('click', async () => {
-        await supabase.auth.signOut()
+        await sbClient.auth.signOut()
         location.href = '/admin/index.html'
       })
 
       // Refresh token silently so long sessions don't expire
-      supabase.auth.onAuthStateChange((event, sess) => {
+      sbClient.auth.onAuthStateChange((event, sess) => {
         if (event === 'SIGNED_OUT') { location.href = '/admin/index.html'; return }
         if (sess) authToken = sess.access_token
       })
 
       // Signal that auth is ready (ISSUE 10–12 panels listen for this)
-      document.dispatchEvent(new CustomEvent('admin:ready', { detail: { supabase, getToken: () => authToken } }))
+      document.dispatchEvent(new CustomEvent('admin:ready', { detail: { sbClient, getToken: () => authToken } }))
 
       // ── Pre-fill Hero and About from /api/content ──────────
       const content = await fetch('/api/content').then(r => r.json()).catch(() => ({}))
