@@ -159,10 +159,13 @@
     if (text) {
       var textNode = el('about-text');
       if (textNode) {
-        // Parágrafos separados por quebra de linha dupla
-        var paragraphs = text.split(/\n\n+/);
+        // Parágrafos separados por quebra de linha dupla, suporte a markdown basico e HTML
+        var paragraphs = text.split(/(?:\r?\n){2,}/);
         textNode.innerHTML = paragraphs.map(function (p) {
-          return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+          var html = p.replace(/\n/g, '<br>')
+                      .replace(/\*\*([\s\S]*?)\*\*/g, '<strong class="font-bold">$1</strong>')
+                      .replace(/\*([\s\S]*?)\*/g, '<em class="italic">$1</em>');
+          return '<p>' + html + '</p>';
         }).join('');
       }
     }
@@ -291,7 +294,18 @@
     }
 
     setText('cta-text',    text    || '');
-    setText('cta-subtext', subtext || '');
+    
+    // Suporte a formatação basica e markdown no subtexto
+    var ctaNode = el('cta-subtext');
+    if (ctaNode) {
+      if (subtext) {
+        ctaNode.innerHTML = subtext.replace(/\n/g, '<br>')
+                                   .replace(/\*\*([\s\S]*?)\*\*/g, '<strong class="font-bold">$1</strong>')
+                                   .replace(/\*([\s\S]*?)\*/g, '<em class="italic">$1</em>');
+      } else {
+        ctaNode.innerHTML = '';
+      }
+    }
     setText('cta-btn-text', btnText || 'FALE COM O FAROL');
     setHref('cta-btn', btnUrl || contact || '#');
 
