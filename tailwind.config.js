@@ -16,6 +16,11 @@ module.exports = {
       fontFamily: {
         agharti:           ['Agharti', 'sans-serif'],
         'agharti-condensed': ['"Agharti Condensed"', 'sans-serif'],
+        'agharti-dsc':     ['"Agharti DSC"', 'sans-serif'],   // Demi Semi-Condensed — headlines & buttons
+        'agharti-bsc':     ['"Agharti BSC"', 'sans-serif'],   // Bold Semi-Condensed — creator names
+        'agharti-bc':      ['"Agharti BC"', 'sans-serif'],    // Bold Condensed — Sobre section
+        'agharti-buw':     ['"Agharti BUW"', 'sans-serif'],   // Black Ultra-Wide — stat numbers
+        'agharti-duc':     ['"Agharti DUC"', 'sans-serif'],   // Demi Ultra-Condensed — creator tags
         casual:            ['Casual Human', 'sans-serif'],
         foun:              ['Foun', 'serif'],
         serif:             ['PT Serif', 'Georgia', 'serif'],

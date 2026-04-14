@@ -71,18 +71,30 @@
          ============================================================ -->
     <section id="hero" aria-labelledby="hero-heading" class="relative min-h-[calc(100vh-4rem)] overflow-hidden flex items-center">
 
+      <!-- Feixe de luz — polígono saindo da janela do farol -->
+      <div
+        aria-hidden="true"
+        class="pointer-events-none select-none absolute inset-0"
+        style="background: rgba(255,255,255,0.22); clip-path: polygon(17% 68%, 100% 0%, 100% 78%);"
+      ></div>
+
       <!-- Lighthouse (decorativa) -->
-      <div class="hidden lg:block absolute left-0 top-0 bottom-0 w-64 xl:w-80 pointer-events-none select-none" aria-hidden="true">
+      <div class="hidden lg:block absolute left-0 top-0 bottom-0 w-64 xl:w-72 pointer-events-none select-none" aria-hidden="true">
         <img src="/assets/images/lighthouse.svg" alt="" role="presentation" class="w-full h-full object-contain object-left-bottom" />
       </div>
 
+      <!-- Asterisco flutuante (entre farol e texto) -->
+      <div class="hidden lg:block absolute pointer-events-none select-none" style="left: 16%; top: 18%;" aria-hidden="true">
+        <img src="/assets/images/logo.svg" alt="" role="presentation" class="w-12 xl:w-14 opacity-90" />
+      </div>
+
       <!-- Conteúdo -->
-      <div class="relative w-full px-6 md:px-12 lg:pl-72 xl:pl-96 lg:pr-16 py-20 md:py-28">
+      <div class="relative w-full px-6 md:px-12 lg:pl-72 xl:pl-80 lg:pr-10 py-20 md:py-28">
 
         <!-- Skeleton loader -->
         <div id="hero-skeleton" class="animate-pulse space-y-4 text-right" aria-hidden="true">
-          <div class="h-20 md:h-28 lg:h-36 bg-brand-black/10 rounded-xl w-full"></div>
-          <div class="h-20 md:h-28 lg:h-36 bg-brand-black/10 rounded-xl w-4/5 ml-auto"></div>
+          <div class="h-16 md:h-24 lg:h-28 bg-brand-black/10 rounded-xl w-full"></div>
+          <div class="h-24 md:h-36 lg:h-48 bg-brand-black/10 rounded-xl w-3/4 ml-auto"></div>
           <div class="h-5 bg-brand-black/10 rounded w-3/5 ml-auto mt-6"></div>
           <div class="h-5 bg-brand-black/10 rounded w-2/3 ml-auto"></div>
           <div class="flex gap-4 justify-end mt-8">
@@ -93,15 +105,16 @@
 
         <!-- Conteúdo dinâmico -->
         <div id="hero-content" class="hidden text-right">
-          <h1 id="hero-heading" class="font-agharti font-black uppercase leading-none text-brand-black text-5xl md:text-7xl lg:text-8xl xl:text-9xl">
-            <span id="hero-headline"></span>
+          <h1 id="hero-heading" class="font-agharti-dsc uppercase leading-[0.88] text-brand-black">
+            <span id="hero-headline-part1" class="block text-[clamp(2.5rem,7vw,9.2rem)]"></span>
+            <span id="hero-headline-part2" class="block text-[clamp(4.5rem,15vw,19.5rem)]"></span>
           </h1>
           <p id="hero-subheadline" class="font-serif italic text-lg md:text-xl lg:text-2xl text-brand-black mt-6 max-w-2xl ml-auto leading-snug"></p>
           <div class="flex flex-wrap gap-4 justify-end mt-8 md:mt-10">
-            <a id="hero-cta1" href="#" class="font-agharti text-brand-black text-lg md:text-xl lg:text-2xl tracking-wide px-7 md:px-10 py-3 md:py-5 rounded-full bg-brand-red inline-block hover:opacity-90 transition-opacity">
+            <a id="hero-cta1" href="#" class="font-agharti-dsc text-brand-black text-xl md:text-2xl lg:text-3xl uppercase tracking-wide px-8 md:px-12 py-4 md:py-5 rounded-full bg-brand-red inline-block hover:opacity-90 transition-opacity">
               <span id="hero-cta1-text"></span>
             </a>
-            <a id="hero-cta2" href="#" class="font-agharti text-brand-black text-lg md:text-xl lg:text-2xl tracking-wide px-7 md:px-10 py-3 md:py-5 rounded-full bg-brand-blue inline-block hover:opacity-90 transition-opacity">
+            <a id="hero-cta2" href="#" class="font-agharti-dsc text-brand-black text-xl md:text-2xl lg:text-3xl uppercase tracking-wide px-8 md:px-12 py-4 md:py-5 rounded-full bg-brand-blue inline-block hover:opacity-90 transition-opacity">
               <span id="hero-cta2-text"></span>
             </a>
           </div>
@@ -109,12 +122,13 @@
 
         <!-- Fallback (exibido se a API falhar) -->
         <div id="hero-fallback" class="hidden text-right">
-          <h1 id="hero-heading" class="font-agharti font-black uppercase leading-none text-brand-black text-5xl md:text-7xl lg:text-8xl xl:text-9xl" data-i18n="hero_fallback_headline">
-            A maior agência de creators da América Latina
+          <h1 id="hero-heading-fallback" class="font-agharti-dsc uppercase leading-[0.88] text-brand-black">
+            <span class="block text-[clamp(2.5rem,7vw,9.2rem)]">A Maior Agência de Creators da</span>
+            <span class="block text-[clamp(4.5rem,15vw,19.5rem)]">América Latina</span>
           </h1>
           <div class="flex flex-wrap gap-4 justify-end mt-8">
-            <a href="#talentos" class="font-agharti text-brand-black text-xl tracking-wide px-10 py-5 rounded-full bg-brand-red inline-block hover:opacity-90 transition-opacity" data-i18n="hero_fallback_cta">
-              Conheça nossos Creators
+            <a href="#talentos" class="font-agharti-dsc text-brand-black text-xl md:text-2xl lg:text-3xl uppercase tracking-wide px-8 md:px-12 py-4 md:py-5 rounded-full bg-brand-red inline-block hover:opacity-90 transition-opacity">
+              Conheça Nossos Creators
             </a>
           </div>
         </div>

@@ -56,32 +56,56 @@
   font-display: swap;
 }
 
-/* ── Família condensed (para headlines) ───────────────────── */
+/* ── Agharti Demi Semi-Condensed — headlines e botões (Figma) ─ */
 @font-face {
-  font-family: 'Agharti Condensed';
-  src: url('/assets/fonts/Agharti-ThinCondensed.woff2') format('woff2');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Agharti Condensed';
-  src: url('/assets/fonts/Agharti-LightCondensed.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Agharti Condensed';
-  src: url('/assets/fonts/Agharti-RegularCondensed.woff2') format('woff2');
+  font-family: 'Agharti DSC';
+  src: url('/assets/fonts/Agharti-DemiSemiCondensed.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
+
+/* ── Agharti Bold Semi-Condensed — nomes de creators ─────── */
+@font-face {
+  font-family: 'Agharti BSC';
+  src: url('/assets/fonts/Agharti-BoldSemiCondensed.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Agharti Bold Condensed — seção Sobre ────────────────── */
+@font-face {
+  font-family: 'Agharti BC';
+  src: url('/assets/fonts/Agharti-BoldCondensed.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Agharti Black Ultra-Wide — números de stats ─────────── */
+@font-face {
+  font-family: 'Agharti BUW';
+  src: url('/assets/fonts/Agharti-BlackUltraWide.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Agharti Demi Ultra-Condensed — tags de creators ─────── */
+@font-face {
+  font-family: 'Agharti DUC';
+  src: url('/assets/fonts/Agharti-DemiUltraCondensed.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Família Condensed genérica (fallback) ────────────────── */
 @font-face {
   font-family: 'Agharti Condensed';
-  src: url('/assets/fonts/Agharti-DemiCondensed.woff2') format('woff2');
-  font-weight: 600;
+  src: url('/assets/fonts/Agharti-BlackCondensed.woff2') format('woff2');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
@@ -94,8 +118,8 @@
 }
 @font-face {
   font-family: 'Agharti Condensed';
-  src: url('/assets/fonts/Agharti-BlackCondensed.woff2') format('woff2');
-  font-weight: 900;
+  src: url('/assets/fonts/Agharti-RegularCondensed.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }

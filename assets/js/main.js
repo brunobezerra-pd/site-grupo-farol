@@ -119,7 +119,12 @@
       return;
     }
 
-    setText('hero-headline',    headline);
+    // Separa em duas partes pelo delimitador "|"
+    // Ex: "A Maior Agência de Creators da|América Latina"
+    var parts = headline.split('|');
+    setText('hero-headline-part1', parts[0].trim());
+    setText('hero-headline-part2', (parts[1] || '').trim());
+
     setText('hero-subheadline', subheadline || '');
     setText('hero-cta1-text',   cta1Text    || 'Conheça nossos Creators');
     setText('hero-cta2-text',   cta2Text    || 'Fale com o Farol');
