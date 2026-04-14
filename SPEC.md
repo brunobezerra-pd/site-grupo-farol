@@ -353,6 +353,7 @@ CREATE TABLE partners (
 |---|---|---|
 | `creators` | Creator photos | Public read, write via service role |
 | `partners` | Partner logos | Public read, write via service role |
+| `content`  | Site-wide assets (About image, etc.) | Public read, write via service role |
 
 ---
 
@@ -418,7 +419,7 @@ Removes partner. Requires authentication.
 
 Uploads image to Supabase Storage. Requires authentication.
 
-**Body:** `multipart/form-data` with `file` and `bucket` fields (`creators` or `partners`).
+**Body:** `multipart/form-data` with `file` and `bucket` fields (`creators`, `partners` or `content`).
 
 **Validations:**
 - Type: `image/*` only

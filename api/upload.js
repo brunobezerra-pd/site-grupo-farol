@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import formidable from 'formidable'
 import { readFileSync } from 'fs'
 
-const ALLOWED_BUCKETS = ['creators', 'partners']
+const ALLOWED_BUCKETS = ['creators', 'partners', 'content']
 
 // Disable Vercel's default body parser so formidable can handle the stream
 export const config = { api: { bodyParser: false } }
