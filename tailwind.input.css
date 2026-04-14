@@ -4,11 +4,98 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Agharti — fonte variável, cobre todos os pesos */
+/* Agharti — arquivos individuais por peso e largura */
+
+/* ── Família padrão (normal width) ────────────────────────── */
 @font-face {
   font-family: 'Agharti';
-  src: url('/assets/fonts/AghartiVF.woff2') format('woff2-variations');
-  font-weight: 100 900;
+  src: url('/assets/fonts/Agharti-Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-stretch: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti';
+  src: url('/assets/fonts/Agharti-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-stretch: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti';
+  src: url('/assets/fonts/Agharti-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-stretch: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti';
+  src: url('/assets/fonts/Agharti-Demi.woff2') format('woff2');
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti';
+  src: url('/assets/fonts/Agharti-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-stretch: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti';
+  src: url('/assets/fonts/Agharti-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-stretch: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Família condensed (para headlines) ───────────────────── */
+@font-face {
+  font-family: 'Agharti Condensed';
+  src: url('/assets/fonts/Agharti-ThinCondensed.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti Condensed';
+  src: url('/assets/fonts/Agharti-LightCondensed.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti Condensed';
+  src: url('/assets/fonts/Agharti-RegularCondensed.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti Condensed';
+  src: url('/assets/fonts/Agharti-DemiCondensed.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti Condensed';
+  src: url('/assets/fonts/Agharti-BoldCondensed.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Agharti Condensed';
+  src: url('/assets/fonts/Agharti-BlackCondensed.woff2') format('woff2');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }

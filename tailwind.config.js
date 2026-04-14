@@ -14,11 +14,12 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        agharti: ['Agharti', 'sans-serif'],
-        casual:  ['Casual Human', 'sans-serif'],
-        foun:    ['Foun', 'serif'],
-        serif:   ['PT Serif', 'Georgia', 'serif'],
-        sans:    ['Poppins', 'system-ui', 'sans-serif'],
+        agharti:           ['Agharti', 'sans-serif'],
+        'agharti-condensed': ['"Agharti Condensed"', 'sans-serif'],
+        casual:            ['Casual Human', 'sans-serif'],
+        foun:              ['Foun', 'serif'],
+        serif:             ['PT Serif', 'Georgia', 'serif'],
+        sans:              ['Poppins', 'system-ui', 'sans-serif'],
       },
       colors: {
         // Cores extraídas do Figma — node 1:4
