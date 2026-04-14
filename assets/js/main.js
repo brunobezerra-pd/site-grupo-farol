@@ -159,12 +159,13 @@
     if (text) {
       var textNode = el('about-text');
       if (textNode) {
-        // Parágrafos separados por quebra de linha dupla, suporte a markdown basico e HTML
-        var paragraphs = text.split(/(?:\r?\n){2,}/);
+        var cleanText = text.replace(/\r/g, '').trim();
+        var paragraphs = cleanText.split(/\n\s*\n/);
         textNode.innerHTML = paragraphs.map(function (p) {
-          var html = p.replace(/\n/g, '<br>')
+          var html = p.trim()
                       .replace(/\*\*([\s\S]*?)\*\*/g, '<strong class="font-bold">$1</strong>')
-                      .replace(/\*([\s\S]*?)\*/g, '<em class="italic">$1</em>');
+                      .replace(/\*([\s\S]*?)\*/g, '<em class="italic">$1</em>')
+                      .replace(/\n/g, '<br>');
           return '<p>' + html + '</p>';
         }).join('');
       }
@@ -299,9 +300,15 @@
     var ctaNode = el('cta-subtext');
     if (ctaNode) {
       if (subtext) {
-        ctaNode.innerHTML = subtext.replace(/\n/g, '<br>')
-                                   .replace(/\*\*([\s\S]*?)\*\*/g, '<strong class="font-bold">$1</strong>')
-                                   .replace(/\*([\s\S]*?)\*/g, '<em class="italic">$1</em>');
+        var cleanCta = subtext.replace(/\r/g, '').trim();
+        var ctaParagraphs = cleanCta.split(/\n\s*\n/);
+        ctaNode.innerHTML = ctaParagraphs.map(function (p) {
+           var html = p.trim()
+                       .replace(/\*\*([\s\S]*?)\*\*/g, '<strong class="font-bold">$1</strong>')
+                       .replace(/\*([\s\S]*?)\*/g, '<em class="italic">$1</em>')
+                       .replace(/\n/g, '<br>');
+           return '<p>' + html + '</p>';
+        }).join('');
       } else {
         ctaNode.innerHTML = '';
       }
