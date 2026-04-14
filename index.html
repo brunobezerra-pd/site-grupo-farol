@@ -216,11 +216,14 @@
           <!-- Conteúdo -->
           <div id="about-content" class="hidden">
             <h2 id="about-heading" class="uppercase leading-none text-brand-black">
-              <span class="block font-agharti-lsc text-4xl md:text-5xl lg:text-6xl" data-i18n="about_somos">SoMos o</span>
-              <span class="block font-agharti-bc text-6xl md:text-7xl lg:text-8xl">GRUPO FAROL</span>
+              <span class="flex items-center gap-6">
+                <span class="font-agharti-lsc text-4xl md:text-5xl lg:text-6xl tracking-wide" data-i18n="about_somos">SOMOS O</span>
+                <span class="flex-grow h-[2px] bg-brand-black" aria-hidden="true"></span>
+              </span>
+              <span class="block font-agharti-bc text-6xl md:text-7xl lg:text-8xl mt-2 tracking-tight">GRUPO FAROL</span>
             </h2>
             <div id="about-text"
-              class="mt-8 font-sans italic text-base md:text-lg lg:text-xl text-brand-black leading-relaxed space-y-4">
+              class="mt-8 font-sans text-base md:text-lg lg:text-xl text-brand-black leading-relaxed space-y-6">
             </div>
           </div>
         </div>
@@ -228,10 +231,10 @@
         <!-- Coluna direita: imagem decorativa + stats -->
         <div class="flex flex-col gap-6">
 
-          <!-- Imagem decorativa -->
-          <div class="hidden lg:block rounded-2xl overflow-hidden w-full aspect-[16/9] bg-brand-black/10"
+          <!-- Imagem (via backend) ou Placeholder -->
+          <div class="hidden lg:block rounded-xl overflow-hidden w-full aspect-[16/9] bg-brand-black/10 border border-brand-black/5"
             aria-hidden="true">
-            <img src="/assets/images/hero-deco.svg" alt="" role="presentation" class="w-full h-full object-cover" />
+            <img id="about-image" src="" alt="Grupo Farol" class="w-full h-full object-cover hidden" />
           </div>
 
           <!-- Stats -->

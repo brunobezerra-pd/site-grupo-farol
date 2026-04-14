@@ -175,6 +175,18 @@
     setText('about-stat3-value', s3v || '+1000');
     setText('about-stat3-label', s3l || 'Clientes e Parceiros');
 
+    // Imagem da seção (via CMS)
+    var imgUrl = data.about_image_url;
+    var imgNode = el('about-image');
+    if (imgNode) {
+      if (imgUrl) {
+        imgNode.src = imgUrl;
+        imgNode.classList.remove('hidden');
+      } else {
+        imgNode.classList.add('hidden');
+      }
+    }
+
     show('about-content');
     show('about-stats');
   }
@@ -182,6 +194,17 @@
   function renderAboutFallback() {
     hide('about-skeleton-left');
     hide('about-stats-skeleton');
+    
+    // Fallback de texto idêntico ao Figma local
+    var fallbackText = 
+      "<p>A creator economy evoluiu.</p>" +
+      "<p>Creators construíram muito mais do que audiência. Construíram comunidades, linguagem e universos próprios.</p>" +
+      "<p>No Farol, acreditamos no poder da <strong>conexão verdadeira</strong>. Quando creators participam desde o início das ideias, o conteúdo se transforma.</p>" +
+      "<p>Deixa de ser apenas algo que se consome e passa a fazer parte da conversa, da cultura e da história que queremos contar juntos.</p>" +
+      "<p>Porque não estamos aqui só para vender posts. <strong>Estamos aqui para construir histórias.</strong></p>";
+    var textNode = el('about-text');
+    if (textNode) textNode.innerHTML = fallbackText;
+
     // Exibe conteúdo com defaults já preenchidos
     setText('about-stat1-value', '+200');
     setText('about-stat1-label', 'Creators no Casting');
@@ -189,6 +212,11 @@
     setText('about-stat2-label', 'Projetos Realizados');
     setText('about-stat3-value', '+1000');
     setText('about-stat3-label', 'Clientes e Parceiros');
+    
+    // Oculta a imagem (mostra o box cinza default)
+    var imgNode = el('about-image');
+    if (imgNode) imgNode.classList.add('hidden');
+
     show('about-content');
     show('about-stats');
   }
