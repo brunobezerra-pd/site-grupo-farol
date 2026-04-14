@@ -44,7 +44,6 @@
     <nav aria-label="Navegação principal"
       class="max-w-screen-xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
       <a href="/" aria-label="Grupo Farol — Página inicial" class="flex-shrink-0 flex items-center gap-2">
-        <img src="/assets/images/logo.svg" alt="" role="presentation" class="h-8 w-8" />
         <span class="font-agharti font-black text-xl uppercase text-brand-black tracking-wide">Grupo Farol</span>
       </a>
 
@@ -122,11 +121,11 @@
         style="z-index: 1; background: #FFF2E7;"></div>
 
       <!-- Lighthouse (decorativa) -->
-      <!-- left: clamp(32px, 4.9vw, 96px) → ≈71px at Figma's 1440px canvas, scales proportionally -->
-      <div id="lighthouse-container" class="hidden lg:block absolute bottom-0 pointer-events-none select-none"
-        style="z-index: 2; left: clamp(32px, 4.9vw, 96px);" aria-hidden="true">
-        <!-- height: min(98vh,900px) → roof nearly touches header, matches Figma -->
-        <img id="lighthouse-img" src="/assets/images/lighthouse.svg" alt="" role="presentation"
+      <!-- Anchor to top with 100vh frame so it doesn't move if dynamic content pushes the hero taller -->
+      <div id="lighthouse-container" class="hidden lg:block absolute top-0 pointer-events-none select-none"
+        style="z-index: 2; left: clamp(32px, 4.9vw, 96px); height: 100vh;" aria-hidden="true">
+        <!-- class: absolute bottom-0 keeps it resting at the bottom of the 100vh frame -->
+        <img id="lighthouse-img" src="/assets/images/lighthouse.svg" alt="" role="presentation" class="absolute bottom-0"
           style="height: min(98vh, 900px); width: auto; display: block; max-width: none;" />
       </div>
 
@@ -724,6 +723,10 @@
         clearTimeout(window._beamTimer);
         window._beamTimer = setTimeout(updateBeam, 60);
       });
+      if (typeof ResizeObserver !== 'undefined') {
+        var heroNode = document.getElementById('hero');
+        if (heroNode) new ResizeObserver(function() { updateBeam(); }).observe(heroNode);
+      }
     })();
   </script>
 
