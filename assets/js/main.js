@@ -801,8 +801,7 @@ function renderFooter() {
     { href: '#sobre',            label: 'SoBre',            i18n: 'nav.sobre' },
     { href: '#talentos',         label: 'TALENTOS',         i18n: 'nav.talentos' },
     { href: '#como-trabalhamos', label: 'Como TrAbALHAMOS', i18n: 'nav.comoTrabalhamos' },
-    { href: '#contatos',         label: 'cONtatos',         i18n: 'nav.contatos' },
-    { href: escapeHtml(contactUrl), label: 'FAle conOsco',  i18n: 'nav.faleConosco' },
+    { href: '#fale-com-o-farol', label: 'FAle conOsco',     i18n: 'nav.faleConosco' },
   ]
 
   const navDesktop = navLinks.map(l =>
