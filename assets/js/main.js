@@ -162,11 +162,10 @@ function renderHero() {
   contentEl.innerHTML = `
     <div class="flex items-start relative">
 
-      <!-- ── Desktop anchor: in flex flow, left column (lg+) ──────────────────── -->
-      <!-- SVG viewBox "0 0 1854 1008.01": lighthouse + light beam + sparkle      -->
-      <!-- Offsets: top=-90px (-79.29% of 113px), left=-52px (-45.82% of 113px)  -->
-      <div class="hidden lg:block relative shrink-0 w-[113px] h-[113px]" aria-hidden="true">
-        <div class="absolute" style="top:-90px;left:-52px;width:1854px;height:1008px">
+      <!-- ── Desktop anchor: absolute bottom-left (lg+) ──────────────────── -->
+      <div class="hidden lg:block absolute bottom-0 left-0 w-[113px] z-0" aria-hidden="true">
+        <!-- SVG anchors relative to bottom-left corner -->
+        <div class="absolute" style="bottom:-70px;left:-60px;width:1854px;height:1008px">
           <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
         </div>
       </div>
@@ -199,10 +198,8 @@ function renderHero() {
         <img src="/assets/images/hero-sparkle.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
       </div>
 
-      <!-- ── Text column: all breakpoints ──────────────────────────────────────── -->
-      <!-- Desktop: right-aligned (lg:items-end, lg:text-right)                    -->
-      <!-- Tablet/Mobile: centered (items-center, text-center)                     -->
-      <div class="relative flex flex-1 min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[48px] md:pb-[64px] lg:pb-[80px]">
+      <!-- ── Text column: right-aligned on desktop, vertically centered ──────── -->
+      <div class="relative z-10 flex flex-1 min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[48px] md:pb-[64px] lg:pb-0 lg:ml-auto w-full">
 
         <h1
           id="hero-heading"
