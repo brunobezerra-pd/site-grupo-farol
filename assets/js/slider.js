@@ -198,7 +198,7 @@ window.renderTalentsSlider = function(creatorsData) {
           <!-- Cards viewport -->
           <!-- On mobile/tablet: overflow shows a peek of the next card.
                The section has overflow-visible up to the parent's edge. -->
-          <div id="slider-clipper" style="overflow: hidden; margin: -100px -60px; padding: 100px 60px;">
+          <div id="slider-clipper" style="overflow: hidden; margin: -100px -120px; padding: 100px 120px;">
             <div id="slider-viewport"
                  class="w-full"
                  style="overflow:visible">
