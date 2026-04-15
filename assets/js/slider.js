@@ -198,19 +198,21 @@ window.renderTalentsSlider = function(creatorsData) {
           <!-- Cards viewport -->
           <!-- On mobile/tablet: overflow shows a peek of the next card.
                The section has overflow-visible up to the parent's edge. -->
-          <div id="slider-viewport"
-               class="w-full"
-               style="overflow:hidden">
-            <div id="slider-track"
-                 class="flex gap-[24px] transition-transform duration-300 ease-in-out"
-                 style="will-change:transform">
-              ${
-                !creators.length
-                  ? `<div class="w-full flex items-center justify-center p-8 bg-farol-beige rounded-3xl min-h-[300px]">
-                       <p class="font-agharti text-farol-text text-3xl md:text-5xl uppercase" style="font-variation-settings:'wdth' 34">Talentos em breve</p>
-                     </div>`
-                  : creators.map(buildCard).join('')
-               }
+          <div id="slider-clipper" style="overflow: hidden; margin: -100px -60px; padding: 100px 60px;">
+            <div id="slider-viewport"
+                 class="w-full"
+                 style="overflow:visible">
+              <div id="slider-track"
+                   class="flex gap-[24px] transition-transform duration-300 ease-in-out"
+                   style="will-change:transform">
+                ${
+                  !creators.length
+                    ? `<div class="w-full flex items-center justify-center p-8 bg-farol-beige rounded-3xl min-h-[300px]">
+                         <p class="font-agharti text-farol-text text-3xl md:text-5xl uppercase" style="font-variation-settings:'wdth' 34">Talentos em breve</p>
+                       </div>`
+                    : creators.map(buildCard).join('')
+                 }
+              </div>
             </div>
           </div>
 
