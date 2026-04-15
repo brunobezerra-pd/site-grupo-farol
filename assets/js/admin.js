@@ -54,7 +54,8 @@ function showToast(msg, type = 'success') {
   if (!el) return
   if (_toastTimer) clearTimeout(_toastTimer)
   el.textContent = msg
-  el.className = `fixed bottom-6 right-6 z-50 px-5 py-3 rounded-lg text-white text-sm font-medium shadow-lg transition-all duration-300 toast-${type} toast-visible`
+  const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600'
+  el.className = `fixed bottom-6 right-6 z-50 px-5 py-3 rounded-lg text-white text-sm font-medium shadow-lg transition-all duration-300 toast-visible ${bgColor}`
   _toastTimer = setTimeout(() => {
     el.classList.remove('toast-visible')
     el.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none')
@@ -119,9 +120,14 @@ function val(id) {
 function setSaving(btnId, saving) {
   const btn = document.getElementById(btnId)
   if (!btn) return
+  
+  // Store the original label before overwriting it with the loading state
+  if (!btn.dataset.originalLabel) {
+    btn.dataset.originalLabel = btn.textContent.trim()
+  }
+  
   btn.disabled = saving
-  btn.textContent = saving ? 'Salvando…' : btn.dataset.label || btn.textContent
-  if (!saving && !btn.dataset.label) btn.dataset.label = btn.textContent
+  btn.textContent = saving ? 'Salvando…' : btn.dataset.originalLabel
 }
 
 // ── Image Slot Component ────────────────────────────────────────────────────
