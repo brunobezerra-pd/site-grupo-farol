@@ -255,7 +255,7 @@ window.renderTalentsSlider = function(creatorsData) {
              class="inline-flex items-center gap-[16px] bg-farol-burning-red rounded-[99px]
                     px-[32px] md:px-[48px] pt-[12px] pb-[18px]
                     shadow-[0px_4px_16px_0px_rgba(0,0,0,0.3)]
-                    hover:opacity-90 transition-opacity
+                    btn-cta-hover
                     focus:outline-none focus:ring-2 focus:ring-farol-text/50"
              data-i18n="talents.ctaAll">
             <span class="font-agharti text-farol-text leading-none whitespace-nowrap"

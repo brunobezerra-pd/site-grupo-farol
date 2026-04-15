@@ -153,4 +153,17 @@
   .toast-success { @apply bg-green-600; }
   .toast-error   { @apply bg-red-600; }
   .toast-visible { @apply opacity-100 translate-y-0 pointer-events-auto; }
+
+  /* ── CTA Hover Effect ── */
+  .btn-cta-hover {
+    @apply transition-transform duration-200 ease-in-out hover:-translate-y-[5px];
+  }
+
+  /* Special case: Final CTA button (already has transform: translate(-50%, 50%)) */
+  #cta-contact-btn {
+    @apply transition-transform duration-200 ease-in-out;
+  }
+  #cta-contact-btn:hover {
+    transform: translate(-50%, calc(50% - 5px)) !important;
+  }
 }
