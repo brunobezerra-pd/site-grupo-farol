@@ -155,73 +155,69 @@ function renderHero() {
   const line2 = parts.length > 1 ? escapeHtml(parts[1]) : ''
 
   const headlineHtml = line2
-    ? `<span class="block leading-none text-[48px] md:text-[64px] lg:text-[112px]">${line1}</span>
+    ? `<span class="block leading-none text-[48px] md:text-[64px] lg:text-[144px]">${line1}</span>
        <span class="block leading-none text-[96px] md:text-[176px] lg:text-[296px]">${line2}</span>`
-    : `<span class="block leading-none text-[60px] md:text-[90px] lg:text-[140px]">${line1}</span>`
+    : `<span class="block leading-none text-[60px] md:text-[90px] lg:text-[144px]">${line1}</span>`
 
   contentEl.innerHTML = `
-    <div class="flex items-start relative">
+    <div class="flex items-start relative lg:w-full">
 
-      <!-- ── Desktop anchor: absolute bottom-left (lg+) ──────────────────── -->
-      <div class="hidden lg:block absolute bottom-0 left-0 w-[113px] z-0" aria-hidden="true">
-        <!-- SVG anchors relative to bottom-left corner -->
-        <div class="absolute" style="bottom:-70px;left:-60px;width:1854px;height:1008px">
-          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
+      <!-- ── Desktop anchor: per Figma flex layout (lg+) ──────────────────── -->
+      <div class="hidden lg:block relative shrink-0 w-[113px] h-[113px]" aria-hidden="true">
+        <div class="absolute" style="top:-90px;left:-52px;width:1854px;height:1008px">
+          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
         </div>
       </div>
 
       <!-- ── Tablet anchor: absolute, out of flex flow (md–lg) ──────────────── -->
-      <!-- Figma: anchor left=0, top=72px within content row                     -->
-      <!-- Illustration: top=-120px, left=-217px → 923×1022px                   -->
       <div class="hidden md:block lg:hidden absolute w-[113px] h-[113px]"
            style="left:0;top:72px" aria-hidden="true">
         <div class="absolute" style="top:-120px;left:-217px;width:923px;height:1022px">
-          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
+          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
         </div>
       </div>
 
       <!-- ── Mobile anchor: absolute, smallest size (< md) ──────────────────── -->
-      <!-- Figma: anchor left=30px, top=42px within content row                  -->
-      <!-- Illustration: top=-48px, left=-217px → 637×1000px                    -->
       <div class="md:hidden absolute w-[113px] h-[113px]"
            style="left:30px;top:42px" aria-hidden="true">
         <div class="absolute" style="top:-48px;left:-217px;width:637px;height:1000px">
-          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
+          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
         </div>
       </div>
 
       <!-- ── Mobile sparkle: separate element near CTA area (< md only) ──────── -->
-      <!-- Figma: absolute left=358px, top=450px in content row, 80×80px          -->
-      <!-- The embedded sparkle in the combined SVG is clipped off-screen on      -->
-      <!-- mobile, so the sparkle is repositioned here near the CTA buttons.      -->
       <div class="md:hidden absolute" style="left:358px;top:450px;width:80px;height:80px" aria-hidden="true">
-        <img src="/assets/images/hero-sparkle.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
+        <img src="/assets/images/hero-sparkle.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
       </div>
 
-      <!-- ── Text column: right-aligned on desktop, vertically centered ──────── -->
-      <div class="relative z-10 flex flex-1 min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[48px] md:pb-[64px] lg:pb-0 lg:ml-auto w-full">
+      <!-- ── Text column: right-aligned on desktop ──────── -->
+      <div class="relative z-10 flex flex-[1_0_0] min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[48px] md:pb-[64px] lg:pb-[72px] lg:w-[1066px]">
 
-        <h1
-          id="hero-heading"
-          class="font-agharti font-semibold uppercase text-farol-text w-full lg:w-[1066px]"
-          style="font-stretch:semi-condensed"
-        >${headlineHtml}</h1>
+        <div class="w-full lg:w-[1066px] flex flex-col justify-center h-auto lg:h-[474px]">
+          <h1
+            id="hero-heading"
+            class="font-agharti font-semibold uppercase text-farol-text"
+            style="font-stretch:semi-condensed"
+          >${headlineHtml}</h1>
+        </div>
 
-        <p class="font-pt-serif italic text-farol-text leading-[1.2] text-[18px] lg:text-[32px] w-full">
-          ${escapeHtml(subheadline)}
-        </p>
+        <div class="min-w-full lg:w-[min-content]">
+          <p class="font-pt-serif italic text-farol-text leading-[1.2] text-[18px] lg:text-[32px] w-full">
+            ${escapeHtml(subheadline)}
+          </p>
+        </div>
 
-        <!-- Buttons: stacked on mobile, side-by-side on tablet+; sizes scale at lg -->
-        <div class="flex flex-col md:flex-row gap-[16px] md:gap-[56px] items-center w-full md:w-auto lg:pb-24 xl:pb-[220px]">
+        <!-- Buttons: exact sizing from Figma on desktop -->
+        <div class="flex flex-col md:flex-row gap-[16px] md:gap-[56px] items-center w-full md:w-auto">
           <a
             href="${escapeHtml(cta1Url)}"
-            class="inline-flex items-center justify-center bg-farol-burning-red rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[48px] lg:pt-[2px] lg:pb-[6px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[68px] tracking-[0.01em] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+            class="inline-flex items-center justify-center bg-farol-burning-red rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[43.1px] lg:pt-[10.7px] lg:pb-[16.1px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[60.94px] lg:leading-none lg:tracking-[0.6px] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
             style="font-stretch:semi-condensed"
             data-i18n="hero.cta1"
           >${escapeHtml(cta1Text)}</a>
           <a
             href="${escapeHtml(cta2Url)}"
-            class="inline-flex items-center justify-center bg-farol-blue rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[48px] lg:pt-[2px] lg:pb-[6px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[68px] tracking-[0.01em] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+            class="inline-flex items-center justify-center bg-farol-blue rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[43.1px] lg:pt-[10.7px] lg:pb-[16.1px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[60.94px] lg:leading-none lg:tracking-[0.6px] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
             style="font-stretch:semi-condensed"
             data-i18n="hero.cta2"
           >${escapeHtml(cta2Text)}</a>
@@ -233,8 +229,8 @@ function renderHero() {
 
   skeleton.classList.add('hidden')
   contentEl.classList.remove('hidden')
-  // Re-apply desktop centering layout that was removed from static HTML to avoid visibility conflicts
-  contentEl.classList.add('lg:flex-1', 'lg:flex', 'lg:flex-col', 'lg:justify-center')
+  // Re-apply desktop flow config
+  contentEl.classList.add('lg:flex', 'lg:items-start')
 }
 function renderAbout() {
   const skeleton  = document.getElementById('about-skeleton')
