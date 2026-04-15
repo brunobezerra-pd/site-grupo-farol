@@ -31,7 +31,7 @@
        Desktop  : no logo, full horizontal nav (right-aligned, Foun font)
        Tablet/Mobile : logo + hamburger — implemented in ISSUE 14
        ═══════════════════════════════════════════════════════════════════════ -->
-  <header role="banner" class="bg-farol-yellow px-[30px] md:px-[64px] lg:px-[120px]">
+  <header role="banner" class="px-[30px] md:px-[64px] lg:px-[120px]">
     <nav aria-label="Navegação principal">
 
       <!-- ── Desktop nav (≥ 1024px) ── -->
@@ -133,7 +133,7 @@
     >
       <!-- Skeleton loader (visible during API fetch) -->
       <div id="hero-skeleton"
-           class="animate-pulse px-[30px] md:px-[64px] lg:px-[120px] pt-[72px]"
+           class="animate-pulse px-[30px] md:px-[64px] lg:px-[120px] pt-[72px] pb-[120px] md:pb-[180px] lg:pb-[240px]"
            aria-hidden="true">
         <div class="flex items-start gap-6">
           <div class="hidden lg:block w-[113px] shrink-0"></div>
@@ -150,7 +150,7 @@
 
       <!-- Hero content — populated by renderHero() in main.js -->
       <div id="hero-content"
-           class="hidden px-[30px] md:px-[64px] lg:px-[120px] pt-[72px]">
+           class="hidden px-[30px] md:px-[64px] lg:px-[120px] pt-[72px] pb-[120px] md:pb-[180px] lg:pb-[240px]">
       </div>
     </section>
 

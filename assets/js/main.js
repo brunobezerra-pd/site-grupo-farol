@@ -202,7 +202,7 @@ function renderHero() {
       <!-- ── Text column: all breakpoints ──────────────────────────────────────── -->
       <!-- Desktop: right-aligned (lg:items-end, lg:text-right)                    -->
       <!-- Tablet/Mobile: centered (items-center, text-center)                     -->
-      <div class="relative flex flex-1 min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right">
+      <div class="relative flex flex-1 min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[48px] md:pb-[64px] lg:pb-[80px]">
 
         <h1
           id="hero-heading"
@@ -218,13 +218,13 @@ function renderHero() {
         <div class="flex flex-col md:flex-row gap-[16px] md:gap-[56px] items-center w-full md:w-auto">
           <a
             href="${escapeHtml(cta1Url)}"
-            class="inline-flex items-center justify-center bg-farol-burning-red rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[48px] lg:pt-[12px] lg:pb-[18px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[68px] tracking-[0.01em] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+            class="inline-flex items-center justify-center bg-farol-burning-red rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[48px] lg:pt-[2px] lg:pb-[6px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[68px] tracking-[0.01em] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
             style="font-stretch:semi-condensed"
             data-i18n="hero.cta1"
           >${escapeHtml(cta1Text)}</a>
           <a
             href="${escapeHtml(cta2Url)}"
-            class="inline-flex items-center justify-center bg-farol-blue rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[48px] lg:pt-[12px] lg:pb-[18px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[68px] tracking-[0.01em] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+            class="inline-flex items-center justify-center bg-farol-blue rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[48px] lg:pt-[2px] lg:pb-[6px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[68px] tracking-[0.01em] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
             style="font-stretch:semi-condensed"
             data-i18n="hero.cta2"
           >${escapeHtml(cta2Text)}</a>
