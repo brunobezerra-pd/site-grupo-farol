@@ -236,6 +236,8 @@ function renderHero() {
 
   skeleton.classList.add('hidden')
   contentEl.classList.remove('hidden')
+  // Re-apply desktop centering layout that was removed from static HTML to avoid visibility conflicts
+  contentEl.classList.add('lg:flex-1', 'lg:flex', 'lg:flex-col', 'lg:justify-center')
 }
 function renderAbout() {
   const skeleton  = document.getElementById('about-skeleton')
