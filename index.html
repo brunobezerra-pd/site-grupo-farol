@@ -65,18 +65,7 @@
       <div class="flex lg:hidden items-center justify-between h-[50px]" id="mobile-header">
         <!-- Logo (shown on tablet/mobile only) -->
         <a href="/" aria-label="Grupo Farol — página inicial" id="mobile-logo">
-          <div class="flex flex-col leading-none select-none">
-            <span class="flex items-center gap-1.5">
-              <span class="font-agharti font-normal text-sm tracking-[0.2em] uppercase text-farol-text">GRUPO</span>
-              <span class="flex items-center gap-0.5" aria-hidden="true">
-                <span class="w-2 h-2 rounded-full bg-farol-burning-red inline-block"></span>
-                <span class="w-2 h-2 rounded-full bg-farol-orange inline-block"></span>
-                <span class="w-2 h-2 rounded-full bg-farol-teal inline-block"></span>
-                <span class="w-2 h-2 rounded-full bg-farol-blue inline-block"></span>
-              </span>
-            </span>
-            <span class="font-agharti font-black text-2xl uppercase tracking-wider text-farol-black leading-none">FAROL</span>
-          </div>
+          <img src="/assets/images/LogoGrupoFarol.png" alt="Grupo Farol" class="h-[32px] w-auto block object-contain" />
         </a>
 
         <!-- Hamburger button -->
@@ -144,7 +133,7 @@
     >
       <!-- Skeleton loader (visible during API fetch) -->
       <div id="hero-skeleton"
-           class="animate-pulse px-[30px] md:px-[64px] lg:px-[120px] pt-[72px] pb-[144px]"
+           class="animate-pulse px-[30px] md:px-[64px] lg:px-[120px] pt-[72px]"
            aria-hidden="true">
         <div class="flex items-start gap-6">
           <div class="hidden lg:block w-[113px] shrink-0"></div>
@@ -161,7 +150,7 @@
 
       <!-- Hero content — populated by renderHero() in main.js -->
       <div id="hero-content"
-           class="hidden px-[30px] md:px-[64px] lg:px-[120px] pt-[72px] pb-[144px]">
+           class="hidden px-[30px] md:px-[64px] lg:px-[120px] pt-[72px]">
       </div>
     </section>
 

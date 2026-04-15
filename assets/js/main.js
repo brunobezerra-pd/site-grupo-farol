@@ -155,9 +155,9 @@ function renderHero() {
   const line2 = parts.length > 1 ? escapeHtml(parts[1]) : ''
 
   const headlineHtml = line2
-    ? `<span class="block leading-none text-[48px] md:text-[80px] lg:text-[144px]">${line1}</span>
+    ? `<span class="block leading-none text-[48px] md:text-[64px] lg:text-[112px]">${line1}</span>
        <span class="block leading-none text-[96px] md:text-[176px] lg:text-[296px]">${line2}</span>`
-    : `<span class="block leading-none text-[60px] md:text-[120px] lg:text-[180px]">${line1}</span>`
+    : `<span class="block leading-none text-[60px] md:text-[90px] lg:text-[140px]">${line1}</span>`
 
   contentEl.innerHTML = `
     <div class="flex items-start relative">
@@ -202,7 +202,7 @@ function renderHero() {
       <!-- ── Text column: all breakpoints ──────────────────────────────────────── -->
       <!-- Desktop: right-aligned (lg:items-end, lg:text-right)                    -->
       <!-- Tablet/Mobile: centered (items-center, text-center)                     -->
-      <div class="relative flex flex-1 min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[32px] lg:pb-[72px]">
+      <div class="relative flex flex-1 min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right">
 
         <h1
           id="hero-heading"
@@ -365,7 +365,7 @@ function renderCreators() {
   // Rotation is applied via data attribute + JS after render so Tailwind
   // doesn't need to scan dynamically-constructed class names.
   const tagsHtml = tags.map(t => `
-    <div class="creators-tag-wrap" data-rot="${t.rotDeg}" role="listitem"
+    <div class="creators-tag-wrap lg:flex-grow" data-rot="${t.rotDeg}" role="listitem"
          style="display:flex;align-items:center">
       <div class="creators-tag-inner"
            style="background:${t.bgColor};
@@ -433,7 +433,7 @@ function renderCreators() {
              Desktop: flex-wrap with JS-applied rotations. -->
         <div id="creators-tags"
              class="flex flex-col gap-[16px] w-full
-                    md:flex-row md:flex-wrap md:gap-[16px] md:items-start"
+                    md:flex-row md:flex-wrap md:gap-[16px] md:items-start lg:justify-between"
              role="list"
              aria-label="Categorias de creators">
           ${tagsHtml}
@@ -503,7 +503,7 @@ function renderHow() {
   // ── WorkCard HTML builder ─────────────────────────────────────────────────
   function buildWorkCard(card) {
     return `
-      <div class="how-card bg-farol-beige border-[4px] border-farol-black rounded-[40px]
+      <div class="how-card h-full bg-farol-beige border-[4px] border-farol-black rounded-[40px]
                   relative flex items-start
                   px-[32px] md:px-[48px] lg:px-[72px]
                   pt-[48px] md:pt-[56px]
@@ -515,7 +515,7 @@ function renderHow() {
         <div class="absolute flex items-center justify-center rounded-full"
              style="width:120px;height:120px;
                     background:${card.stampColor};
-                    top:-60px;left:-24px
+                    top:-60px;left:-48px;
                     padding:10px">
           <span class="font-agharti text-farol-text text-center"
                 style="font-variation-settings:'wdth' 0;
@@ -590,10 +590,10 @@ function renderHow() {
         <!-- Desktop: 2×2 grid. Tablet: 1-column. Mobile: 1-column. -->
         <!-- Each card has a stamp that overflows top-left — needs extra top margin -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-[48px] gap-y-[96px]
-                    w-full pt-[80px]"
+                    items-stretch w-full pt-[80px]"
              role="list"
              aria-label="Como trabalhamos com marcas">
-          ${cards.map(c => `<div role="listitem">${buildWorkCard(c)}</div>`).join('')}
+          ${cards.map(c => `<div role="listitem" class="h-full">${buildWorkCard(c)}</div>`).join('')}
         </div>
 
       </div>
@@ -831,18 +831,7 @@ function renderFooter() {
         <div class="flex flex-col gap-[8px] items-start">
           <!-- Logo: white HTML reproduction matching mobile-header pattern -->
           <a href="/" aria-label="Grupo Farol — página inicial" class="no-underline">
-            <div class="flex flex-col leading-none select-none">
-              <span class="flex items-center gap-1.5">
-                <span class="font-agharti font-normal text-[13px] tracking-[0.2em] uppercase text-white">GRUPO</span>
-                <span class="flex items-center gap-1" aria-hidden="true">
-                  <span class="w-[7px] h-[7px] rounded-full bg-farol-burning-red inline-block"></span>
-                  <span class="w-[7px] h-[7px] rounded-full bg-farol-orange inline-block"></span>
-                  <span class="w-[7px] h-[7px] rounded-full bg-farol-teal inline-block"></span>
-                  <span class="w-[7px] h-[7px] rounded-full bg-farol-blue inline-block"></span>
-                </span>
-              </span>
-              <span class="font-agharti font-black text-[42px] uppercase tracking-wider text-white leading-none">FAROL</span>
-            </div>
+            <img src="/assets/images/LogoGrupoFarol--dark.png" alt="Grupo Farol" class="h-[48px] w-auto block object-contain" />
           </a>
           <p class="font-poppins text-white text-[24px] leading-[1.82] whitespace-nowrap"
              data-i18n="footer.copyright">©2026 Grupo Farol. Todos os direitos reservados.</p>
@@ -862,18 +851,7 @@ function renderFooter() {
 
         <!-- Logo -->
         <a href="/" aria-label="Grupo Farol — página inicial" class="no-underline">
-          <div class="flex flex-col items-center leading-none select-none">
-            <span class="flex items-center gap-1.5">
-              <span class="font-agharti font-normal text-[13px] tracking-[0.2em] uppercase text-white">GRUPO</span>
-              <span class="flex items-center gap-1" aria-hidden="true">
-                <span class="w-[7px] h-[7px] rounded-full bg-farol-burning-red inline-block"></span>
-                <span class="w-[7px] h-[7px] rounded-full bg-farol-orange inline-block"></span>
-                <span class="w-[7px] h-[7px] rounded-full bg-farol-teal inline-block"></span>
-                <span class="w-[7px] h-[7px] rounded-full bg-farol-blue inline-block"></span>
-              </span>
-            </span>
-            <span class="font-agharti font-black text-[52px] uppercase tracking-wider text-white leading-none">FAROL</span>
-          </div>
+          <img src="/assets/images/LogoGrupoFarol--dark.png" alt="Grupo Farol" class="h-[56px] w-auto block object-contain mx-auto" />
         </a>
 
         <!-- Copyright -->
