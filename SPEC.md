@@ -1,11 +1,10 @@
 # SPEC — Grupo Farol Institutional Website
 
-**Version:** 1.2  
+**Version:** 2.0  
 **Status:** Approved for implementation  
 **Date:** April 2026  
 **Reference:** PRD v1.2  
-**Changelog v1.2:** Added responsiveness, fonts, CSS/Tailwind, semantics and accessibility sections.  
-**Changelog v1.1:** Added section 12 — Supabase Keepalive via Vercel Cron.
+**Changelog v2.0:** Added MCP integrations (Supabase + Figma), .env.local setup, Figma-driven breakpoint strategy, Hero section SVG positioning spec, slider boundary behavior, per-breakpoint implementation strategy, content bucket, image placeholder/upload/remove pattern, admin branding, gitignore rules, Figma color/style integration with Tailwind.
 
 ---
 
@@ -31,39 +30,81 @@
 │   │   ├── slider.js           ← Talent slider logic
 │   │   └── admin.js            ← Admin panel logic
 │   ├── fonts/
-│   │   ├── AghartiVF.woff2         ← Variable font (all weights)
-│   │   ├── CasualHuman.woff2       ← Regular weight
-│   │   ├── CasualHuman-Bold.woff2  ← Bold weight
+│   │   ├── AghartiVF.woff2
+│   │   ├── CasualHuman.woff2
+│   │   ├── CasualHuman-Bold.woff2
 │   │   └── Foun.woff2
-│   └── images/                 ← Static assets (logo, icons, etc.)
-├── tailwind.config.js          ← Tailwind configuration
-├── tailwind.input.css          ← CSS entry with @tailwind directives + @font-face
-├── robots.txt                  ← Blocks /admin/ indexing
-├── vercel.json                 ← Routes, cron and env configuration
-└── .env.local                  ← Environment variables (never committed)
+│   └── images/
+│       └── placeholders/       ← Static placeholder SVGs for sections with no uploaded image
+├── tailwind.config.js
+├── tailwind.input.css
+├── vercel.json
+└── .env.local                  ← Never committed
 ```
+
+### 1.1 .gitignore rules
+
+The following must be in `.gitignore`:
+- `.env.local`
+- `node_modules/`
+- `PRD.md`
+- `SPEC.md`
+- `ISSUES.md`
+- `KICKOFF.md`
+
+`README.md` is allowed in the repository but must contain only information strictly necessary for setup and operation — no architecture decisions, no business context, no credentials, no references to internal planning documents.
 
 ---
 
 ## 2. Environment Variables
 
+Create `.env.local` at project root from the very first issue. Never commit it.
+
 ```env
 SUPABASE_URL=https://xxxx.supabase.co
 SUPABASE_ANON_KEY=xxxx
-SUPABASE_SERVICE_ROLE_KEY=xxxx   ← used only in Serverless Functions
+SUPABASE_SERVICE_ROLE_KEY=xxxx
 CRON_SECRET=a-long-random-secret
+FIGMA_FILE_KEY=xxxx              ← Figma file key (used during development only)
 ```
 
-Rule: `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` are never exposed on the front-end. Only `/api` Serverless Functions use them.
+`SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` are used only in Serverless Functions — never exposed to the browser.  
+`SUPABASE_ANON_KEY` is used in the browser via Supabase JS SDK — this is expected and safe because RLS protects the data.  
+`FIGMA_FILE_KEY` is a development-only variable used by the Figma MCP. It must not be referenced in any deployed code.
 
 ---
 
-## 3. Typography and Fonts
+## 3. MCP Integrations
 
-### 3.1 @font-face declarations (in `tailwind.input.css`)
+The Claude Code session must connect to and actively use two MCP servers throughout development:
+
+### 3.1 Supabase MCP
+- Use for: creating tables, applying RLS policies, creating storage buckets, seeding data, inspecting schema
+- All database operations must go through the Supabase MCP when possible, not manual SQL copy-paste
+- RLS policies must be applied immediately after table creation in the same operation — never leave a table without RLS
+
+### 3.2 Figma MCP (official Figma Developer MCP)
+- Use for: extracting design tokens (colors, typography, spacing), inspecting components, reading SVG elements, getting exact values for positioning and layout
+- The Figma file has three separate frames, one per breakpoint: **Desktop**, **Tablet**, **Mobile**
+- Always read the correct frame for the breakpoint being implemented
+- Figma layers and components are structured to aid HTML/CSS comprehension — use them as implementation reference
+- Figma color styles must be extracted and mapped to Tailwind config — do not hardcode color values
+
+### 3.3 SVG Asset Handling (critical)
+When the Figma MCP exports or downloads an SVG asset to disk:
+- **Never** pass the SVG file to the Claude API as an image — the API only accepts `image/jpeg`, `image/png`, `image/gif`, `image/webp`
+- SVG is XML-based text — always read it using bash: `cat filename.svg`
+- Inspect the XML structure as text and embed or reference it directly in the HTML
+- If the file was downloaded with a `.png` extension but contains SVG content, rename it to `.svg` first: `mv filename.png filename.svg`
+- This rule applies to every SVG asset throughout the entire project — hero illustration, icons, decorative elements
+
+---
+
+## 4. Typography and Fonts
+
+### 4.1 @font-face declarations (in `tailwind.input.css`)
 
 ```css
-/* Agharti — variable font, covers all weights */
 @font-face {
   font-family: 'Agharti';
   src: url('/assets/fonts/AghartiVF.woff2') format('woff2-variations');
@@ -72,7 +113,6 @@ Rule: `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` are never exposed on the fro
   font-display: swap;
 }
 
-/* Casual Human */
 @font-face {
   font-family: 'Casual Human';
   src: url('/assets/fonts/CasualHuman.woff2') format('woff2');
@@ -89,7 +129,6 @@ Rule: `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` are never exposed on the fro
   font-display: swap;
 }
 
-/* Foun */
 @font-face {
   font-family: 'Foun';
   src: url('/assets/fonts/Foun.woff2') format('woff2');
@@ -99,76 +138,68 @@ Rule: `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` are never exposed on the fro
 }
 ```
 
-### 3.2 Google Fonts (in `tailwind.input.css`)
+### 4.2 Google Fonts
 
 ```css
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap');
 ```
 
-### 3.3 Font Hierarchy
+### 4.3 Font Hierarchy
 
-> ⚠️ No explicit pattern defined in Figma. Font application must follow Figma as the source of truth. The associations below are inferences — verify during implementation.
+> ⚠️ No explicit pattern defined in Figma. Font application must follow Figma as source of truth. Verify during implementation via Figma MCP.
 
 | Font | Likely use |
 |---|---|
-| Agharti | Display headlines and titles (hero, large numbers) |
+| Agharti | Display headlines and titles |
 | Casual Human | Brand accent and personality elements |
 | Foun | Editorial highlights, quotes |
-| PT Serif | Editorial subtitles with personality |
+| PT Serif | Editorial subtitles |
 | Poppins | Body text, UI, labels, admin |
 
-### 3.4 Tailwind Font Configuration
+---
 
+## 5. Visual Identity and Tailwind Integration
+
+### 5.1 Color Tokens
+
+Do not hardcode any color values. Extract all color styles from the Figma file via Figma MCP and map them directly to `tailwind.config.js` under `theme.extend.colors`.
+
+Example structure (exact values must come from Figma):
 ```js
-// tailwind.config.js
-module.exports = {
-  content: ['./*.html', './admin/*.html', './assets/js/*.js'],
-  theme: {
-    extend: {
-      fontFamily: {
-        agharti: ['Agharti', 'sans-serif'],
-        casual: ['Casual Human', 'sans-serif'],
-        foun: ['Foun', 'serif'],
-        serif: ['PT Serif', 'Georgia', 'serif'],
-        sans: ['Poppins', 'system-ui', 'sans-serif'],
-      },
-    },
-  },
+colors: {
+  'farol-red': '#xxxxxx',
+  'farol-beige': '#xxxxxx',
+  'farol-black': '#xxxxxx',
+  // ... all styles found in Figma
 }
 ```
 
----
+This ensures the Tailwind color palette is always in sync with the design.
 
-## 4. Visual Identity
+### 5.2 WCAG Contrast
 
-| Token | Value |
-|---|---|
-| Primary color (red) | `#C0392B` (verify with Figma) |
-| Background color (beige) | `#F5ECD7` (verify with Figma) |
-| Text color (black) | `#1A1A1A` |
-
-> ⚠️ Exact color values must be extracted from Figma before implementation. Add to `tailwind.config.js` under `theme.extend.colors`.
-
-> ⚠️ WCAG color contrast compliance has been explicitly removed from Phase 1 requirements. Fidelity to Figma layout takes priority.
+WCAG color contrast compliance is explicitly excluded from Phase 1. Figma fidelity takes priority.
 
 ---
 
-## 5. CSS and Tailwind
+## 6. CSS and Tailwind
 
-### 5.1 Approach
+### 6.1 Approach
 
-Tailwind CSS via **standalone CLI** — no mandatory Node/npm in project, no webpack or vite. The `tailwindcss` binary scans HTML and JS files and generates an optimized `assets/css/output.css`.
+Tailwind CSS via **standalone CLI** — no mandatory Node/npm, no webpack or vite.
 
-### 5.2 Units
+### 6.2 Units
 
-- Typography: `rem` (base 16px, scaled via Tailwind)
-- Spacing: `rem` for structural margins/paddings, `em` for text-relative spacing
-- Breakpoints: defined in `px` in Tailwind config, used via responsive classes
+- Typography: `rem`
+- Spacing: `rem` for structural, `em` for text-relative
+- Breakpoints: `px` in Tailwind config, applied via responsive class prefixes
 
-### 5.3 Breakpoints
+### 6.3 Breakpoints
 
+Breakpoints must match the three frames defined in the Figma file exactly. Read the frame dimensions via Figma MCP before setting values in `tailwind.config.js`.
+
+Approximate reference (confirm with Figma):
 ```js
-// tailwind.config.js
 screens: {
   sm: '640px',   // mobile landscape
   md: '768px',   // tablet
@@ -177,10 +208,9 @@ screens: {
 }
 ```
 
-### 5.4 Build Scripts
+### 6.4 Build Scripts
 
 ```json
-// package.json (minimal, scripts only)
 {
   "scripts": {
     "build:css": "tailwindcss -i ./tailwind.input.css -o ./assets/css/output.css --minify",
@@ -191,104 +221,124 @@ screens: {
 
 ---
 
-## 6. Responsiveness
+## 7. Implementation Strategy — Breakpoints
 
-### 6.1 Principle
+Each front-end section is implemented in three sequential passes:
 
-Mobile-first. Base styles for mobile, overridden with `md:` and `lg:` prefixes for tablet and desktop.
+1. **Desktop first** — extract design from Desktop frame in Figma, implement fully
+2. **Tablet** — extract from Tablet frame, apply differences. Note: tablet and mobile show logo in header; desktop does not.
+3. **Mobile** — extract from Mobile frame, apply differences
 
-### 6.2 Navigation Menu
+This means front-end issues are split by breakpoint where the section has meaningful layout differences. The AI must compare all three frames before implementing to identify what changes and what stays the same.
+
+---
+
+## 8. Responsiveness
+
+### 8.1 Principle
+
+Desktop-first implementation order (per section 7), but mobile-first CSS (Tailwind default). Base styles target mobile, overridden with `md:` and `lg:`.
+
+### 8.2 Header / Navigation
 
 | Breakpoint | Behavior |
 |---|---|
-| Mobile (< 768px) | Hamburger icon visible; click opens vertical dropdown with menu items; close on outside click or item click |
-| Tablet/Desktop (≥ 768px) | Full horizontal menu visible; hamburger hidden |
+| Desktop | No logo. Full horizontal navigation menu visible. |
+| Tablet | Farol logo visible. Hamburger menu only — horizontal nav hidden. |
+| Mobile | Farol logo visible. Hamburger menu only — horizontal nav hidden. |
 
-Dropdown implementation:
-- Toggle via JS (add/remove `is-open` class)
-- Open animation via Tailwind (`transition`, `opacity`, `translate-y`)
-- Focus managed via JS (on open, focus first item; Escape closes)
+Dropdown behavior (tablet + mobile):
+- Click hamburger → simple vertical dropdown opens
+- Click outside or click item → dropdown closes
+- Escape key closes dropdown
+- `aria-expanded`, `aria-controls`, `aria-label` on hamburger button
+- Focus managed: first item focused on open
 
-### 6.3 Section Behavior
+### 8.3 Section Behavior
 
-| Section | Desktop | Mobile |
-|---|---|---|
-| Hero | Free layout per Figma | Stacked, font scales proportionally |
-| About | Text + big numbers inline | Single column, stacked |
-| Creators | Tags in a row | Tags wrap, multiple lines |
-| Talents | 3 cards in slider | 1 card at a time, swipe enabled |
-| How We Work | 4 columns | 1 column, stacked |
-| Partners | Multi-column grid | 2-column grid |
-| Final CTA | 2 columns | 1 column, stacked |
+| Section | Desktop | Tablet | Mobile |
+|---|---|---|---|
+| Hero | Full layout per Figma | Per Figma tablet frame | Per Figma mobile frame |
+| About | Text + big numbers inline | Per Figma | Single column, stacked |
+| Creators | Tags in a row | Tags wrap | Tags wrap |
+| Talents slider | 3 cards visible | 1 card + peek of next | 1 card + peek of next |
+| How We Work | 4 columns | Per Figma | 1 column, stacked |
+| Partners | Multi-column grid | Per Figma | 2-column grid |
+| Final CTA | 2 columns | Per Figma | 1 column, stacked |
 
-### 6.4 Responsive Typography
+### 8.4 Responsive Typography
 
-Large display titles (e.g. "200 CREATORS") scale proportionally using Tailwind responsive classes:
-
-```html
-<h2 class="text-5xl md:text-7xl lg:text-9xl font-agharti font-black">
-  200 CREATORS.
-</h2>
-```
-
-### 6.5 Slider — Mobile
-
-- 1 card at a time
-- Swipe enabled via touch events (`touchstart`, `touchend`)
-- Navigation arrows maintained on mobile (positioned below the card)
-- Infinite loop maintained
+Large display titles scale proportionally using Tailwind responsive classes. Exact sizes must be read from Figma frames for each breakpoint.
 
 ---
 
-## 7. Semantic HTML and Accessibility
+## 9. Hero Section — SVG Positioning
 
-### 7.1 Semantic Structure
+The Hero section contains three SVG elements whose positions change across breakpoints:
+- **Lighthouse** (farol)
+- **Light beam** (luz que sai do farol)
+- **Sparkle icon** (ícone de brilho)
 
-```html
-<body>
-  <a href="#main-content" class="skip-link">Skip to content</a>
-  <header role="banner">
-    <nav aria-label="Main navigation">...</nav>
-  </header>
-  <main id="main-content">
-    <section aria-labelledby="hero-heading">...</section>
-    <section aria-labelledby="about-heading">...</section>
-    <section aria-labelledby="creators-heading">...</section>
-    <section aria-labelledby="talents-heading">...</section>
-    <section aria-labelledby="how-heading">...</section>
-    <section aria-labelledby="partners-heading">...</section>
-    <section aria-labelledby="cta-heading">...</section>
-  </main>
-  <footer role="contentinfo">...</footer>
-</body>
-```
+### Rules
+- All three are SVG/vector — extract from Figma via Figma MCP
+- Positioning is static per breakpoint, not animated
+- The sparkle icon must always appear to "come out of the lighthouse window" — its position is relative to the lighthouse, not to the viewport
+- Use CSS `position: absolute` with percentage-based or `calc()` values relative to the lighthouse container, so the relationship holds across screen sizes within each breakpoint range
+- Read exact coordinates from each Figma frame (Desktop, Tablet, Mobile) and implement as breakpoint-specific position classes
+- The lighthouse container must be a positioned parent (`position: relative`) that wraps all three SVG elements
 
-### 7.2 Accessibility Requirements
-
-| Element | Requirement |
-|---|---|
-| Creator images | `alt="Photo of [creator name]"` |
-| Partner logos | `alt="[partner name] logo"` |
-| Decorative images | `alt=""` + `role="presentation"` |
-| Buttons without visible text | descriptive `aria-label` |
-| Slider | `role="region"` + `aria-label="Featured talents"` + `aria-live="polite"` |
-| Slider arrows | `aria-label="Previous creator"` / `aria-label="Next creator"` |
-| Hamburger button | `aria-expanded` + `aria-controls` + `aria-label="Open menu"` |
-| Social media links | `aria-label="[name]'s Instagram"` + `target="_blank"` + `rel="noopener noreferrer"` |
-| Skip link | Visible when focused via keyboard |
-| Visible focus | Never remove `outline` without replacing with a visible alternative |
-| Tab order | Follow logical document reading order |
-
-### 7.3 Compliance
-
-- Target: WCAG 2.1 level AA — **except minimum color contrast** (explicit decision, Phase 1)
-- Keyboard navigation functional across the entire site and admin
+### Implementation note
+Before writing any Hero CSS, read all three Figma frames and document the x/y coordinates of each SVG element relative to the lighthouse container. Use those values as the source of truth.
 
 ---
 
-## 8. Database Schema (Supabase / Postgres)
+## 10. Talent Slider
 
-### 8.1 Table `content`
+### Behavior
+- **Desktop:** 3 cards visible simultaneously
+- **Tablet:** 1 card fully visible + partial peek of the next card on the right edge
+- **Mobile:** 1 card fully visible + partial peek of the next card on the right edge
+- The peek effect signals to the user that more items exist — it is a visual affordance, not a separate component
+
+### Navigation rules
+- First slide: only "next" action available (no previous)
+- Last slide: only "previous" action available (no next)
+- No loop — the slider has a defined start and end
+- Navigation via arrows (always visible, disabled state when at boundary)
+- Navigation via swipe on touch devices
+
+### Admin control
+- Number of slides is determined by how many creators are configured in the admin
+- Each creator in the admin = one slide card
+- Reordering via numeric `position` field
+
+---
+
+## 11. Image Placeholders — Upload and Remove Pattern
+
+Every section in the Figma that contains a placeholder image must follow this pattern:
+
+**Public site behavior:**
+- If an image has been uploaded for that slot: display the uploaded image
+- If no image has been uploaded (or it has been removed): display the original static placeholder (SVG or styled div, matching the Figma placeholder visually)
+
+**Admin behavior:**
+- Each image slot has an upload button and, when an image exists, a remove button
+- Upload: calls `POST /api/upload` with the appropriate bucket, saves the returned URL to the database
+- Remove: deletes the file from Supabase Storage, clears the URL from the database — public site reverts to placeholder
+
+**Sections with image placeholders (verify all in Figma):**
+- About section (gray placeholder beside institutional text)
+- Final CTA section (right column placeholder)
+- Any other placeholder found in Figma frames
+
+**Database:** image URLs for these slots are stored as keys in the `content` table (e.g. `about_image_url`, `cta_final_image_url`). Empty string or null = show placeholder.
+
+---
+
+## 12. Database Schema (Supabase / Postgres)
+
+### 12.1 Table `content`
 
 ```sql
 CREATE TABLE content (
@@ -308,19 +358,21 @@ CREATE TABLE content (
 | `hero_cta2_text` | CTA 2 button text |
 | `hero_cta2_url` | CTA 2 button URL |
 | `about_text` | About section institutional text |
-| `about_stat1_value` | Big number 1 value (e.g. "+200") |
-| `about_stat1_label` | Big number 1 label (e.g. "Creators no Casting") |
+| `about_image_url` | About section image (empty = show placeholder) |
+| `about_stat1_value` | Big number 1 value |
+| `about_stat1_label` | Big number 1 label |
 | `about_stat2_value` | Big number 2 value |
 | `about_stat2_label` | Big number 2 label |
 | `about_stat3_value` | Big number 3 value |
 | `about_stat3_label` | Big number 3 label |
-| `cta_final_text` | Final CTA section title |
-| `cta_final_subtext` | Final CTA section subtext |
+| `cta_final_text` | Final CTA title |
+| `cta_final_subtext` | Final CTA subtext |
 | `cta_final_btn_text` | Final CTA button text |
 | `cta_final_btn_url` | Final CTA button URL |
+| `cta_final_image_url` | Final CTA right column image (empty = show placeholder) |
 | `contact_url` | "Fale com o Farol" button destination |
 
-### 8.2 Table `creators`
+### 12.2 Table `creators`
 
 ```sql
 CREATE TABLE creators (
@@ -336,7 +388,7 @@ CREATE TABLE creators (
 );
 ```
 
-### 8.3 Table `partners`
+### 12.3 Table `partners`
 
 ```sql
 CREATE TABLE partners (
@@ -347,95 +399,91 @@ CREATE TABLE partners (
 );
 ```
 
-### 8.4 Supabase Storage
+### 12.4 RLS Policies
+
+Must be applied immediately after table creation — never leave a table without RLS.
+
+```sql
+-- Enable RLS
+ALTER TABLE content ENABLE ROW LEVEL SECURITY;
+ALTER TABLE creators ENABLE ROW LEVEL SECURITY;
+ALTER TABLE partners ENABLE ROW LEVEL SECURITY;
+
+-- Public read
+DROP POLICY IF EXISTS "Public read" ON content;
+DROP POLICY IF EXISTS "Public read" ON creators;
+DROP POLICY IF EXISTS "Public read" ON partners;
+CREATE POLICY "Public read" ON content FOR SELECT USING (true);
+CREATE POLICY "Public read" ON creators FOR SELECT USING (true);
+CREATE POLICY "Public read" ON partners FOR SELECT USING (true);
+
+-- Authenticated write
+DROP POLICY IF EXISTS "Auth write" ON content;
+DROP POLICY IF EXISTS "Auth write" ON creators;
+DROP POLICY IF EXISTS "Auth write" ON partners;
+CREATE POLICY "Auth write" ON content FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Auth write" ON creators FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Auth write" ON partners FOR ALL USING (auth.role() = 'authenticated');
+```
+
+### 12.5 Supabase Storage Buckets
 
 | Bucket | Use | Policy |
 |---|---|---|
 | `creators` | Creator photos | Public read, write via service role |
 | `partners` | Partner logos | Public read, write via service role |
-| `content`  | Site-wide assets (About image, etc.) | Public read, write via service role |
+| `content` | Section images (about, CTA final, etc.) | Public read, write via service role |
 
 ---
 
-## 9. API — Serverless Functions
+## 13. API — Serverless Functions
 
-### 9.1 `GET /api/content`
+### 13.1 `GET /api/content`
+Returns all `content` table fields as JSON object `{ key: value }`.
 
-Returns all `content` table fields as a JSON object.
-
-**Response:**
-```json
-{
-  "hero_headline": "A Maior Agência de Creators da América Latina",
-  "hero_subheadline": "...",
-  ...
-}
-```
-
-### 9.2 `POST /api/content`
-
-Updates `content` table fields. Requires authentication.
-
-**Headers:** `Authorization: Bearer <supabase_jwt>`
-
-**Body:**
-```json
-{ "hero_headline": "New title" }
-```
-
+### 13.2 `POST /api/content`
+Updates `content` table fields. Requires JWT.  
+**Headers:** `Authorization: Bearer <supabase_jwt>`  
+**Body:** `{ "key": "value", ... }`  
 **Response:** `{ "ok": true }`
 
-### 9.3 `GET /api/creators`
-
+### 13.3 `GET /api/creators`
 Returns creator list ordered by `position ASC`.
 
-### 9.4 `POST /api/creators`
+### 13.4 `POST /api/creators`
+Creates new creator. Requires JWT.
 
-Creates new creator. Requires authentication.
+### 13.5 `PUT /api/creators`
+Updates existing creator by `id`. Requires JWT.
 
-### 9.5 `PUT /api/creators`
+### 13.6 `DELETE /api/creators`
+Removes creator by `id`. Requires JWT.
 
-Updates existing creator. Requires authentication.  
-**Body:** `id` + fields to update.
-
-### 9.6 `DELETE /api/creators`
-
-Removes creator. Requires authentication.  
-**Body:** `{ "id": "uuid" }`
-
-### 9.7 `GET /api/partners`
-
+### 13.7 `GET /api/partners`
 Returns partner list ordered by `created_at ASC`.
 
-### 9.8 `POST /api/partners`
+### 13.8 `POST /api/partners`
+Creates new partner. Requires JWT.
 
-Creates new partner. Requires authentication.
+### 13.9 `DELETE /api/partners`
+Removes partner by `id`. Requires JWT.
 
-### 9.9 `DELETE /api/partners`
+### 13.10 `POST /api/upload`
+Uploads image to Supabase Storage. Requires JWT.  
+**Body:** `multipart/form-data` with `file` and `bucket` (`creators`, `partners`, or `content`).  
+**Validations:** `image/*` only, 2MB max (front-end validated).  
+**Response:** `{ "url": "public_url" }`
 
-Removes partner. Requires authentication.
-
-### 9.10 `POST /api/upload`
-
-Uploads image to Supabase Storage. Requires authentication.
-
-**Body:** `multipart/form-data` with `file` and `bucket` fields (`creators`, `partners` or `content`).
-
-**Validations:**
-- Type: `image/*` only
-- Max size: 2MB (validated on front-end before sending)
-
-**Response:**
-```json
-{ "url": "https://xxxx.supabase.co/storage/v1/object/public/creators/filename.jpg" }
-```
+### 13.11 `DELETE /api/upload`
+Removes image from Supabase Storage. Requires JWT.  
+**Body:** `{ "bucket": "content", "path": "filename.jpg" }`  
+**Response:** `{ "ok": true }`
 
 ---
 
-## 10. Authentication
+## 14. Authentication
 
-- Managed by Supabase Auth (email + password)
-- Login via Supabase JS SDK in browser
+- Supabase Auth (email + password)
 - JWT stored in `localStorage` after login
 - All write calls send `Authorization: Bearer <token>`
 - Serverless Functions validate JWT via `SUPABASE_SERVICE_ROLE_KEY`
@@ -444,86 +492,65 @@ Uploads image to Supabase Storage. Requires authentication.
 
 ---
 
-## 11. Public Site — Behavior
+## 15. Public Site — Behavior
 
 ### Content loading
-- On `index.html` load, JS runs `GET /api/content`, `GET /api/creators` and `GET /api/partners` in parallel (`Promise.all`)
-- Skeleton loaders shown in dynamic sections during loading
-- If a call fails, the section shows fallback content defined in HTML
-- Empty fields do not break the layout
+- `Promise.all([fetchContent(), fetchCreators(), fetchPartners()])` on page load
+- Skeleton loaders shown during loading
+- Section fallbacks if individual calls fail
+- Empty/null image URLs render the static placeholder, never a broken image tag
 
 ### i18n (preparation only)
-- All fixed HTML texts use `data-i18n="key"` attributes
-- A `STRINGS` object in `main.js` centralizes PT-BR texts
-- No language switching in MVP — structure only
+- All fixed texts use `data-i18n="key"` attributes
+- `STRINGS` object in `main.js` centralizes PT-BR texts
+- No language switching in MVP
 
 ---
 
-## 12. Admin Panel — Behavior
+## 16. Admin Panel — Behavior
+
+### Branding
+- Admin panel must display the Farol logo in the header for consistent branding
+- Style: clean, functional, Poppins font
 
 ### Login (`/admin/index.html`)
-- Email + password fields
-- Calls `supabase.auth.signInWithPassword()`
-- Success: redirects to `/admin/dashboard.html`
-- Error: shows "Incorrect email or password"
-- Valid JWT in localStorage: redirects directly to dashboard
+- Email + password
+- Valid JWT in localStorage → redirect to dashboard
+- Success → redirect to dashboard
+- Error → "Incorrect email or password"
 
 ### Dashboard (`/admin/dashboard.html`)
-- Checks authentication on load; if not authenticated, redirects to login
-- Loads current content via API to pre-fill fields
-- Organized in tabs:
-  1. **Hero** — text fields + URLs
-  2. **About** — institutional text + big numbers
-  3. **Talents** — list with edit/remove + "Add Creator" button
-  4. **Partners** — logo grid with remove + "Add Partner" button
-  5. **Final CTA** — text fields + URL
-  6. **Settings** — contact URL
-- **Save** button per tab
-- Feedback: success message (green) or error (red) after each save
-- **Sign out** button at the top
+- Auth check on load
+- Tabs: Hero, About, Talents, Partners, Final CTA, Settings
+- Save button per tab with success/error feedback
+- Sign out button
 
-### Image upload
-- `input[type="file"]` accepts `image/*` only
-- Preview before saving
-- 2MB front-end validation before upload
-- On save: calls `POST /api/upload`, receives public URL, saves with other fields
+### Image slots in admin
+Every section with an image placeholder must show:
+- Current image preview (if uploaded)
+- Upload button (always visible)
+- Remove button (visible only when an image exists)
+- On remove: file deleted from Storage, URL cleared from `content` table, preview reverts to placeholder
 
 ---
 
-## 13. Supabase Keepalive
+## 17. Supabase Keepalive
 
-### Problem
-Supabase pauses free-tier projects after 7 days of inactivity.
-
-### Solution
-Vercel Cron Job (free on Hobby plan) calling a lightweight endpoint daily.
+Vercel Cron Job running daily at 09:00 UTC.
 
 ### `vercel.json`
-
 ```json
 {
-  "crons": [
-    {
-      "path": "/api/keepalive",
-      "schedule": "0 9 * * *"
-    }
-  ],
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
-  ],
-  "headers": [
-    {
-      "source": "/admin/(.*)",
-      "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
-      ]
-    }
-  ]
+  "crons": [{ "path": "/api/keepalive", "schedule": "0 9 * * *" }],
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/$1" }],
+  "headers": [{
+    "source": "/admin/(.*)",
+    "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+  }]
 }
 ```
 
 ### `/api/keepalive.js`
-
 ```js
 import { createClient } from '@supabase/supabase-js'
 
@@ -532,22 +559,55 @@ export default async function handler(req, res) {
   if (token !== process.env.CRON_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
-
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  )
-
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
   const { error } = await supabase.from('content').select('key').limit(1)
   if (error) return res.status(500).json({ error: error.message })
-
   return res.status(200).json({ ok: true, timestamp: new Date().toISOString() })
 }
 ```
 
 ---
 
-## 14. robots.txt
+## 18. Semantic HTML and Accessibility
+
+### Structure
+```html
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <header role="banner">
+    <nav aria-label="Main navigation">...</nav>
+  </header>
+  <main id="main-content">
+    <section aria-labelledby="hero-heading">...</section>
+    <section aria-labelledby="about-heading">...</section>
+    <section aria-labelledby="creators-heading">...</section>
+    <section aria-labelledby="talents-heading">...</section>
+    <section aria-labelledby="how-heading">...</section>
+    <section aria-labelledby="partners-heading">...</section>
+    <section aria-labelledby="cta-heading">...</section>
+  </main>
+  <footer role="contentinfo">...</footer>
+</body>
+```
+
+### Accessibility requirements
+
+| Element | Requirement |
+|---|---|
+| Creator images | `alt="Photo of [name]"` |
+| Partner logos | `alt="[name] logo"` |
+| Section images | `alt` from content or empty if decorative |
+| Decorative images | `alt=""` + `role="presentation"` |
+| Slider | `role="region"` + `aria-label="Featured talents"` + `aria-live="polite"` |
+| Slider arrows | `aria-label` + `disabled` attribute at boundaries |
+| Hamburger button | `aria-expanded` + `aria-controls` + `aria-label="Open menu"` |
+| Social links | `aria-label="[name]'s [platform]"` + `rel="noopener noreferrer"` |
+| Skip link | Visible on keyboard focus |
+| WCAG contrast | Excluded from Phase 1 — Figma fidelity takes priority |
+
+---
+
+## 19. robots.txt
 
 ```
 User-agent: *
@@ -556,20 +616,23 @@ Disallow: /admin/
 
 ---
 
-## 15. Recorded Technical Decisions
+## 20. Recorded Technical Decisions
 
 | Decision | Choice | Reason |
 |---|---|---|
 | Front-end framework | HTML + CSS + vanilla JS | No build step, faster delivery |
 | Admin framework | HTML + CSS + vanilla JS | Consistency, no extra dependencies |
-| CSS | Tailwind standalone CLI | Scalable, no bundler, compatible with plain HTML |
+| CSS | Tailwind standalone CLI | Scalable, no bundler, plain HTML compatible |
 | CSS units | `rem`/`em` | Responsive and typographic scalability |
-| Responsiveness strategy | Mobile-first | Tailwind standard, better progressiveness |
-| Mobile menu | Simple dropdown | Simple to implement, no dependencies |
-| Database | Supabase Postgres | Free tier, integrated with Auth and Storage |
+| Responsiveness order | Desktop → Tablet → Mobile per section | Matches Figma frame structure |
+| Mobile menu | Simple dropdown | Simple, no dependencies |
+| Hero SVG positioning | Absolute positioning relative to lighthouse container | Maintains sparkle-to-window relationship across breakpoints |
+| Slider loop | No loop, hard boundaries | Matches Figma navigation affordance |
+| Color tokens | Extracted from Figma via MCP | Single source of truth, Tailwind in sync with design |
+| Database | Supabase Postgres | Free tier, integrated Auth and Storage |
 | Authentication | Supabase Auth | Avoids building auth from scratch |
-| Image storage | Supabase Storage | Integrated, automatic public URLs |
+| Image storage | Supabase Storage (3 buckets) | Integrated, automatic public URLs |
 | Creator reordering | Numeric `position` field | Drag-and-drop deferred to Phase 2 |
 | User management | Via Supabase dashboard | Admin screen deferred to Phase 2 |
-| Keepalive | Daily Vercel Cron | Free on Hobby plan, zero extra config |
-| WCAG contrast compliance | Not applied in Phase 1 | Figma fidelity takes priority |
+| Keepalive | Daily Vercel Cron | Free on Hobby plan |
+| Planning docs in repo | Excluded via .gitignore | No internal info leaked to repository |

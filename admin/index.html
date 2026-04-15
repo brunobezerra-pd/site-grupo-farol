@@ -5,93 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Admin — Grupo Farol</title>
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
   <link rel="stylesheet" href="/assets/css/output.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center font-sans">
+<body class="bg-gray-50 min-h-screen flex flex-col font-poppins">
 
-  <div class="w-full max-w-sm px-6">
-    <div class="mb-8 text-center">
-      <h1 class="text-2xl font-bold text-brand-black tracking-tight">Grupo Farol</h1>
-      <p class="text-sm text-gray-500 mt-1">Painel Administrativo</p>
-    </div>
+  <a href="#login-form" class="skip-link">Pular para o formulário de login</a>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-      <form id="login-form" novalidate>
-        <div class="mb-5">
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-            E-mail
-          </label>
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 py-4 px-6" role="banner">
+    <a href="/admin/" aria-label="Grupo Farol — Painel Admin">
+      <!-- Logo: Agharti font + brand-color dots, matching the Figma visual identity -->
+      <div class="flex flex-col leading-none select-none">
+        <span class="flex items-center gap-2">
+          <span class="font-agharti font-normal text-lg tracking-[0.25em] uppercase text-farol-text">GRUPO</span>
+          <span class="flex items-center gap-1" aria-hidden="true">
+            <span class="w-2.5 h-2.5 rounded-full bg-farol-burning-red inline-block"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-farol-orange inline-block"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-farol-teal inline-block"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-farol-blue inline-block"></span>
+          </span>
+        </span>
+        <span class="font-agharti font-black text-4xl uppercase tracking-wider text-farol-black leading-none">FAROL</span>
+      </div>
+    </a>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-1 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-sm">
+      <h1 class="text-2xl font-semibold text-gray-800 mb-1">Entrar</h1>
+      <p class="text-sm text-gray-500 mb-8">Acesso restrito ao painel de administração.</p>
+
+      <form id="login-form" class="space-y-5" novalidate>
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
+            type="email"
             id="email"
             name="email"
-            type="email"
             autocomplete="email"
             required
-            placeholder="seuemail@grupofarol.com"
-            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition"
-            aria-describedby="login-error"
+            placeholder="seu@email.com"
+            class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-farol-burning-red focus:border-transparent transition"
           />
         </div>
 
-        <div class="mb-6">
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
-            Senha
-          </label>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
           <input
+            type="password"
             id="password"
             name="password"
-            type="password"
             autocomplete="current-password"
             required
             placeholder="••••••••"
-            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition"
-            aria-describedby="login-error"
+            class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-farol-burning-red focus:border-transparent transition"
           />
         </div>
 
+        <!-- Error message -->
         <div
-          id="login-error"
+          id="error-msg"
           role="alert"
           aria-live="assertive"
-          class="hidden mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700"
-        >
-          E-mail ou senha incorretos.
-        </div>
+          class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3"
+        ></div>
 
         <button
-          id="submit-btn"
           type="submit"
-          class="w-full rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-brand-red focus:ring-offset-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          id="submit-btn"
+          class="w-full py-2.5 px-4 bg-farol-burning-red text-white text-sm font-semibold rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-farol-burning-red focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Entrar
         </button>
       </form>
     </div>
-  </div>
+  </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
-    (async () => {
-      // Load public Supabase keys from server (keeps credentials out of source)
-      const cfg = await fetch('/api/config').then(r => r.json())
-      const supabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey)
+    (async function () {
+      const DASHBOARD = '/admin/dashboard.html'
 
-      // If already authenticated, go straight to dashboard
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
-        location.href = '/admin/dashboard.html'
+      // ── Load public config from server ─────────────────────────────────────
+      let supabase
+      try {
+        const cfg = await fetch('/api/config').then(r => r.json())
+        supabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey)
+      } catch (err) {
+        showError('Não foi possível conectar ao servidor. Tente novamente.')
         return
       }
 
-      const form     = document.getElementById('login-form')
-      const errorEl  = document.getElementById('login-error')
+      // ── Redirect if already authenticated ─────────────────────────────────
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) return (location.href = DASHBOARD)
+
+      // ── Login form ─────────────────────────────────────────────────────────
+      const form      = document.getElementById('login-form')
       const submitBtn = document.getElementById('submit-btn')
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault()
-        errorEl.classList.add('hidden')
-        submitBtn.disabled = true
-        submitBtn.textContent = 'Entrando…'
+        hideError()
+        setLoading(true)
 
         const email    = document.getElementById('email').value.trim()
         const password = document.getElementById('password').value
@@ -99,16 +117,26 @@
         const { error } = await supabase.auth.signInWithPassword({ email, password })
 
         if (error) {
-          errorEl.classList.remove('hidden')
-          submitBtn.disabled = false
-          submitBtn.textContent = 'Entrar'
-          document.getElementById('password').value = ''
-          document.getElementById('password').focus()
+          showError('Email ou senha incorretos.')
+          setLoading(false)
           return
         }
 
-        location.href = '/admin/dashboard.html'
+        location.href = DASHBOARD
       })
+
+      function showError(msg) {
+        const el = document.getElementById('error-msg')
+        el.textContent = msg
+        el.classList.remove('hidden')
+      }
+      function hideError() {
+        document.getElementById('error-msg').classList.add('hidden')
+      }
+      function setLoading(loading) {
+        submitBtn.disabled    = loading
+        submitBtn.textContent = loading ? 'Entrando…' : 'Entrar'
+      }
     })()
   </script>
 

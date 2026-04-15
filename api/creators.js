@@ -1,47 +1,47 @@
-import { createClient } from '@supabase/supabase-js'
+const { createClient } = require('@supabase/supabase-js')
 
-function getSupabase() {
-  return createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  )
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
+
+async function requireAuth(req, res) {
+  const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim()
+  if (!token) {
+    res.status(401).json({ error: 'Unauthorized' })
+    return null
+  }
+  const { data: { user }, error } = await supabase.auth.getUser(token)
+  if (error || !user) {
+    res.status(401).json({ error: 'Unauthorized' })
+    return null
+  }
+  return user
 }
 
-async function validateJWT(authHeader) {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) return false
-  const token = authHeader.slice(7)
-  const supabase = getSupabase()
-  const { data, error } = await supabase.auth.getUser(token)
-  return !error && !!data.user
-}
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type')
 
-  if (req.method === 'OPTIONS') return res.status(204).end()
+  if (req.method === 'OPTIONS') return res.status(200).end()
 
-  const supabase = getSupabase()
-
-  // GET — return creators ordered by position ASC
+  // ── GET /api/creators ──────────────────────────────────────────────────────
   if (req.method === 'GET') {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
     const { data, error } = await supabase
       .from('creators')
       .select('*')
       .order('position', { ascending: true })
+
     if (error) return res.status(500).json({ error: error.message })
     return res.status(200).json(data)
   }
 
-  // All write methods require a valid JWT
-  const valid = await validateJWT(req.headers['authorization'])
-  if (!valid) return res.status(401).json({ error: 'Unauthorized' })
-
-  // POST — create new creator
+  // ── POST /api/creators ─────────────────────────────────────────────────────
   if (req.method === 'POST') {
-    const { name, category, photo_url, instagram_url, youtube_url, tiktok_url, position } = req.body ?? {}
+    if (!await requireAuth(req, res)) return
+
+    const { name, category, photo_url, instagram_url, youtube_url, tiktok_url, position } = req.body || {}
 
     if (!name || !category || !photo_url) {
       return res.status(400).json({ error: 'name, category and photo_url are required' })
@@ -49,7 +49,15 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from('creators')
-      .insert({ name, category, photo_url, instagram_url, youtube_url, tiktok_url, position: position ?? 0 })
+      .insert({
+        name,
+        category,
+        photo_url,
+        instagram_url: instagram_url || null,
+        youtube_url:   youtube_url   || null,
+        tiktok_url:    tiktok_url    || null,
+        position:      position ?? 0,
+      })
       .select()
       .single()
 
@@ -57,18 +65,25 @@ export default async function handler(req, res) {
     return res.status(201).json(data)
   }
 
-  // PUT — update existing creator by id
+  // ── PUT /api/creators ──────────────────────────────────────────────────────
   if (req.method === 'PUT') {
-    const { id, ...fields } = req.body ?? {}
+    if (!await requireAuth(req, res)) return
+
+    const { id, name, category, photo_url, instagram_url, youtube_url, tiktok_url, position } = req.body || {}
+
     if (!id) return res.status(400).json({ error: 'id is required' })
 
-    const allowed = ['name', 'category', 'photo_url', 'instagram_url', 'youtube_url', 'tiktok_url', 'position']
-    const updates = Object.fromEntries(
-      Object.entries(fields).filter(([k]) => allowed.includes(k))
-    )
+    const updates = {}
+    if (name        !== undefined) updates.name          = name
+    if (category    !== undefined) updates.category      = category
+    if (photo_url   !== undefined) updates.photo_url     = photo_url
+    if (instagram_url !== undefined) updates.instagram_url = instagram_url || null
+    if (youtube_url   !== undefined) updates.youtube_url   = youtube_url   || null
+    if (tiktok_url    !== undefined) updates.tiktok_url    = tiktok_url    || null
+    if (position    !== undefined) updates.position      = position
 
     if (Object.keys(updates).length === 0) {
-      return res.status(400).json({ error: 'No valid fields provided' })
+      return res.status(400).json({ error: 'No fields to update' })
     }
 
     const { data, error } = await supabase
@@ -79,22 +94,23 @@ export default async function handler(req, res) {
       .single()
 
     if (error) return res.status(500).json({ error: error.message })
-    if (!data) return res.status(404).json({ error: 'Creator not found' })
+    if (!data)  return res.status(404).json({ error: 'Creator not found' })
     return res.status(200).json(data)
   }
 
-  // DELETE — remove creator by id
+  // ── DELETE /api/creators ───────────────────────────────────────────────────
   if (req.method === 'DELETE') {
-    const { id } = req.body ?? {}
+    if (!await requireAuth(req, res)) return
+
+    const { id } = req.body || {}
     if (!id) return res.status(400).json({ error: 'id is required' })
 
-    const { error, count } = await supabase
+    const { error } = await supabase
       .from('creators')
-      .delete({ count: 'exact' })
+      .delete()
       .eq('id', id)
 
     if (error) return res.status(500).json({ error: error.message })
-    if (count === 0) return res.status(404).json({ error: 'Creator not found' })
     return res.status(200).json({ ok: true })
   }
 

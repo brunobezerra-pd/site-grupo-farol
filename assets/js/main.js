@@ -1,374 +1,983 @@
-/**
- * main.js — Orquestra o carregamento de dados do site público.
- * Issues 14-20: renderiza conteúdo dinâmico de cada seção.
- * Issue 21: Promise.all, skeleton loaders, fallbacks individuais por seção.
- */
+// main.js — Public site logic
+// Sections are implemented across ISSUES 15–24.
+// This file owns: STRINGS (i18n prep), content/creators/partners loading, nav wiring.
 
-(function () {
-  'use strict';
+// ── i18n strings (PT-BR) ─────────────────────────────────────────────────────
+// All fixed UI text lives here. Swap this object for another locale in Phase 2.
+const STRINGS = {
+  a11y: {
+    skipToContent: 'Pular para o conteúdo',
+  },
+  nav: {
+    sobre:           'SoBre',
+    talentos:        'TALENTOS',
+    comoTrabalhamos: 'Como TrAbALHAMOS',
+    contatos:        'cONtatos',
+    faleConosco:     'FAle conOsco',
+  },
+  hero: {
+    heading: 'Grupo Farol — A maior agência de creators da América Latina',
+    cta1:    'Conheça Nossos Creators',
+    cta2:    'Fale com o Farol',
+  },
+  about: {
+    heading: 'Sobre o Grupo Farol',
+  },
+  creators: {
+    heading:  'Nossos Creators',
+    callout:  'Mais de 200 Creators',
+    tags: [
+      'Humor & Criatividade',
+      'Gastronomia',
+      'Esportes & Games',
+      'Moda & Beleza',
+      'Lifestyle',
+      'Páginas & Comunidades',
+    ],
+  },
+  talents: {
+    heading:  'Talentos em Destaque',
+    callout:  'Conheça alguns dos creators que fazem parte da nossa curadoria.',
+    subtext:  'Nosso casting reúne talentos que construíram comunidades reais em diferentes territórios da cultura digital.',
+    empty:    'Talentos em breve.',
+    prev:     'Anterior',
+    next:     'Próximo',
+    ctaAll:   'Conheça todos os nossos talentos',
+  },
+  how: {
+    heading:   'Como Trabalhamos',
+    subheading: 'COMO TRABaLHaMOS',
+    title:     'COM MARCAS',
+    subtext:   'Um processo estruturado que combina curadoria humana, visão estratégica e execução impecável.',
+    card1: {
+      stamp: 'EstRaTÉGiA & INTELIGÊNCIA',
+      text:  'Atuamos como uma consultoria criativa que identifica territórios culturais e constrói narrativas onde o talento faz parte da ideia desde o começo. Em vez de fórmulas prontas, <strong>desenvolvemos caminhos estratégicos para que a marca se torne parte orgânica da conversa.</strong>',
+    },
+    card2: {
+      stamp: 'CONEXões & PARCERIAS',
+      text:  '<strong>Articulamos relações verdadeiras entre marcas e talentos</strong>, fugindo da lógica de "mídia de prateleira". Focamos na construção de <strong>parcerias de longo</strong> prazo onde a co-autoria garante a autenticidade do conteúdo.',
+    },
+    card3: {
+      stamp: 'Projetos Especiais',
+      text:  'Desenvolvemos formatos e narrativas proprietárias que <strong>transformam briefings em histórias que permanecem</strong>. Criamos projetos sob medida onde a conexão entre marca e criador é o que <strong>gera impacto real no público.</strong>',
+    },
+    card4: {
+      stamp: 'Excelência no Craft',
+      text:  'Nossa execução une <strong>técnica audiovisual e alma criativa</strong>. Cuidamos de todo o processo, do roteiro à direção, garantindo que o resultado final tenha o <strong>rigor técnico e a sensibilidade narrativa</strong> que o mercado de conteúdo exige.',
+    },
+  },
+  partners: {
+    heading: 'Parceiros',
+    title:   'DE QUEM SOMOS PARCEIROS',
+    empty:   '',
+  },
+  cta: {
+    heading:  'Fale com o Farol',
+    title:    'VAMOS CO-CRIAR JUNTOS?',
+    subtext:  'Quando o objetivo é construir conteúdo que deixa marca, <strong>estamos prontos para criar juntos.</strong>',
+    cta:      'FALE COM O FAROL',
+  },
+  footer: {
+    copyright: '©2026 Grupo Farol. Todos os direitos reservados.',
+    nav: {
+      sobre:            'SoBre',
+      talentos:         'TALENTOS',
+      comoTrabalhamos:  'Como TrAbALHAMOS',
+      contatos:         'cONtatos',
+      faleConosco:      'FAle conOsco',
+    },
+  },
+  errors: {
+    loadFailed: 'Não foi possível carregar o conteúdo.',
+  },
+}
 
-  /* ------------------------------------------------------------------ */
-  /* STRINGS — i18n stub (PT-BR); estrutura pronta para troca de idioma  */
-  /* ------------------------------------------------------------------ */
-  var STRINGS = {
-    skip_to_content:        'Ir para o conteúdo',
-    nav_sobre:              'SoBre',
-    nav_talentos:           'TALENTOS',
-    nav_como:               'Como TrAbALHAMOS',
-    nav_parceiros:          'cONtatos',
-    nav_fale:               'FAle conOsco',
-    hero_fallback_headline: 'A maior agência de creators da América Latina',
-    hero_fallback_cta:      'Conheça nossos Creators',
-    about_somos:            'SoMos o',
-    creators_mais:          'MAIS DE',
-    creators_headline:      '200 CREATORS.',
-    creators_sub:           'Centenas de comunidades.',
-    creators_desc:          'Nosso casting reúne talentos que construíram comunidades reais em diferentes <strong>territórios</strong> da cultura digital.',
-    tag_humor:              'HUMOR & CRIATIVIDADE',
-    tag_gastro:             'GASTRONOMIA',
-    tag_esportes:           'ESPORTES & GAMES',
-    tag_moda:               'MODA & BELEZA',
-    tag_lifestyle:          'LIFESTYLE',
-    tag_paginas:            'PÁGINAS & COMUNIDADES',
-    talents_heading:        'TALENTOS EM DESTAQUE',
-    talents_sub:            'Conheça alguns dos creators que fazem parte da nossa curadoria.',
-    talents_cta:            'CONHEÇA TODOS OS NOSSOS TALENTOS',
-    talents_fallback:       'Talentos em breve.',
-    how_label:              'COMO TRABALHAMOS',
-    how_heading:            'COM MARCAS',
-    how_sub:                'Um processo estruturado que combina curadoria humana, visão estratégica e execução impecável.',
-    partners_heading:       'DE QUEM SOMOS PARCEIROS',
-    partners_empty:         'Em breve nossos parceiros.',
-    cta_label:              'VAMOS CO-CRIAR JUNTOS?',
-    cta_fallback_label:     'VAMOS CO-CRIAR JUNTOS?',
-    cta_fallback_btn:       'FALE COM O FAROL',
-    footer_copy:            '© 2025 Grupo Farol. Todos os direitos reservados.',
-  };
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
 
-  /* ------------------------------------------------------------------ */
-  /* Helpers                                                              */
-  /* ------------------------------------------------------------------ */
+// ── Module state ──────────────────────────────────────────────────────────────
+let _content  = {}
+let _creators = []
+let _partners = []
 
-  function el(id) { return document.getElementById(id); }
+// ── API fetchers ──────────────────────────────────────────────────────────────
+async function fetchContent() {
+  const res = await fetch('/api/content')
+  if (!res.ok) throw new Error('content')
+  _content = await res.json()
+}
 
-  function setText(id, value) {
-    var node = el(id);
-    if (node && value !== undefined && value !== null) node.textContent = value;
+async function fetchCreators() {
+  const res = await fetch('/api/creators')
+  if (!res.ok) throw new Error('creators')
+  _creators = await res.json()
+}
+
+async function fetchPartners() {
+  const res = await fetch('/api/partners')
+  if (!res.ok) throw new Error('partners')
+  _partners = await res.json()
+}
+
+// ── Nav: wire contact link from DB ────────────────────────────────────────────
+function wireContactLinks() {
+  const url = _content.contact_url || ''
+  const links = document.querySelectorAll('#nav-contact-link, #mobile-contact-link')
+  links.forEach(el => {
+    if (url) el.href = url
+  })
+}
+
+// ── Section renderers (stubs — filled by each Issue) ─────────────────────────
+function renderHero() {
+  const skeleton  = document.getElementById('hero-skeleton')
+  const contentEl = document.getElementById('hero-content')
+  if (!skeleton || !contentEl) return
+
+  const headline    = _content.hero_headline    || 'A maior agência de creators da\nAmérica Latina'
+  const subheadline = _content.hero_subheadline || ''
+  const cta1Text    = _content.hero_cta1_text   || 'Conheça Nossos Creators'
+  const cta1Url     = _content.hero_cta1_url    || '#talentos'
+  const cta2Text    = _content.hero_cta2_text   || 'Fale com o Farol'
+  const cta2Url     = _content.hero_cta2_url    || '#contato'
+
+  // Headline: split on newline for two-size display (matches Figma two-line design)
+  // Sizes per breakpoint — Desktop: 144px / 296px | Tablet: 80px / 176px | Mobile: 48px / 96px
+  const parts = headline.split('\n')
+  const line1 = escapeHtml(parts[0] || headline)
+  const line2 = parts.length > 1 ? escapeHtml(parts[1]) : ''
+
+  const headlineHtml = line2
+    ? `<span class="block leading-none text-[48px] md:text-[80px] lg:text-[144px]">${line1}</span>
+       <span class="block leading-none text-[96px] md:text-[176px] lg:text-[296px]">${line2}</span>`
+    : `<span class="block leading-none text-[60px] md:text-[120px] lg:text-[180px]">${line1}</span>`
+
+  contentEl.innerHTML = `
+    <div class="flex items-start relative">
+
+      <!-- ── Desktop anchor: in flex flow, left column (lg+) ──────────────────── -->
+      <!-- SVG viewBox "0 0 1854 1008.01": lighthouse + light beam + sparkle      -->
+      <!-- Offsets: top=-90px (-79.29% of 113px), left=-52px (-45.82% of 113px)  -->
+      <div class="hidden lg:block relative shrink-0 w-[113px] h-[113px]" aria-hidden="true">
+        <div class="absolute" style="top:-90px;left:-52px;width:1854px;height:1008px">
+          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
+        </div>
+      </div>
+
+      <!-- ── Tablet anchor: absolute, out of flex flow (md–lg) ──────────────── -->
+      <!-- Figma: anchor left=0, top=72px within content row                     -->
+      <!-- Illustration: top=-120px, left=-217px → 923×1022px                   -->
+      <div class="hidden md:block lg:hidden absolute w-[113px] h-[113px]"
+           style="left:0;top:72px" aria-hidden="true">
+        <div class="absolute" style="top:-120px;left:-217px;width:923px;height:1022px">
+          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
+        </div>
+      </div>
+
+      <!-- ── Mobile anchor: absolute, smallest size (< md) ──────────────────── -->
+      <!-- Figma: anchor left=30px, top=42px within content row                  -->
+      <!-- Illustration: top=-48px, left=-217px → 637×1000px                    -->
+      <div class="md:hidden absolute w-[113px] h-[113px]"
+           style="left:30px;top:42px" aria-hidden="true">
+        <div class="absolute" style="top:-48px;left:-217px;width:637px;height:1000px">
+          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
+        </div>
+      </div>
+
+      <!-- ── Mobile sparkle: separate element near CTA area (< md only) ──────── -->
+      <!-- Figma: absolute left=358px, top=450px in content row, 80×80px          -->
+      <!-- The embedded sparkle in the combined SVG is clipped off-screen on      -->
+      <!-- mobile, so the sparkle is repositioned here near the CTA buttons.      -->
+      <div class="md:hidden absolute" style="left:358px;top:450px;width:80px;height:80px" aria-hidden="true">
+        <img src="/assets/images/hero-sparkle.svg" alt="" role="presentation" class="block w-full h-full" onerror="this.style.display='none'" />
+      </div>
+
+      <!-- ── Text column: all breakpoints ──────────────────────────────────────── -->
+      <!-- Desktop: right-aligned (lg:items-end, lg:text-right)                    -->
+      <!-- Tablet/Mobile: centered (items-center, text-center)                     -->
+      <div class="relative flex flex-1 min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[32px] lg:pb-[72px]">
+
+        <h1
+          id="hero-heading"
+          class="font-agharti font-semibold uppercase text-farol-text w-full lg:w-[1066px]"
+          style="font-stretch:semi-condensed"
+        >${headlineHtml}</h1>
+
+        <p class="font-pt-serif italic text-farol-text leading-[1.2] text-[18px] lg:text-[32px] w-full">
+          ${escapeHtml(subheadline)}
+        </p>
+
+        <!-- Buttons: stacked on mobile, side-by-side on tablet+; sizes scale at lg -->
+        <div class="flex flex-col md:flex-row gap-[16px] md:gap-[56px] items-center w-full md:w-auto">
+          <a
+            href="${escapeHtml(cta1Url)}"
+            class="inline-flex items-center justify-center bg-farol-burning-red rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[48px] lg:pt-[12px] lg:pb-[18px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[68px] tracking-[0.01em] whitespace-nowrap hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+            style="font-stretch:semi-condensed"
+            data-i18n="hero.cta1"
+          >${escapeHtml(cta1Text)}</a>
+          <a
+            href="${escapeHtml(cta2Url)}"
+            class="inline-flex items-center justify-center bg-farol-blue rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[48px] lg:pt-[12px] lg:pb-[18px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[68px] tracking-[0.01em] whitespace-nowrap hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+            style="font-stretch:semi-condensed"
+            data-i18n="hero.cta2"
+          >${escapeHtml(cta2Text)}</a>
+        </div>
+
+      </div>
+    </div>
+  `
+
+  skeleton.classList.add('hidden')
+  contentEl.classList.remove('hidden')
+}
+function renderAbout() {
+  const skeleton  = document.getElementById('about-skeleton')
+  const contentEl = document.getElementById('about-content')
+  if (!contentEl) return
+
+  const imageUrl  = _content.about_image_url  || ''
+  const aboutText = _content.about_text        || ''
+  const stat1Val  = _content.about_stat1_value || '+200'
+  const stat2Val  = _content.about_stat2_value || '+1000'
+  const stat3Val  = _content.about_stat3_value || '+1000'
+
+  // Image: use uploaded URL or static placeholder
+  const imgSrc = imageUrl
+    ? escapeHtml(imageUrl)
+    : '/assets/images/placeholders/about-placeholder.svg'
+
+  // Body text: split on double-newline into individual paragraphs
+  const bodyHtml = aboutText
+    .split(/\n\n+/)
+    .filter(p => p.trim())
+    .map(p => `<p class="font-poppins italic text-farol-text leading-[1.2] text-[18px]">${escapeHtml(p.trim())}</p>`)
+    .join('\n')
+
+  contentEl.innerHTML = `
+    <div class="px-[30px] md:px-[64px] lg:px-[120px] py-[72px]">
+
+      <!-- Desktop: two-column; Tablet/Mobile: single column -->
+      <div class="flex flex-col lg:flex-row gap-[40px] lg:gap-[105px] lg:h-[800px]">
+
+        <!-- ── Left column: heading + body text ──────────────────────────── -->
+        <div class="flex flex-col flex-1 gap-[32px] lg:gap-0 lg:justify-between">
+
+          <!-- Heading block (relative for separator positioning) -->
+          <div class="relative">
+            <div class="text-farol-text">
+              <p class="font-agharti font-light leading-none text-[48px] md:text-[80px] lg:text-[144px]"
+                 style="font-stretch:semi-condensed">SoMos o</p>
+              <p class="font-agharti font-bold leading-none text-[116px] md:text-[180px] lg:text-[264px]"
+                 style="font-stretch:condensed">GRUPO FAROL</p>
+            </div>
+            <!-- Separator line (right-aligned, vertically centred on the first heading line) -->
+            <div class="absolute h-0 right-0 top-[29px] md:top-[48px] lg:top-[66px] w-[318px] md:w-[481px] lg:w-[580px]"
+                 aria-hidden="true">
+              <div class="absolute" style="inset:-3px 0 0 0">
+                <img src="/assets/images/about-separator.svg" alt="" role="presentation"
+                     class="block w-full h-full" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Body text paragraphs -->
+          <div class="flex flex-col gap-[12px]">
+            ${bodyHtml}
+          </div>
+
+        </div>
+
+        <!-- ── Right column: image + stats cards ─────────────────────────── -->
+        <div class="flex flex-col gap-[32px] w-full lg:w-[713px] lg:h-full lg:justify-between">
+
+          <!-- Image slot: uploaded image or placeholder -->
+          <div class="w-full h-[384px] bg-[#d9d9d9] overflow-hidden">
+            <img src="${imgSrc}"
+                 alt="Sobre o Grupo Farol"
+                 class="w-full h-full object-cover"
+                 onerror="this.onerror=null; this.src='/assets/images/placeholders/about-placeholder.svg';" />
+          </div>
+
+          <!-- Stats cards row (mobile: stacked; tablet+: horizontal row) -->
+          <div class="flex flex-col md:flex-row gap-[32px] md:gap-0 md:justify-between">
+
+            <!-- Card 1 — green: creators no casting -->
+            <div class="bg-farol-green flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[126px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
+              <div class="flex flex-row md:flex-col gap-[18px] md:gap-[25px] items-center justify-center text-farol-text text-center">
+                <p class="font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
+                   style="font-stretch:ultra-expanded">${escapeHtml(stat1Val)}</p>
+                <p class="font-foun leading-none text-[30px] lg:text-[40px]">creators<br>no casting</p>
+              </div>
+            </div>
+
+            <!-- Card 2 — blue: projetos realizados -->
+            <div class="bg-farol-blue flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[150px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
+              <div class="flex flex-row md:flex-col gap-[18px] md:gap-[25px] items-center justify-center text-farol-text text-center">
+                <p class="font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
+                   style="font-stretch:ultra-expanded">${escapeHtml(stat2Val)}</p>
+                <p class="font-foun leading-none text-[30px] lg:text-[40px]">PrOjetos<br>realizados</p>
+              </div>
+            </div>
+
+            <!-- Card 3 — red: clientes e parceiros -->
+            <div class="bg-farol-red flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[150px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
+              <div class="flex flex-row md:flex-col gap-[18px] md:gap-[25px] items-center justify-center text-farol-text text-center">
+                <p class="font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
+                   style="font-stretch:ultra-expanded">${escapeHtml(stat3Val)}</p>
+                <p class="font-foun leading-none text-[30px] lg:text-[40px]">Clientes<br>E parceiros</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `
+
+  if (skeleton) skeleton.classList.add('hidden')
+  contentEl.classList.remove('hidden')
+}
+function renderCreators() {
+  const el = document.getElementById('creators-content')
+  if (!el) return
+
+  // Tags: colour-coded category badges matching Figma exactly.
+  // Desktop: slightly rotated for scattered visual effect.
+  // Tablet: flex-wrap two-column grid.
+  // Mobile: full-width stacked list.
+  const tags = [
+    { label: 'HuMOR &amp; CRIATIVIDADE',  bgColor: '#D96837', rotDeg: -3.94 },
+    { label: 'GASTRONOMIA',               bgColor: '#D1D362', rotDeg: -0.74 },
+    { label: 'ESPORTES &amp; GAMES',      bgColor: '#E5A545', rotDeg:  5.06 },
+    { label: 'MODA &amp; BELEZA',         bgColor: '#B1375B', rotDeg:  5.06 },
+    { label: 'LIFESTYLE',                 bgColor: '#5C8DC9', rotDeg: -6.68 },
+    { label: 'P&Aacute;GINAS &amp; COMUNIDADES', bgColor: '#90C2AC', rotDeg: -2.33 },
+  ]
+
+  // Rotation is applied via data attribute + JS after render so Tailwind
+  // doesn't need to scan dynamically-constructed class names.
+  const tagsHtml = tags.map(t => `
+    <div class="creators-tag-wrap" data-rot="${t.rotDeg}" role="listitem"
+         style="display:flex;align-items:center">
+      <div class="creators-tag-inner"
+           style="background:${t.bgColor};
+                  border-radius:9999px;
+                  padding:4px 32px 14px;
+                  width:100%;
+                  display:flex;align-items:center;justify-content:center">
+        <span class="font-agharti text-farol-text whitespace-nowrap"
+              style="font-variation-settings:'wdth' 50;
+                     font-size:clamp(40px,8vw,80px);
+                     line-height:1">${t.label}</span>
+      </div>
+    </div>
+  `).join('')
+
+  el.innerHTML = `
+    <div class="bg-farol-beige overflow-hidden px-[30px] md:px-[64px] lg:px-[120px] py-[72px]">
+      <div class="flex flex-col gap-[72px] lg:gap-[105px] items-start w-full">
+
+        <!-- ── Heading block ──────────────────────────────────────── -->
+        <div class="flex flex-col gap-[10px] items-start w-full">
+
+          <!-- "MAIS DE" + decorative dashed line -->
+          <div class="flex gap-[10px] items-center w-full" aria-hidden="true">
+            <div class="shrink-0" style="transform:rotate(-1.91deg);display:inline-block">
+              <span class="font-casual-human text-farol-text text-[32px] md:text-[48px] lg:text-[64px]"
+                    style="line-height:0.94"
+                    data-i18n="creators.maisde">MAIS DE</span>
+            </div>
+            <div class="flex-1" style="height:28px;position:relative;overflow:hidden" aria-hidden="true">
+              <svg style="position:absolute;inset:0;width:100%;height:100%"
+                   xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <line x1="0" y1="50%" x2="100%" y2="50%"
+                      stroke="#1A1A1A" stroke-width="2.5" stroke-dasharray="10 6"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Display headline: "200 CREATORS. CENTENAS DE COMUNIDADES." -->
+          <!-- Desktop: side-by-side (different sizes on the same baseline).
+               Tablet/Mobile: stacked. -->
+          <div class="flex flex-col lg:flex-row lg:gap-[10px] lg:items-end w-full text-farol-text">
+            <h2 id="creators-heading"
+                class="font-agharti text-[140px] md:text-[200px] lg:text-[296px]"
+                style="line-height:0.94;font-variation-settings:'wdth' 50"
+                data-i18n="creators.callout200">200 CREATORS.</h2>
+            <span class="font-agharti text-[72px] md:text-[108px] lg:text-[176px] uppercase"
+                  style="line-height:0.94;font-variation-settings:'wdth' 34;font-weight:100"
+                  data-i18n="creators.calloutCentenas">Centenas de comunidades.</span>
+          </div>
+
+        </div>
+
+        <!-- ── Subtext ────────────────────────────────────────────── -->
+        <p class="font-pt-serif italic text-farol-text text-[22px] md:text-[28px] lg:text-[35px] text-center leading-normal w-full"
+           data-i18n="creators.subtext">
+          Nosso casting reúne talentos que construíram comunidades reais em diferentes
+          <strong class="font-pt-serif not-italic font-bold">territ&oacute;rios</strong>
+          da cultura digital.
+        </p>
+
+        <!-- ── Category tags ──────────────────────────────────────── -->
+        <!-- Mobile: single column full-width.
+             Tablet: flex-wrap natural flow (2-col).
+             Desktop: flex-wrap with JS-applied rotations. -->
+        <div id="creators-tags"
+             class="flex flex-col gap-[16px] w-full
+                    md:flex-row md:flex-wrap md:gap-[16px] md:items-start"
+             role="list"
+             aria-label="Categorias de creators">
+          ${tagsHtml}
+        </div>
+
+      </div>
+    </div>
+  `
+
+  // Apply desktop-only rotation after DOM insertion.
+  // On tablet/mobile the rotation hurts the wrapping layout — skip it.
+  function applyTagRotations() {
+    const isDesktop = window.innerWidth >= 1024
+    el.querySelectorAll('.creators-tag-wrap').forEach(wrap => {
+      const inner = wrap.querySelector('.creators-tag-inner')
+      if (!inner) return
+      const deg = parseFloat(wrap.dataset.rot || '0')
+      inner.style.transform = isDesktop ? `rotate(${deg}deg)` : ''
+    })
   }
 
-  function setHref(id, value) {
-    var node = el(id);
-    if (node && value) node.href = value;
+  applyTagRotations()
+
+  // Re-apply on window resize so rotation updates correctly
+  if (!window._creatorsResizeAttached) {
+    window._creatorsResizeAttached = true
+    window.addEventListener('resize', applyTagRotations, { passive: true })
+  }
+}
+function renderHow() {
+  const el = document.getElementById('how-content')
+  if (!el) return
+
+  // ── Card data ─────────────────────────────────────────────────────────────
+  // Stamp colours from Figma exactly:
+  //  card1 (EstRaTÉGiA): #D1D362 green
+  //  card2 (CONEXões):   #D96837 orange
+  //  card3 (Projetos):   #E5A545 yellow
+  //  card4 (Excelência): #90C2AC teal
+  const cards = [
+    {
+      stamp:      'EstRaTÉGiA &amp;<br>INTELIGÊNCIA',
+      stampColor: '#D1D362',
+      text:       'Atuamos como uma consultoria criativa que identifica territórios culturais e constrói narrativas onde o talento faz parte da ideia desde o começo. Em vez de fórmulas prontas, <strong>desenvolvemos caminhos estratégicos para que a marca se torne parte orgânica da conversa.</strong>',
+      i18n:       'how.card1',
+    },
+    {
+      stamp:      'CONEXões &amp;<br>PARCERIAS',
+      stampColor: '#D96837',
+      text:       '<strong>Articulamos relações verdadeiras entre marcas e talentos</strong>, fugindo da lógica de "mídia de prateleira". Focamos na construção de <strong>parcerias de longo</strong> prazo onde a co-autoria garante a autenticidade do conteúdo.',
+      i18n:       'how.card2',
+    },
+    {
+      stamp:      'Projetos<br>Especiais',
+      stampColor: '#E5A545',
+      text:       'Desenvolvemos formatos e narrativas proprietárias que <strong>transformam briefings em histórias que permanecem</strong>. Criamos projetos sob medida onde a conexão entre marca e criador é o que <strong>gera impacto real no público.</strong>',
+      i18n:       'how.card3',
+    },
+    {
+      stamp:      'Excelência<br>no Craft',
+      stampColor: '#90C2AC',
+      text:       'Nossa execução une <strong>técnica audiovisual e alma criativa</strong>. Cuidamos de todo o processo, do roteiro à direção, garantindo que o resultado final tenha o <strong>rigor técnico e a sensibilidade narrativa</strong> que o mercado de conteúdo exige.',
+      i18n:       'how.card4',
+    },
+  ]
+
+  // ── WorkCard HTML builder ─────────────────────────────────────────────────
+  function buildWorkCard(card) {
+    return `
+      <div class="how-card bg-farol-beige border-[4px] border-farol-black rounded-[40px]
+                  relative flex items-start
+                  px-[32px] md:px-[48px] lg:px-[72px]
+                  pt-[48px] md:pt-[56px]
+                  pb-[32px]
+                  w-full"
+           data-i18n="${card.i18n}">
+
+        <!-- Category stamp (top-left, overlapping card border) -->
+        <div class="absolute flex items-center justify-center rounded-full"
+             style="width:120px;height:120px;
+                    background:${card.stampColor};
+                    top:-60px;left:-24px
+                    padding:10px">
+          <span class="font-agharti text-farol-text text-center"
+                style="font-variation-settings:'wdth' 0;
+                       font-size:clamp(18px,1.8vw,32px);
+                       line-height:0.95;
+                       font-weight:700;
+                       transform:rotate(-20deg);
+                       display:block">
+            ${card.stamp}
+          </span>
+        </div>
+
+        <!-- Card body text (Poppins italic per Figma) -->
+        <p class="font-poppins italic text-farol-text leading-normal
+                  text-[18px] md:text-[22px] lg:text-[24px]
+                  mt-[16px] md:mt-[8px]">
+          ${card.text}
+        </p>
+      </div>
+    `
   }
 
-  function show(id) {
-    var node = el(id);
-    if (node) node.classList.remove('hidden');
+  el.innerHTML = `
+    <div class="bg-farol-beige px-[30px] md:px-[64px] lg:px-[120px] py-[72px]">
+      <div class="flex flex-col gap-[32px] lg:gap-[64px] items-start w-full">
+
+        <!-- ── Heading block ──────────────────────────────────────── -->
+        <div class="flex flex-col items-center w-full" style="margin-bottom:24px">
+
+          <!-- "COMO TRABaLHaMOS" — Casual Human, slightly rotated -->
+          <p class="font-casual-human text-farol-text text-center"
+             style="font-size:clamp(28px,4vw,64px);
+                    line-height:1;
+                    transform:rotate(1.51deg);
+                    display:inline-block"
+             data-i18n="how.subheading">COMO TRABaLHaMOS</p>
+
+          <!-- "COM MARCAS" with yellow rectangle behind it -->
+          <div class="relative flex items-center justify-center w-full" style="margin-top:-8px">
+            <!-- Yellow rect behind text (Figma ::before) -->
+            <div class="absolute" aria-hidden="true"
+                 style="background:#E5A545;
+                        height:55%;
+                        bottom:4px;
+                        left:50%;
+                        transform:translateX(-50%) rotate(0.9deg);
+                        width:min(892px,93%)">
+            </div>
+            <h2 id="how-heading-visible"
+                class="font-agharti text-farol-text relative"
+                style="font-size:clamp(80px,18vw,296px);
+                       font-variation-settings:'wdth' 50;
+                       font-weight:700;
+                       line-height:1;
+                       transform:rotate(2.84deg);
+                       white-space:nowrap;"
+                data-i18n="how.title">COM MARCAS</h2>
+          </div>
+
+        </div>
+
+        <!-- ── Subtext ──────────────────────────────────────────────── -->
+        <p class="font-pt-serif italic text-farol-text
+                  text-[20px] md:text-[26px] lg:text-[32px]
+                  text-center leading-normal w-full"
+           data-i18n="how.subtext">
+          Um processo estruturado que combina
+          <strong class="font-pt-serif not-italic font-bold">curadoria humana, visão estratégica e execução impecável.</strong>
+        </p>
+
+        <!-- ── Work cards grid ──────────────────────────────────────── -->
+        <!-- Desktop: 2×2 grid. Tablet: 1-column. Mobile: 1-column. -->
+        <!-- Each card has a stamp that overflows top-left — needs extra top margin -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-[48px] gap-y-[96px]
+                    w-full pt-[80px]"
+             role="list"
+             aria-label="Como trabalhamos com marcas">
+          ${cards.map(c => `<div role="listitem">${buildWorkCard(c)}</div>`).join('')}
+        </div>
+
+      </div>
+    </div>
+  `
+}
+function renderPartners() {
+  const section = document.getElementById('contatos')
+  const el      = document.getElementById('partners-content')
+  if (!el) return
+
+  const partners = _partners || []
+
+  // ── Empty state: hide entire section ──────────────────────────────────
+  if (!partners.length) {
+    if (section) section.hidden = true
+    return
+  }
+  if (section) section.hidden = false
+
+  // ── Logo card ──────────────────────────────────────────────────
+  function buildLogoCard(partner) {
+    const nameEsc   = escapeHtml(partner.name     || '')
+    const logoEsc   = escapeHtml(partner.logo_url || '')
+    const altText   = nameEsc ? `${nameEsc} logo` : 'Partner logo'
+
+    const logoHtml = logoEsc
+      ? `<img src="${logoEsc}"
+              alt="${altText}"
+              class="max-w-full max-h-full object-contain"
+              loading="lazy"
+              onerror="this.style.display='none'" />`
+      : `<div class="w-full h-full bg-[#e0d5c7] rounded-[12px]"></div>`
+
+    return `
+      <div class="bg-white rounded-[16px] overflow-hidden flex items-center justify-center
+                  shrink-0 p-[16px]"
+           style="width:256px;height:144px"
+           role="listitem"
+           title="${nameEsc}">
+        ${logoHtml}
+      </div>
+    `
   }
 
-  function hide(id) {
-    var node = el(id);
-    if (node) node.classList.add('hidden');
+  // ── Skeleton card ─────────────────────────────────────────────
+  function buildSkeleton() {
+    return `
+      <div class="bg-white rounded-[16px] shrink-0 animate-pulse"
+           style="width:256px;height:144px"
+           aria-hidden="true">
+      </div>
+    `
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Fetch                                                                */
-  /* ------------------------------------------------------------------ */
+  el.innerHTML = `
+    <div class="bg-farol-beige px-[30px] md:px-[64px] lg:px-[120px] py-[72px]">
+      <div class="flex flex-col gap-[64px] lg:gap-[96px] items-start w-full">
 
-  function fetchContent() {
-    return fetch('/api/content')
-      .then(function (res) {
-        if (!res.ok) throw new Error('content ' + res.status);
-        return res.json();
-      });
+        <!-- ── Heading row ─────────────────────────────────────── -->
+        <div class="flex items-end gap-[32px] w-full">
+          <h2 class="font-agharti text-farol-text leading-[0.94] shrink-0
+                     text-[56px] md:text-[80px] lg:text-[112px] uppercase"
+              style="font-variation-settings:'wdth' 50"
+              data-i18n="partners.title">DE QUEM SOMOS PARCEIROS</h2>
+          <!-- Horizontal separator line -->
+          <div class="hidden lg:block flex-1 mb-[12px]" aria-hidden="true">
+            <div style="height:3px;background:#1A1A1A;border-radius:2px"></div>
+          </div>
+        </div>
+
+        <!-- ── Logo grid ────────────────────────────────────────── -->
+        <!-- Desktop: flex-wrap up to 5 per row. Tablet & Mobile: 2-column grid -->
+        <div class="w-full">
+
+          <!-- Desktop (≥1024px): flex-wrap centred, up to 5 per row -->
+          <div class="hidden lg:flex flex-wrap gap-[32px] justify-center w-full"
+               role="list"
+               aria-label="Logos de parceiros">
+            ${partners.map(buildLogoCard).join('')}
+          </div>
+
+          <!-- Tablet & Mobile (<1024px): strict 2-column grid -->
+          <div class="grid lg:hidden grid-cols-2 gap-[24px] w-full"
+               role="list"
+               aria-label="Logos de parceiros">
+            ${partners.map(p => {
+              const nameEsc = escapeHtml(p.name || '')
+              const logoEsc = escapeHtml(p.logo_url || '')
+              const altText = nameEsc ? `${nameEsc} logo` : 'Partner logo'
+              const logoHtml = logoEsc
+                ? `<img src="${logoEsc}" alt="${altText}" class="max-w-full max-h-full object-contain" loading="lazy" onerror="this.style.display='none'" />`
+                : `<div class="w-full h-full bg-[#e0d5c7]"></div>`
+              return `
+                <div class="bg-white rounded-[16px] overflow-hidden flex items-center justify-center p-[12px] w-full"
+                     style="height:100px"
+                     role="listitem"
+                     title="${nameEsc}">
+                  ${logoHtml}
+                </div>`
+            }).join('')}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  `
+}
+function renderCta() {
+  const el = document.getElementById('cta-content')
+  if (!el) return
+
+  // Content comes from _content (key→value map from /api/content)
+  // cta_final_image_url is the admin-uploaded image; falls back to grey placeholder
+  const imageUrl  = (_content && _content.cta_final_image_url) || ''
+  const contactUrl = (_content && _content.contact_url) || '#'
+
+  const imageHtml = imageUrl
+    ? `<img src="${escapeHtml(imageUrl)}"
+            alt="Imagem de contexto Grupo Farol"
+            class="w-full h-full object-cover rounded-[24px]"
+            loading="lazy"
+            onerror="this.onerror=null; this.outerHTML='<div class=\\'w-full h-full bg-[#D9D9D9] rounded-[24px]\\'></div>';" />`
+    : `<div class="w-full h-full bg-[#D9D9D9] rounded-[24px]"
+             aria-hidden="true"></div>`
+
+  el.innerHTML = `
+    <div class="bg-farol-beige px-[30px] md:px-[64px] lg:px-[120px] py-[72px]">
+      <div class="flex flex-col lg:flex-row gap-[48px] lg:gap-[96px] items-start w-full">
+
+        <!-- ── Left: CTA green card ──────────────────────────────── -->
+        <div class="bg-[#D1D362] rounded-[48px] flex flex-col gap-[48px] items-center justify-center
+                    px-[40px] pt-[40px] pb-[72px] relative
+                    w-full lg:w-[790px] shrink-0"
+             style="min-height:300px">
+
+          <!-- Title: Casual Human Bold, slightly rotated -->
+          <p class="font-casual-human font-bold text-farol-text text-center leading-[0.94]
+                    text-[40px] md:text-[52px] lg:text-[64px]"
+             style="transform:rotate(1.56deg);display:inline-block"
+             data-i18n="cta.title">VAMOS CO-CRIAR JUNTOS?</p>
+
+          <!-- Horizontal separator -->
+          <div class="w-[240px] md:w-[320px] lg:w-[405px]" aria-hidden="true"
+               style="height:3px;background:#1A1A1A;border-radius:2px"></div>
+
+          <!-- Subtext: PT Serif -->
+          <p class="font-pt-serif text-farol-text text-center leading-[1.4]
+                    text-[20px] md:text-[24px] lg:text-[28px]
+                    max-w-[746px] w-full"
+             data-i18n="cta.subtext">
+            Quando o objetivo é construir conteúdo que deixa marca,
+            <strong>estamos prontos para criar juntos.</strong>
+          </p>
+
+          <!-- CTA button: hangs below the card -->
+          <a href="${escapeHtml(contactUrl)}"
+             id="cta-contact-btn"
+             class="absolute bottom-0 left-1/2 flex items-center gap-[24px]
+                    bg-farol-red rounded-[99px]
+                    px-[48px] pt-[12px] pb-[18px]
+                    no-underline"
+             style="transform:translate(-50%, 50%);"
+             data-i18n="cta.cta">
+            <span class="font-agharti text-farol-text text-center
+                         text-[40px] md:text-[52px] lg:text-[68px]
+                         whitespace-nowrap"
+                  style="font-variation-settings:'wdth' 34;
+                         letter-spacing:0.01em">
+              FALE COM O FAROL
+            </span>
+            <!-- Arrow icon circle -->
+            <span class="flex items-center justify-center rounded-full bg-transparent
+                         border-[4px] border-farol-black flex-shrink-0
+                         w-[56px] h-[56px]"
+                  aria-hidden="true">
+              <svg viewBox="0 0 32 26" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M31.056 14.155c.685-.685.685-1.795 0-2.48L19.894.514c-.685-.685-1.795-.685-2.48 0-.685.685-.685 1.795 0 2.48L27.335 12.915 17.414 22.837c-.685.685-.685 1.795 0 2.48.685.685 1.795.685 2.48 0L31.056 14.155ZM0 12.915v1.754h29.815v-1.754V11.16H0v1.754Z" fill="black"/>
+              </svg>
+            </span>
+          </a>
+        </div>
+
+        <!-- ── Right: image slot ──────────────────────────────────── -->
+        <!-- Desktop: 496×791px. Tablet/Mobile: 16:9 aspect ratio -->
+        <div class="w-full lg:flex-1 overflow-hidden"
+             style="height:clamp(220px,40vw,496px)">
+          ${imageHtml}
+        </div>
+
+      </div>
+    </div>
+  `
+}
+
+function renderFooter() {
+  const el = document.getElementById('footer-content')
+  if (!el) return
+
+  const contactUrl = (_content && _content.contact_url) || '#'
+
+  // Nav links mirror the main nav — same anchors
+  const navLinks = [
+    { href: '#sobre',            label: 'SoBre',            i18n: 'nav.sobre' },
+    { href: '#talentos',         label: 'TALENTOS',         i18n: 'nav.talentos' },
+    { href: '#como-trabalhamos', label: 'Como TrAbALHAMOS', i18n: 'nav.comoTrabalhamos' },
+    { href: '#contatos',         label: 'cONtatos',         i18n: 'nav.contatos' },
+    { href: escapeHtml(contactUrl), label: 'FAle conOsco',  i18n: 'nav.faleConosco' },
+  ]
+
+  const navDesktop = navLinks.map(l =>
+    `<li><a href="${l.href}"
+              class="font-foun text-white text-[24px] leading-normal
+                     hover:opacity-70 transition-opacity whitespace-nowrap
+                     focus:outline-none focus:underline"
+              data-i18n="${l.i18n}">${l.label}</a></li>`
+  ).join('')
+
+  const navMobile = navLinks.map(l =>
+    `<li><a href="${l.href}"
+              class="font-foun text-white text-[28px] leading-normal text-center
+                     hover:opacity-70 transition-opacity
+                     focus:outline-none focus:underline"
+              data-i18n="${l.i18n}">${l.label}</a></li>`
+  ).join('')
+
+  el.innerHTML = `
+    <div class="bg-farol-black px-[30px] md:px-[64px] lg:px-[120px] py-[72px]">
+
+      <!-- Desktop layout: logo+copyright left | nav right -->
+      <div class="hidden lg:flex items-center justify-between w-full">
+
+        <!-- Left: logo + copyright -->
+        <div class="flex flex-col gap-[8px] items-start">
+          <!-- Logo: white HTML reproduction matching mobile-header pattern -->
+          <a href="/" aria-label="Grupo Farol — página inicial" class="no-underline">
+            <div class="flex flex-col leading-none select-none">
+              <span class="flex items-center gap-1.5">
+                <span class="font-agharti font-normal text-[13px] tracking-[0.2em] uppercase text-white">GRUPO</span>
+                <span class="flex items-center gap-1" aria-hidden="true">
+                  <span class="w-[7px] h-[7px] rounded-full bg-farol-burning-red inline-block"></span>
+                  <span class="w-[7px] h-[7px] rounded-full bg-farol-orange inline-block"></span>
+                  <span class="w-[7px] h-[7px] rounded-full bg-farol-teal inline-block"></span>
+                  <span class="w-[7px] h-[7px] rounded-full bg-farol-blue inline-block"></span>
+                </span>
+              </span>
+              <span class="font-agharti font-black text-[42px] uppercase tracking-wider text-white leading-none">FAROL</span>
+            </div>
+          </a>
+          <p class="font-poppins text-white text-[24px] leading-[1.82] whitespace-nowrap"
+             data-i18n="footer.copyright">©2026 Grupo Farol. Todos os direitos reservados.</p>
+        </div>
+
+        <!-- Right: nav links -->
+        <nav aria-label="Links de rodapé">
+          <ul class="flex items-center gap-[32px] list-none m-0 p-0" role="list">
+            ${navDesktop}
+          </ul>
+        </nav>
+
+      </div>
+
+      <!-- Mobile/tablet layout: centered logo, then copyright, then nav stacked -->
+      <div class="flex lg:hidden flex-col items-center gap-[32px] w-full text-center">
+
+        <!-- Logo -->
+        <a href="/" aria-label="Grupo Farol — página inicial" class="no-underline">
+          <div class="flex flex-col items-center leading-none select-none">
+            <span class="flex items-center gap-1.5">
+              <span class="font-agharti font-normal text-[13px] tracking-[0.2em] uppercase text-white">GRUPO</span>
+              <span class="flex items-center gap-1" aria-hidden="true">
+                <span class="w-[7px] h-[7px] rounded-full bg-farol-burning-red inline-block"></span>
+                <span class="w-[7px] h-[7px] rounded-full bg-farol-orange inline-block"></span>
+                <span class="w-[7px] h-[7px] rounded-full bg-farol-teal inline-block"></span>
+                <span class="w-[7px] h-[7px] rounded-full bg-farol-blue inline-block"></span>
+              </span>
+            </span>
+            <span class="font-agharti font-black text-[52px] uppercase tracking-wider text-white leading-none">FAROL</span>
+          </div>
+        </a>
+
+        <!-- Copyright -->
+        <p class="font-poppins text-white text-[18px] leading-[1.6]"
+           data-i18n="footer.copyright">©2026 Grupo Farol. Todos os direitos reservados.</p>
+
+        <!-- Nav -->
+        <nav aria-label="Links de rodapé">
+          <ul class="flex flex-col items-center gap-[16px] list-none m-0 p-0" role="list">
+            ${navMobile}
+          </ul>
+        </nav>
+
+      </div>
+
+    </div>
+  `
+}
+
+// ── Mobile nav: hamburger toggle ─────────────────────────────────────────────
+function initMobileNav() {
+  const btn  = document.getElementById('hamburger-btn')
+  const menu = document.getElementById('mobile-menu')
+  if (!btn || !menu) return
+
+  function openMenu() {
+    menu.classList.remove('hidden')
+    btn.setAttribute('aria-expanded', 'true')
+    btn.setAttribute('aria-label', 'Fechar menu')
+    // Focus first focusable item inside menu
+    const first = menu.querySelector('a, button')
+    if (first) first.focus()
   }
 
-  function fetchCreators() {
-    return fetch('/api/creators')
-      .then(function (res) {
-        if (!res.ok) throw new Error('creators ' + res.status);
-        return res.json();
-      });
+  function closeMenu() {
+    menu.classList.add('hidden')
+    btn.setAttribute('aria-expanded', 'false')
+    btn.setAttribute('aria-label', 'Abrir menu')
   }
 
-  function fetchPartners() {
-    return fetch('/api/partners')
-      .then(function (res) {
-        if (!res.ok) throw new Error('partners ' + res.status);
-        return res.json();
-      });
-  }
+  btn.addEventListener('click', () => {
+    const isOpen = btn.getAttribute('aria-expanded') === 'true'
+    isOpen ? closeMenu() : openMenu()
+  })
 
-  /* ------------------------------------------------------------------ */
-  /* Render — Hero (Issue 14)                                             */
-  /* ------------------------------------------------------------------ */
+  // Close on any menu link click
+  menu.addEventListener('click', e => {
+    if (e.target.closest('a')) closeMenu()
+  })
 
-  function renderHero(data) {
-    hide('hero-skeleton');
-
-    var headline    = data.hero_headline;
-    var subheadline = data.hero_subheadline;
-    var cta1Text    = data.hero_cta1_text;
-    var cta1Url     = data.hero_cta1_url;
-    var cta2Text    = data.hero_cta2_text;
-    var cta2Url     = data.hero_cta2_url;
-
-    if (!headline) {
-      // Dados insuficientes — exibe fallback
-      show('hero-fallback');
-      return;
+  // Close on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+      closeMenu()
+      btn.focus()
     }
+  })
 
-    // Separa em duas partes pelo delimitador "|"
-    // Ex: "A Maior Agência de Creators da|América Latina"
-    var parts = headline.split('|');
-    setText('hero-headline-part1', parts[0].trim());
-    setText('hero-headline-part2', (parts[1] || '').trim());
-
-    setText('hero-subheadline', subheadline || '');
-    setText('hero-cta1-text',   cta1Text    || 'Conheça nossos Creators');
-    setText('hero-cta2-text',   cta2Text    || 'Fale com o Farol');
-    setHref('hero-cta1', cta1Url || '#talentos');
-    setHref('hero-cta2', cta2Url || '#cta-final');
-
-    show('hero-content');
-  }
-
-  function renderHeroFallback() {
-    hide('hero-skeleton');
-    show('hero-fallback');
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* Render — About (Issue 15)                                            */
-  /* ------------------------------------------------------------------ */
-
-  function renderAbout(data) {
-    hide('about-skeleton-left');
-    hide('about-stats-skeleton');
-
-    var text    = data.about_text;
-    var s1v     = data.about_stat1_value;
-    var s1l     = data.about_stat1_label;
-    var s2v     = data.about_stat2_value;
-    var s2l     = data.about_stat2_label;
-    var s3v     = data.about_stat3_value;
-    var s3l     = data.about_stat3_label;
-
-    // Texto institucional
-    if (text) {
-      var textNode = el('about-text');
-      if (textNode) {
-        var cleanText = text.replace(/\r/g, '').trim();
-        var paragraphs = cleanText.split(/\n\s*\n/);
-        textNode.innerHTML = paragraphs.map(function (p) {
-          var html = p.trim()
-                      .replace(/\*\*([\s\S]*?)\*\*/g, '<strong class="font-bold">$1</strong>')
-                      .replace(/\*([\s\S]*?)\*/g, '<em class="italic">$1</em>')
-                      .replace(/\n/g, '<br>');
-          return '<p>' + html + '</p>';
-        }).join('');
-      }
+  // Close on outside click
+  document.addEventListener('click', e => {
+    if (
+      btn.getAttribute('aria-expanded') === 'true' &&
+      !btn.contains(e.target) &&
+      !menu.contains(e.target)
+    ) {
+      closeMenu()
     }
+  })
+}
 
-    // Stats
-    setText('about-stat1-value', s1v || '+200');
-    setText('about-stat1-label', s1l || 'Creators no Casting');
-    setText('about-stat2-value', s2v || '+1000');
-    setText('about-stat2-label', s2l || 'Projetos Realizados');
-    setText('about-stat3-value', s3v || '+1000');
-    setText('about-stat3-label', s3l || 'Clientes e Parceiros');
+// ── Boot ──────────────────────────────────────────────────────────────────────
+async function init() {
+  // Parallel load — ISSUE 24 adds full skeleton/fallback handling
+  const results = await Promise.allSettled([
+    fetchContent(),
+    fetchCreators(),
+    fetchPartners(),
+  ])
 
-    // Imagem da seção (via CMS)
-    var imgUrl = data.about_image_url;
-    var imgNode = el('about-image');
-    if (imgNode) {
-      if (imgUrl) {
-        imgNode.src = imgUrl;
-        imgNode.classList.remove('hidden');
-      } else {
-        imgNode.classList.add('hidden');
-      }
-    }
+  // Log individual failures without crashing the rest of the page
+  results.forEach(r => {
+    if (r.status === 'rejected') console.warn('Fetch failed:', r.reason)
+  })
 
-    show('about-content');
-    show('about-stats');
+  // Wire nav contact link
+  wireContactLinks()
+
+  // Wire hamburger toggle
+  initMobileNav()
+
+  // Render sections (each checks its own data availability)
+  renderHero()
+  renderAbout()
+  renderCreators()
+  
+  // Provide populated creators array to the slider component
+  if (typeof window.renderTalentsSlider === 'function') {
+    window.renderTalentsSlider(_creators)
   }
 
-  function renderAboutFallback() {
-    hide('about-skeleton-left');
-    hide('about-stats-skeleton');
-    
-    // Fallback de texto idêntico ao Figma local
-    var fallbackText = 
-      "<p>A creator economy evoluiu.</p>" +
-      "<p>Creators construíram muito mais do que audiência. Construíram comunidades, linguagem e universos próprios.</p>" +
-      "<p>No Farol, acreditamos no poder da <strong>conexão verdadeira</strong>. Quando creators participam desde o início das ideias, o conteúdo se transforma.</p>" +
-      "<p>Deixa de ser apenas algo que se consome e passa a fazer parte da conversa, da cultura e da história que queremos contar juntos.</p>" +
-      "<p>Porque não estamos aqui só para vender posts. <strong>Estamos aqui para construir histórias.</strong></p>";
-    var textNode = el('about-text');
-    if (textNode) textNode.innerHTML = fallbackText;
+  renderHow()
+  renderPartners()
+  renderCta()
+  renderFooter()
+}
 
-    // Exibe conteúdo com defaults já preenchidos
-    setText('about-stat1-value', '+200');
-    setText('about-stat1-label', 'Creators no Casting');
-    setText('about-stat2-value', '+1000');
-    setText('about-stat2-label', 'Projetos Realizados');
-    setText('about-stat3-value', '+1000');
-    setText('about-stat3-label', 'Clientes e Parceiros');
-    
-    // Oculta a imagem (mostra o box cinza default)
-    var imgNode = el('about-image');
-    if (imgNode) imgNode.classList.add('hidden');
-
-    show('about-content');
-    show('about-stats');
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* Render — Creators Slider (Issue 17)                                  */
-  /* ------------------------------------------------------------------ */
-
-  function renderCreators(creators) {
-    if (typeof window.initSlider === 'function') {
-      window.initSlider(creators);
-    }
-  }
-
-  function renderCreatorsFallback() {
-    hide('slider-skeleton');
-    show('slider-fallback');
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* Render — Partners (Issue 19)                                         */
-  /* ------------------------------------------------------------------ */
-
-  function renderPartners(partners) {
-    hide('partners-skeleton');
-
-    if (!partners || !partners.length) {
-      show('partners-empty');
-      return;
-    }
-
-    var grid = el('partners-grid');
-    if (!grid) return;
-
-    grid.innerHTML = partners.map(function (p) {
-      return '<div class="flex items-center justify-center p-4 bg-white rounded-xl">' +
-        '<img ' +
-          'src="' + p.logo_url + '" ' +
-          'alt="' + p.name + ' logo" ' +
-          'class="max-h-12 max-w-full object-contain" ' +
-          'loading="lazy" ' +
-        '/>' +
-      '</div>';
-    }).join('');
-
-    show('partners-grid');
-  }
-
-  function renderPartnersFallback() {
-    hide('partners-skeleton');
-    // Seção simplesmente não aparece — sem parceiros cadastrados ainda
-    var section = document.getElementById('parceiros');
-    if (section) section.classList.add('hidden');
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* Render — Final CTA (Issue 20)                                        */
-  /* ------------------------------------------------------------------ */
-
-  function renderCta(data) {
-    hide('cta-skeleton');
-
-    var text    = data.cta_final_text;
-    var subtext = data.cta_final_subtext;
-    var btnText = data.cta_final_btn_text;
-    var btnUrl  = data.cta_final_btn_url;
-    var contact = data.contact_url;
-
-    if (!text && !btnText) {
-      show('cta-fallback');
-      return;
-    }
-
-    setText('cta-text',    text    || '');
-    
-    // Suporte a formatação basica e markdown no subtexto
-    var ctaNode = el('cta-subtext');
-    if (ctaNode) {
-      if (subtext) {
-        var cleanCta = subtext.replace(/\r/g, '').trim();
-        var ctaParagraphs = cleanCta.split(/\n\s*\n/);
-        ctaNode.innerHTML = ctaParagraphs.map(function (p) {
-           var html = p.trim()
-                       .replace(/\*\*([\s\S]*?)\*\*/g, '<strong class="font-bold">$1</strong>')
-                       .replace(/\*([\s\S]*?)\*/g, '<em class="italic">$1</em>')
-                       .replace(/\n/g, '<br>');
-           return '<p>' + html + '</p>';
-        }).join('');
-      } else {
-        ctaNode.innerHTML = '';
-      }
-    }
-    setText('cta-btn-text', btnText || 'FALE COM O FAROL');
-    setHref('cta-btn', btnUrl || contact || '#');
-
-    // Atualiza link de contato no footer também
-    if (contact) setHref('footer-contact-link', contact);
-
-    show('cta-content');
-  }
-
-  function renderCtaFallback() {
-    hide('cta-skeleton');
-    show('cta-fallback');
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* Inicialização — Promise.all                                          */
-  /* ------------------------------------------------------------------ */
-
-  function init() {
-    var contentPromise  = fetchContent().catch(function (err) { console.warn('[farol] content:', err); return null; });
-    var creatorsPromise = fetchCreators().catch(function (err) { console.warn('[farol] creators:', err); return null; });
-    var partnersPromise = fetchPartners().catch(function (err) { console.warn('[farol] partners:', err); return null; });
-
-    Promise.all([contentPromise, creatorsPromise, partnersPromise])
-      .then(function (results) {
-        var content  = results[0];
-        var creators = results[1];
-        var partners = results[2];
-
-        // Hero
-        if (content) renderHero(content);
-        else         renderHeroFallback();
-
-        // About
-        if (content) renderAbout(content);
-        else         renderAboutFallback();
-
-        // CTA Final
-        if (content) renderCta(content);
-        else         renderCtaFallback();
-
-        // Creators slider
-        if (creators && creators.length) renderCreators(creators);
-        else                              renderCreatorsFallback();
-
-        // Partners
-        if (partners !== null) renderPartners(partners);
-        else                    renderPartnersFallback();
-      });
-  }
-
-  // Aguarda o DOM estar pronto
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-})();
+document.addEventListener('DOMContentLoaded', init)

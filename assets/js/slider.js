@@ -1,175 +1,397 @@
-/**
- * slider.js — Slider de talentos em destaque
- * Issue 17: 3 cards no desktop, 1 no mobile, loop infinito, swipe touch, arrows
- */
+// slider.js — Featured Talents slider (ISSUES 19 & 20)
+//
+// Desktop  (≥1024px): 3 cards visible, prev/next arrows, no looping.
+// Tablet+Mobile (<1024px): 1 card + peek of next, touch swipe + arrows below.
+//
+// Data source: GET /api/creators — ordered by `position` ascending.
+// All fixed text uses data-i18n attributes per SPEC i18n convention.
 
-(function () {
-  'use strict';
+// ── Figma design tokens for this section ─────────────────────────────────────
+// Section bg:   #B9323B  (farol-burning-red)   — rounded-[48px] desktop, square tablet/mobile
+// Card bg:      #FFF2E7  (farol-beige)
+// Card padding: 12px
+// Image height: 390px
+// Name text:    Agharti wdth:34, 96px desktop / 72px tablet / 56px mobile
+// Social text:  PT Serif italic, ~19px
+// Stamp:        150px circle, Agharti wdth:0, 48px, rotated -20°, top:-63px, right:~24px
+// Arrow btn:    88px circle, bg farol-beige, shadow, positioned at slider mid-height
+//               Desktop: hanging outside slider edges (left:-40px / right:0)
+// CTA button:   Agharti wdth:34 ~68px, bg farol-burning-red, shadow, hanging below section
 
-  /**
-   * Retorna quantos cards são visíveis dado o viewport atual.
-   */
+// ── Category stamp colours (match Figma badge colours per category name) ──────
+const STAMP_COLORS = {
+  'humor & criatividade': '#D96837',
+  'gastronomia':          '#D1D362',
+  'esportes & games':     '#E5A545',
+  'moda & beleza':        '#B1375B',
+  'lifestyle':            '#5C8DC9',
+  'páginas & comunidades':'#90C2AC',
+  // Fallback for unknown categories
+  default:                '#D96837',
+}
+
+function stampColor(category) {
+  const key = (category || '').toLowerCase().trim()
+  return STAMP_COLORS[key] || STAMP_COLORS.default
+}
+
+// ── Handle extractor (username from full URL or raw handle) ───────────────────
+function toHandle(url) {
+  if (!url) return ''
+  // If it's a plain handle (no slash), return as-is with @
+  const stripped = url.replace(/^@/, '').trim()
+  // If it looks like a URL, extract the last path segment
+  try {
+    const u = new URL(url)
+    const parts = u.pathname.replace(/^\//, '').replace(/\/$/, '').split('/')
+    const handle = parts[parts.length - 1]
+    return handle ? `@${handle}` : ''
+  } catch {
+    return stripped ? `@${stripped}` : ''
+  }
+}
+
+// ── escapeHtml (re-used from main.js scope — but slider.js is standalone) ─────
+function _escHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
+
+// ── Card renderer ─────────────────────────────────────────────────────────────
+function buildCard(creator) {
+  const name        = _escHtml(creator.name     || '')
+  const photoUrl    = creator.photo_url         || ''
+  const category    = creator.category          || ''
+  const instaHandle = toHandle(creator.instagram_url || '')
+  const tiktokHandle= toHandle(creator.tiktok_url    || '')
+  const color       = stampColor(category)
+  const categoryEsc = _escHtml(category)
+
+  const photoHtml = photoUrl
+    ? `<img src="${_escHtml(photoUrl)}" alt="${name}" class="absolute inset-0 w-full h-full object-cover rounded-[16px]" loading="lazy" onerror="this.onerror=null; this.outerHTML='<div class=\\'absolute inset-0 bg-[#d9d9d9] rounded-[16px]\\'></div>';" />`
+    : `<div class="absolute inset-0 bg-[#d9d9d9] rounded-[16px]"></div>`
+
+  const instaHtml = instaHandle ? `
+    <div class="flex items-center gap-[8px] min-w-0">
+      <img src="/assets/images/icon-instagram.svg" alt="Instagram" class="shrink-0" style="width:32px;height:32px" />
+      <span class="font-pt-serif italic text-farol-text leading-normal text-[16px] md:text-[18px] lg:text-[19px] truncate">${_escHtml(instaHandle)}</span>
+    </div>` : ''
+
+  const tiktokHtml = tiktokHandle ? `
+    <div class="flex items-center gap-[8px] min-w-0">
+      <img src="/assets/images/icon-tiktok.svg" alt="TikTok" class="shrink-0" style="width:32px;height:32px" />
+      <span class="font-pt-serif italic text-farol-text leading-normal text-[16px] md:text-[18px] lg:text-[19px] truncate">${_escHtml(tiktokHandle)}</span>
+    </div>` : ''
+
+  return `
+    <div class="talent-card bg-farol-beige rounded-[24px] p-[12px] flex flex-col gap-[23px] relative shrink-0"
+         style="width:calc(100vw - 100px);
+                max-width:497px;
+                min-width:280px">
+
+      <!-- Card image area -->
+      <div class="relative rounded-[16px] overflow-hidden" style="height:320px" aria-hidden="true">
+        ${photoHtml}
+        <!-- Decorative stripe (matching Figma CardImageDecoration) -->
+        <div class="absolute left-[24px] top-[24px] flex flex-col gap-[4px]" aria-hidden="true">
+          ${Array.from({length:7}, () => '<div style="width:10px;height:24px;background:#1A1A1A;opacity:0.15;border-radius:2px"></div>').join('')}
+        </div>
+      </div>
+
+      <!-- Card body -->
+      <div class="flex flex-col gap-[16px] pb-[32px] px-[16px] md:px-[24px]">
+        <p class="font-agharti text-farol-text leading-none text-[56px] md:text-[72px] lg:text-[96px] w-full"
+           style="font-variation-settings:'wdth' 34">${name}</p>
+        <div class="flex items-center gap-[16px] flex-wrap">
+          ${instaHtml}
+          ${tiktokHtml}
+        </div>
+      </div>
+
+      <!-- Category stamp (top-right corner, overlapping card edge) -->
+      ${category ? `
+      <div class="absolute flex items-center justify-center rounded-full"
+           style="width:120px;height:120px;background:${color};top:-50px;right:16px;padding:10px">
+        <span class="font-agharti text-farol-text text-center leading-tight"
+              style="font-variation-settings:'wdth' 0;font-size:clamp(20px,2vw,32px);
+                     font-weight:700;transform:rotate(-20deg);display:block">
+          ${categoryEsc}
+        </span>
+      </div>` : ''}
+    </div>
+  `
+}
+
+// ── Skeleton card ─────────────────────────────────────────────────────────────
+function buildSkeletonCard() {
+  return `
+    <div class="talent-card bg-farol-beige rounded-[24px] p-[12px] flex flex-col gap-[23px] relative shrink-0
+                w-full md:w-[420px] lg:w-[497px] animate-pulse">
+      <div class="rounded-[16px] bg-[#e0d5c7]" style="height:320px"></div>
+      <div class="flex flex-col gap-[12px] pb-[32px] px-[24px]">
+        <div class="h-[56px] bg-[#e0d5c7] rounded-[8px] w-3/4"></div>
+        <div class="h-[24px] bg-[#e0d5c7] rounded-[8px] w-1/2"></div>
+      </div>
+    </div>
+  `
+}
+
+// ── Main slider controller ────────────────────────────────────────────────────
+window.renderTalentsSlider = function(creatorsData) {
+  const container = document.getElementById('talents-slider')
+  if (!container) return
+
+  // State
+  let creators      = creatorsData || []
+  let currentIndex  = 0     // index of first visible card
+
+  // ── How many cards visible depends on breakpoint ──────────────────────────
   function visibleCount() {
-    if (window.innerWidth >= 1024) return 3; // lg
-    if (window.innerWidth >= 768) return 2;  // md
-    return 1;                                // mobile
+    return window.innerWidth >= 1024 ? 3 : 1
   }
 
-  /**
-   * Renderiza o HTML de um card de creator.
-   * @param {Object} creator
-   */
-  function renderCard(creator) {
-    var socials = '';
+  // ── Render: full section shell ────────────────────────────────────────────
+  function renderShell(isLoading) {
+    container.innerHTML = `
+      <div class="bg-farol-burning-red overflow-visible px-[30px] md:px-[64px] lg:px-[120px] py-[72px] lg:rounded-[48px] relative"
+           style="margin-top:0">
 
-    if (creator.instagram_url) {
-      socials += '<a href="' + creator.instagram_url + '" target="_blank" rel="noopener noreferrer" ' +
-        'aria-label="Instagram de ' + creator.name + '" ' +
-        'class="inline-flex items-center gap-1 font-serif italic text-sm text-brand-black hover:text-brand-red transition-colors">' +
-        '<svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
-          '<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>' +
-        '</svg>' +
-        '@' + creator.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '') +
-        '</a>';
-    }
+        <!-- ── Section heading ─────────────────────────────────────── -->
+        <div class="flex flex-col items-start relative w-full" style="margin-bottom:72px">
 
-    if (creator.youtube_url) {
-      socials += '<a href="' + creator.youtube_url + '" target="_blank" rel="noopener noreferrer" ' +
-        'aria-label="YouTube de ' + creator.name + '" ' +
-        'class="inline-flex items-center gap-1 font-serif italic text-sm text-brand-black hover:text-brand-red transition-colors">' +
-        '<svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
-          '<path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>' +
-        '</svg>' +
-        'YouTube' +
-        '</a>';
-    }
+          <!-- Big title: "TAlENtoS Em DestaQUeS" -->
+          <!-- Desktop: single line overflowing. Tablet/Mobile: wraps -->
+          <p class="font-agharti text-farol-text leading-none w-full overflow-visible"
+             style="font-size:clamp(80px,16vw,304px);
+                    font-variation-settings:'wdth' 50;
+                    white-space:nowrap"
+             data-i18n="talents.heading">TAlENtoS Em DestaQUeS</p>
 
-    if (creator.tiktok_url) {
-      socials += '<a href="' + creator.tiktok_url + '" target="_blank" rel="noopener noreferrer" ' +
-        'aria-label="TikTok de ' + creator.name + '" ' +
-        'class="inline-flex items-center gap-1 font-serif italic text-sm text-brand-black hover:text-brand-red transition-colors">' +
-        '<svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
-          '<path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.27 8.27 0 0 0 4.84 1.55V6.79a4.85 4.85 0 0 1-1.07-.1z"/>' +
-        '</svg>' +
-        '@' + creator.tiktok_url.replace(/.*tiktok\.com\/@/, '').replace(/\/$/, '') +
-        '</a>';
-    }
+          <!-- Beige badge "Conheça alguns dos creators..." -->
+          <div class="mt-[-8px] md:mt-[-12px] lg:mt-[-16px] self-end"
+               style="transform:rotate(0.9deg)">
+            <div class="bg-farol-beige rounded-[99px] px-[32px] pt-[2px] pb-[10px] flex items-center">
+              <span class="font-casual-human font-bold text-farol-text leading-normal whitespace-nowrap"
+                    style="font-size:clamp(18px,2.5vw,40px)"
+                    data-i18n="talents.callout">Conheça alguns dos creators que fazem parte da nossa curadoria.</span>
+            </div>
+          </div>
 
-    return '<div class="slider-card" role="group" aria-label="Foto de ' + creator.name + '">' +
-      '<div class="slider-card-inner">' +
-        '<img ' +
-          'src="' + creator.photo_url + '" ' +
-          'alt="Foto de ' + creator.name + '" ' +
-          'class="slider-card-photo" ' +
-          'loading="lazy" ' +
-        '/>' +
-        '<div class="slider-card-info">' +
-          '<p class="font-agharti font-black text-2xl md:text-3xl uppercase text-brand-black leading-none mb-3">' + creator.name + '</p>' +
-          (creator.category ? '<p class="font-casual text-sm text-brand-black/70 mb-3">' + creator.category + '</p>' : '') +
-          (socials ? '<div class="flex flex-wrap gap-3">' + socials + '</div>' : '') +
-        '</div>' +
-      '</div>' +
-    '</div>';
+        </div>
+
+        <!-- ── Subtext ──────────────────────────────────────────────── -->
+        <p class="font-pt-serif italic text-farol-text text-[22px] md:text-[28px] lg:text-[35px]
+                  text-center leading-normal w-full mb-[72px]"
+           data-i18n="talents.subtext">
+          Nosso casting reúne talentos que construíram comunidades reais em diferentes
+          <strong class="font-pt-serif not-italic font-bold">territórios</strong>
+          da cultura digital.
+        </p>
+
+        <!-- ── Slider viewport + arrows ─────────────────────────────── -->
+        <div class="relative" style="padding-bottom:72px">
+
+          <!-- Cards viewport -->
+          <!-- On mobile/tablet: overflow shows a peek of the next card.
+               The section has overflow-visible up to the parent's edge. -->
+          <div id="slider-viewport"
+               class="w-full"
+               style="overflow:hidden">
+            <div id="slider-track"
+                 class="flex gap-[24px] transition-transform duration-300 ease-in-out"
+                 style="will-change:transform">
+              ${
+                !creators.length
+                  ? `<div class="w-full flex items-center justify-center p-8 bg-farol-beige rounded-3xl min-h-[300px]">
+                       <p class="font-agharti text-farol-text text-3xl md:text-5xl uppercase" style="font-variation-settings:'wdth' 34">Talentos em breve</p>
+                     </div>`
+                  : creators.map(buildCard).join('')
+               }
+            </div>
+          </div>
+
+          <!-- ── Left arrow ────────────────────────────────────────── -->
+          <button id="slider-prev"
+                  class="absolute -translate-y-1/2 flex items-center justify-center bg-farol-beige rounded-full
+                         shadow-[0px_6px_6px_0px_rgba(0,0,0,0.25)]
+                         transition-opacity duration-200
+                         focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+                  style="width:88px;height:88px;top:50%;left:-44px;z-index:10"
+                  aria-label="Anterior"
+                  data-i18n-aria="talents.prev"
+                  type="button">
+            <!-- Left arrow SVG -->
+            <svg width="40" height="28" viewBox="0 0 40 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M38 14H2M2 14L14 2M2 14L14 26" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <!-- ── Right arrow ───────────────────────────────────────── -->
+          <button id="slider-next"
+                  class="absolute -translate-y-1/2 flex items-center justify-center bg-farol-beige rounded-full
+                         shadow-[0px_6px_6px_0px_rgba(0,0,0,0.25)]
+                         transition-opacity duration-200
+                         focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+                  style="width:88px;height:88px;top:50%;right:-44px;z-index:10"
+                  aria-label="Próximo"
+                  data-i18n-aria="talents.next"
+                  type="button">
+            <!-- Right arrow SVG -->
+            <svg width="40" height="28" viewBox="0 0 40 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M2 14H38M38 14L26 2M38 14L26 26" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+        </div>
+
+        <!-- ── CTA button — hangs below section bottom edge ─────────── -->
+        <div class="flex justify-center" style="margin-top:-36px;position:relative;z-index:5">
+          <a href="#talentos"
+             id="talents-cta"
+             class="inline-flex items-center gap-[16px] bg-farol-burning-red rounded-[99px]
+                    px-[32px] md:px-[48px] pt-[12px] pb-[18px]
+                    shadow-[0px_4px_16px_0px_rgba(0,0,0,0.3)]
+                    hover:opacity-90 transition-opacity
+                    focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+             data-i18n="talents.ctaAll">
+            <span class="font-agharti text-farol-text leading-none whitespace-nowrap"
+                  style="font-size:clamp(32px,4vw,68px);font-variation-settings:'wdth' 34">
+              CONHEÇA TODOS OS NOSSOS TALENTOS
+            </span>
+            <!-- Circle arrow icon -->
+            <span class="flex items-center justify-center bg-farol-beige rounded-full border-[3px] border-farol-black
+                         shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] shrink-0"
+                  style="width:56px;height:56px" aria-hidden="true">
+              <svg width="24" height="18" viewBox="0 0 40 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 14H38M38 14L26 2M38 14L26 26" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </a>
+        </div>
+
+      </div>
+    `
   }
 
-  /**
-   * Inicializa o slider com o array de creators.
-   * Chamado por main.js após carregar os dados.
-   * @param {Array} creators
-   */
-  window.initSlider = function (creators) {
-    var track    = document.getElementById('slider-track');
-    var viewport = document.getElementById('slider-viewport');
-    var skeleton = document.getElementById('slider-skeleton');
-    var fallback = document.getElementById('slider-fallback');
-    var btnPrev  = document.getElementById('slider-prev');
-    var btnNext  = document.getElementById('slider-next');
+  // ── Update arrow states and track position ────────────────────────────────
+  function updateSlider() {
+    const track    = document.getElementById('slider-track')
+    const btnPrev  = document.getElementById('slider-prev')
+    const btnNext  = document.getElementById('slider-next')
+    if (!track || !btnPrev || !btnNext) return
 
-    if (!track || !creators || !creators.length) {
-      if (skeleton) skeleton.classList.add('hidden');
-      if (fallback) fallback.classList.remove('hidden');
-      return;
+    const visible  = visibleCount()
+    const total    = creators.length
+    const maxIndex = Math.max(0, total - visible)
+
+    // Clamp current index
+    if (currentIndex < 0)        currentIndex = 0
+    if (currentIndex > maxIndex) currentIndex = maxIndex
+
+    // Calculate card width (first card element)
+    const firstCard = track.querySelector('.talent-card')
+    const cardW     = firstCard ? firstCard.offsetWidth : 0
+    const gap       = 24
+    const offset    = currentIndex * (cardW + gap)
+
+    track.style.transform = `translateX(-${offset}px)`
+
+    // Arrow disabled states
+    const atStart = currentIndex === 0
+    const atEnd   = currentIndex >= maxIndex
+
+    btnPrev.disabled = atStart
+    btnPrev.setAttribute('aria-disabled', String(atStart))
+    btnPrev.style.opacity = atStart ? '0.35' : '1'
+    btnPrev.style.cursor  = atStart ? 'default' : 'pointer'
+
+    btnNext.disabled = atEnd
+    btnNext.setAttribute('aria-disabled', String(atEnd))
+    btnNext.style.opacity = atEnd ? '0.35' : '1'
+    btnNext.style.cursor  = atEnd ? 'default' : 'pointer'
+  }
+
+  // ── Wire arrow click handlers ─────────────────────────────────────────────
+  function wireArrows() {
+    const btnPrev = document.getElementById('slider-prev')
+    const btnNext = document.getElementById('slider-next')
+
+    if (btnPrev) {
+      btnPrev.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          currentIndex--
+          updateSlider()
+        }
+      })
     }
 
-    // Esconde skeleton, exibe slider
-    if (skeleton) skeleton.classList.add('hidden');
-    viewport.classList.remove('hidden');
-
-    var count  = creators.length;
-    var index  = 0; // índice lógico atual (0 .. count-1)
-    var vis    = visibleCount();
-    var moving = false;
-
-    // Renderiza todos os cards
-    track.innerHTML = creators.map(renderCard).join('');
-
-    // Ajusta a largura do card conforme visíveis
-    function updateCardWidths() {
-      vis = visibleCount();
-      var pct = (100 / vis) + '%';
-      track.querySelectorAll('.slider-card').forEach(function (card) {
-        card.style.width = pct;
-      });
+    if (btnNext) {
+      btnNext.addEventListener('click', () => {
+        const visible  = visibleCount()
+        const maxIndex = Math.max(0, creators.length - visible)
+        if (currentIndex < maxIndex) {
+          currentIndex++
+          updateSlider()
+        }
+      })
     }
+  }
 
-    // Move para um índice sem animação (para loop)
-    function jumpTo(i) {
-      track.style.transition = 'none';
-      track.style.transform  = 'translateX(-' + (i * (100 / vis)) + '%)';
-    }
+  // ── Touch swipe support (ISSUE 20 — Tablet/Mobile) ────────────────────────
+  function wireSwipe() {
+    const viewport = document.getElementById('slider-viewport')
+    if (!viewport) return
 
-    // Move com animação
-    function slideTo(i) {
-      track.style.transition = 'transform 0.4s ease-in-out';
-      track.style.transform  = 'translateX(-' + (i * (100 / vis)) + '%)';
-    }
+    let startX = 0
+    let startY = 0
 
-    function goNext() {
-      if (moving) return;
-      moving = true;
-      index = (index + 1) % count;
-      slideTo(index);
-      setTimeout(function () { moving = false; }, 450);
-    }
+    viewport.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
+    }, { passive: true })
 
-    function goPrev() {
-      if (moving) return;
-      moving = true;
-      index = (index - 1 + count) % count;
-      slideTo(index);
-      setTimeout(function () { moving = false; }, 450);
-    }
+    viewport.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX
+      const dy = e.changedTouches[0].clientY - startY
 
-    updateCardWidths();
-    jumpTo(0);
+      // Only register as horizontal swipe if dx is dominant
+      if (Math.abs(dx) < Math.abs(dy)) return
+      if (Math.abs(dx) < 40) return          // min swipe distance
 
-    btnNext.addEventListener('click', goNext);
-    btnPrev.addEventListener('click', goPrev);
+      const visible  = visibleCount()
+      const maxIndex = Math.max(0, creators.length - visible)
 
-    // Touch / swipe
-    var touchStartX = 0;
-    var touchEndX   = 0;
-
-    viewport.addEventListener('touchstart', function (e) {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    viewport.addEventListener('touchend', function (e) {
-      touchEndX = e.changedTouches[0].screenX;
-      var diff = touchStartX - touchEndX;
-      if (Math.abs(diff) > 40) {
-        diff > 0 ? goNext() : goPrev();
+      if (dx < 0 && currentIndex < maxIndex) {
+        // Swipe left → next
+        currentIndex++
+        updateSlider()
+      } else if (dx > 0 && currentIndex > 0) {
+        // Swipe right → prev
+        currentIndex--
+        updateSlider()
       }
-    }, { passive: true });
+    }, { passive: true })
+  }
 
-    // Recalcula em resize
-    var resizeTimer;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        updateCardWidths();
-        jumpTo(index);
-      }, 150);
-    });
-  };
-})();
+  // ── Re-calculate on window resize ─────────────────────────────────────────
+  let _resizeTimer
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer)
+    _resizeTimer = setTimeout(() => {
+      // Reset to start if current index is out of new bounds
+      const visible  = visibleCount()
+      const maxIndex = Math.max(0, creators.length - visible)
+      if (currentIndex > maxIndex) currentIndex = maxIndex
+      updateSlider()
+    }, 100)
+  }, { passive: true })
+  // Initial setup
+  renderShell()
+  wireArrows()
+  wireSwipe()
+  requestAnimationFrame(() => updateSlider())
+}

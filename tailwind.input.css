@@ -4,145 +4,46 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Agharti — arquivos individuais por peso e largura */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
 
-/* ── Família padrão (normal width) ────────────────────────── */
-@font-face {
-  font-family: 'Agharti';
-  src: url('/assets/fonts/Agharti-Thin.woff2') format('woff2');
-  font-weight: 100;
-  font-stretch: normal;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Agharti';
-  src: url('/assets/fonts/Agharti-Light.woff2') format('woff2');
-  font-weight: 300;
-  font-stretch: normal;
-  font-style: normal;
-  font-display: swap;
-}
+/* ── Agharti (individual weight files — no variable font available) ── */
 @font-face {
   font-family: 'Agharti';
   src: url('/assets/fonts/Agharti-Regular.woff2') format('woff2');
   font-weight: 400;
-  font-stretch: normal;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
   font-family: 'Agharti';
   src: url('/assets/fonts/Agharti-Demi.woff2') format('woff2');
   font-weight: 600;
-  font-stretch: normal;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
   font-family: 'Agharti';
   src: url('/assets/fonts/Agharti-Bold.woff2') format('woff2');
   font-weight: 700;
-  font-stretch: normal;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
   font-family: 'Agharti';
   src: url('/assets/fonts/Agharti-Black.woff2') format('woff2');
   font-weight: 900;
-  font-stretch: normal;
   font-style: normal;
   font-display: swap;
 }
 
-/* ── Agharti Demi Semi-Condensed — headlines e botões (Figma) ─ */
-@font-face {
-  font-family: 'Agharti DSC';
-  src: url('/assets/fonts/Agharti-DemiSemiCondensed.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ── Agharti Bold Semi-Condensed — nomes de creators ─────── */
-@font-face {
-  font-family: 'Agharti BSC';
-  src: url('/assets/fonts/Agharti-BoldSemiCondensed.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ── Agharti Bold Condensed — seção Sobre "GRUPO FAROL" ─── */
-@font-face {
-  font-family: 'Agharti BC';
-  src: url('/assets/fonts/Agharti-BoldCondensed.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ── Agharti Light Semi-Condensed — "SoMos o" ────────────── */
-@font-face {
-  font-family: 'Agharti LSC';
-  src: url('/assets/fonts/Agharti-LightSemiCondensed.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ── Agharti Thin Semi-Condensed — "Centenas de comunidades" */
-@font-face {
-  font-family: 'Agharti TSC';
-  src: url('/assets/fonts/Agharti-ThinSemiCondensed.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ── Agharti Black Ultra-Wide — números de stats ─────────── */
-@font-face {
-  font-family: 'Agharti BUW';
-  src: url('/assets/fonts/Agharti-BlackUltraWide.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ── Agharti Demi Ultra-Condensed — tags de creators ─────── */
-@font-face {
-  font-family: 'Agharti DUC';
-  src: url('/assets/fonts/Agharti-DemiUltraCondensed.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ── Família Condensed genérica (fallback) ────────────────── */
-@font-face {
-  font-family: 'Agharti Condensed';
-  src: url('/assets/fonts/Agharti-BlackCondensed.woff2') format('woff2');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Agharti Condensed';
-  src: url('/assets/fonts/Agharti-BoldCondensed.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Agharti Condensed';
-  src: url('/assets/fonts/Agharti-RegularCondensed.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Casual Human */
+/* ── Casual Human ── */
 @font-face {
   font-family: 'Casual Human';
   src: url('/assets/fonts/CasualHuman.woff2') format('woff2');
@@ -159,7 +60,7 @@
   font-display: swap;
 }
 
-/* Foun */
+/* ── Foun ── */
 @font-face {
   font-family: 'Foun';
   src: url('/assets/fonts/Foun.woff2') format('woff2');
@@ -168,57 +69,88 @@
   font-display: swap;
 }
 
-@layer components {
-  /* Skip link — visível apenas ao receber foco via teclado */
+/* ── Skip link (accessible, visible on keyboard focus) ── */
+@layer utilities {
   .skip-link {
-    @apply absolute -left-full top-4 z-50 px-4 py-2 bg-brand-red text-white rounded font-sans font-semibold text-sm;
-    @apply focus:left-4 focus:outline-none focus:ring-2 focus:ring-brand-black;
-    transition: left 0.15s ease;
+    @apply absolute -top-full left-4 z-50 bg-white text-black px-4 py-2 text-sm font-medium;
+  }
+  .skip-link:focus {
+    @apply top-4;
+  }
+}
+
+/* ── Admin panel components ── */
+@layer components {
+
+  /* Tab button */
+  .admin-tab {
+    @apply relative px-5 py-3.5 text-sm font-medium text-gray-500
+           hover:text-gray-800 focus:outline-none
+           border-b-2 border-transparent transition-colors whitespace-nowrap;
+  }
+  .admin-tab[aria-selected="true"] {
+    @apply text-farol-burning-red border-farol-burning-red;
   }
 
-  /* Nav mobile — colapsado por padrão, animado via JS com max-height */
-  .nav-mobile {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out, opacity 0.25s ease-in-out;
-  }
-  .nav-mobile.is-open {
-    opacity: 1;
+  /* Section title inside tab panel */
+  .admin-section-title {
+    @apply text-lg font-semibold text-gray-800 mb-6;
   }
 
-  /* Tags de categoria dos creators — tamanho e peso fiéis ao Figma */
-  .creator-tag {
-    @apply inline-block font-agharti text-brand-black
-           text-base md:text-xl lg:text-2xl
-           px-6 py-2 md:px-8 md:py-3 rounded-full border-2 border-brand-black
-           select-none cursor-default;
-    transform: rotate(var(--tag-rotate, -2deg));
+  /* Save button */
+  .admin-save-btn {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-farol-burning-red text-white
+           text-sm font-semibold rounded-lg hover:opacity-90 focus:outline-none
+           focus:ring-2 focus:ring-farol-burning-red focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed transition;
   }
 
-  /* Blocos "Como Trabalhamos" */
-  .how-block {
-    @apply border-t-2 border-brand-black pt-6;
+  /* Generic form field wrapper */
+  .admin-field label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+  .admin-field input,
+  .admin-field textarea,
+  .admin-field select {
+    @apply w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white
+           focus:outline-none focus:ring-2 focus:ring-farol-burning-red focus:border-transparent transition;
+  }
+  .admin-field textarea {
+    @apply resize-y min-h-[100px];
   }
 
-  /* Slider — cards */
-  .slider-card {
-    @apply flex-none px-2 md:px-3;
-    width: 85%;
+  /* Image slot */
+  .image-slot {
+    @apply border border-gray-200 rounded-xl p-4 bg-white;
   }
-  @media (min-width: 768px) {
-    .slider-card { width: 50%; }
+  .image-slot-label {
+    @apply block text-sm font-medium text-gray-700 mb-3;
   }
-  @media (min-width: 1024px) {
-    .slider-card { width: 33.333%; }
+  .image-slot-preview {
+    @apply w-full h-48 rounded-lg overflow-hidden bg-gray-100 mb-3 flex items-center justify-center;
   }
-  .slider-card-inner {
-    @apply rounded-2xl overflow-hidden relative bg-brand-beige;
+  .image-slot-preview img {
+    @apply w-full h-full object-cover;
   }
-  .slider-card-photo {
-    @apply w-full aspect-[3/4] object-cover block;
+  .image-slot-placeholder {
+    @apply flex flex-col items-center justify-center text-gray-400 gap-2;
   }
-  .slider-card-info {
-    @apply p-4 md:p-5 bg-brand-beige;
+  .image-slot-actions {
+    @apply flex items-center gap-3;
   }
+  .image-slot-upload-label {
+    @apply cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold
+           border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50
+           focus-within:ring-2 focus-within:ring-farol-burning-red transition;
+  }
+  .image-slot-remove-btn {
+    @apply inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold
+           border border-red-200 rounded-lg text-red-600 hover:bg-red-50
+           focus:outline-none focus:ring-2 focus:ring-red-400 transition;
+  }
+
+  /* Toast */
+  .toast-success { @apply bg-green-600; }
+  .toast-error   { @apply bg-red-600; }
+  .toast-visible { @apply opacity-100 translate-y-0 pointer-events-auto; }
 }

@@ -1,11 +1,9 @@
-// Exposes only the public Supabase keys to the front-end.
-// SUPABASE_SERVICE_ROLE_KEY and CRON_SECRET are never included here.
-export default function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
+// Returns the public Supabase config needed by the browser.
+// SUPABASE_ANON_KEY is safe to expose — RLS protects all data.
+module.exports = function handler(req, res) {
   res.setHeader('Cache-Control', 'public, max-age=3600')
-
-  return res.status(200).json({
-    supabaseUrl: process.env.SUPABASE_URL,
+  res.status(200).json({
+    supabaseUrl:     process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
   })
 }
