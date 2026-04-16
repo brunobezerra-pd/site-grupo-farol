@@ -102,6 +102,12 @@ function escapeHtml(str) {
     .replace(/'/g, '&#x27;')
 }
 
+// md() — renders inline Markdown safely (bold, italic, etc.) without block-level wrappers.
+// Use inside existing styled elements (h1, p, span). Never renders <p> or block tags.
+function md(str) {
+  return DOMPurify.sanitize(marked.parseInline(str || ''))
+}
+
 // ── Module state ──────────────────────────────────────────────────────────────
 let _content  = {}
 let _creators = []
@@ -142,24 +148,18 @@ function renderHero() {
   if (!skeleton || !contentEl) return
 
   // Figma Desktop: line1 text-[144px] leading-none, line2 text-[296px] leading-none
-  const line1       = escapeHtml(_content.hero_headline_line1 || 'A maior agência de creators da')
-  const line2       = escapeHtml(_content.hero_headline_line2 || 'América Latina')
-  const subheadline = _content.hero_subheadline || 'No Farol, conectamos marcas a um ecossistema exclusivo com os principais talentos |para co-criar histórias que engajam e inspiram.'
+  const line1       = md(_content.hero_headline_line1 || 'A maior agência de creators da')
+  const line2       = md(_content.hero_headline_line2 || 'América Latina')
+  const subheadline = _content.hero_subheadline || 'No Farol, conectamos marcas a um ecossistema exclusivo com os principais talentos **para co-criar histórias que engajam e inspiram.**'
   const cta1Text    = _content.hero_cta1_text   || 'ConHEçA NoSsos CReAToRs'
   const cta1Url     = _content.hero_cta1_url    || '#talentos'
   const cta2Text    = _content.hero_cta2_text   || 'FaLE com O FARoL'
   const cta2Url     = _content.hero_cta2_url    || '#contato'
 
-  const headlineHtml = `<span class="block leading-none text-[48px] md:text-[80px] lg:text-[144px]">${line1}</span><span class="block leading-none text-[88px] md:text-[176px] lg:text-[296px]">${line2}</span>`
+  const headlineHtml = `<span class="block leading-none text-[48px] md:text-[80px] lg:text-[112px] lg:whitespace-nowrap">${line1}</span><span class="block leading-none text-[88px] md:text-[176px] lg:text-[296px]">${line2}</span>`
 
-  // Subheadline: split on | to separate regular italic from bold italic
-  const subParts   = subheadline.split('|')
-  const subRegular = escapeHtml(subParts[0] || subheadline)
-  const subBold    = subParts.length > 1 ? escapeHtml(subParts[1]) : ''
-
-  const subheadlineHtml = subBold
-    ? `<span class="font-pt-serif italic leading-[1.2]">${subRegular}</span><span class="font-pt-serif italic font-bold leading-[1.2]">${subBold}</span>`
-    : `<span class="font-pt-serif italic leading-[1.2]">${subRegular}</span>`
+  // Subheadline: inline Markdown (supports **bold**, *italic*, etc.)
+  const subheadlineHtml = md(subheadline)
 
   contentEl.innerHTML = `
     <!-- Beam: absolutely positioned relative to section (section is position:relative).
@@ -184,10 +184,11 @@ function renderHero() {
         </div>
       </div>
 
-      <!-- Text column: flex-[1_0_0] items-end gap-[32px] pb-[72px] (Figma exact) -->
-      <div class="relative z-20 flex flex-[1_0_0] flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[72px]">
+      <!-- Text column: outer column has no gap — spacing is controlled per-element via mt.
+           Figma 2185:832: flex flex-col items-end, no gap. -->
+      <div class="relative z-20 flex flex-[1_0_0] flex-col items-center lg:items-end text-farol-text text-center lg:text-right">
 
-        <!-- Headline container: h-[474px] w-[1066px] flex-col justify-center (Figma exact) -->
+        <!-- Headline container: h-[474px] w-[1066px] flex-col justify-center (Figma 2185:458) -->
         <div class="flex flex-col justify-center h-auto lg:h-[474px] w-full lg:w-[1066px]">
           <h1
             id="hero-heading"
@@ -196,15 +197,15 @@ function renderHero() {
           >${headlineHtml}</h1>
         </div>
 
-        <!-- Subheadline: min-w-full w-[min-content] text-[32px] leading-[1.2] (Figma exact) -->
-        <div class="min-w-full lg:w-[min-content]">
-          <p class="text-farol-text text-[18px] md:text-[24px] lg:text-[32px]">
+        <!-- Subheadline: mt matches Figma 2185:841 gap-[32px] (headline→subheadline). -->
+        <div class="min-w-full lg:w-[min-content] mt-[16px] lg:mt-[32px]">
+          <p class="font-pt-serif italic leading-[1.2] text-farol-text text-[18px] md:text-[24px] lg:text-[32px]">
             ${subheadlineHtml}
           </p>
         </div>
 
-        <!-- Buttons: gap-[56px] items-center (Figma exact) -->
-        <div class="flex flex-col md:flex-row items-center gap-[16px] md:gap-[56px]">
+        <!-- Buttons: mt matches Figma 2185:841 pb-[72px] (subheadline→buttons). -->
+        <div class="flex flex-col md:flex-row items-center gap-[16px] md:gap-[56px] mt-[32px] lg:mt-[72px]">
           <a
             href="${escapeHtml(cta1Url)}"
             class="inline-flex items-center justify-center bg-farol-burning-red rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[43.102px] lg:pt-[10.776px] lg:pb-[16.163px] font-agharti uppercase text-farol-text text-[36px] lg:text-[60.94px] leading-none lg:tracking-[0.6094px] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
@@ -242,11 +243,11 @@ function renderAbout() {
     ? escapeHtml(imageUrl)
     : '/assets/images/placeholders/about-placeholder.svg'
 
-  // Body text: split on double-newline into individual paragraphs
+  // Body text: split on double-newline into individual paragraphs; inline Markdown per paragraph
   const bodyHtml = aboutText
     .split(/\n\n+/)
     .filter(p => p.trim())
-    .map(p => `<p class="font-poppins italic text-farol-text leading-[1.2] text-[18px]">${escapeHtml(p.trim())}</p>`)
+    .map(p => `<p class="font-poppins italic text-farol-text leading-[1.2] text-[18px]">${md(p.trim())}</p>`)
     .join('\n')
 
   contentEl.innerHTML = `
@@ -698,8 +699,12 @@ function renderCta() {
 
   // Content comes from _content (key→value map from /api/content)
   // cta_final_image_url is the admin-uploaded image; falls back to grey placeholder
-  const imageUrl  = (_content && _content.cta_final_image_url) || ''
+  const imageUrl   = (_content && _content.cta_final_image_url) || ''
   const contactUrl = (_content && _content.contact_url) || '#'
+  const ctaTitle   = (_content && _content.cta_final_text)    || 'VAMOS CO-CRIAR JUNTOS?'
+  const ctaSubtext = (_content && _content.cta_final_subtext) || 'Quando o objetivo é construir conteúdo que deixa marca, **estamos prontos para criar juntos.**'
+  const ctaBtnText = (_content && _content.cta_final_btn_text) || 'FALE COM O FAROL'
+  const ctaBtnUrl  = (_content && _content.cta_final_btn_url)  || contactUrl
 
   const imageHtml = imageUrl
     ? `<img src="${escapeHtml(imageUrl)}"
@@ -724,7 +729,7 @@ function renderCta() {
           <p class="font-casual-human font-bold text-farol-text text-center leading-[0.94]
                     text-[40px] md:text-[52px] lg:text-[64px]"
              style="transform:rotate(1.56deg);display:inline-block"
-             data-i18n="cta.title">VAMOS CO-CRIAR JUNTOS?</p>
+             data-i18n="cta.title">${md(ctaTitle)}</p>
 
           <!-- Horizontal separator -->
           <div class="w-[240px] md:w-[320px] lg:w-[405px]" aria-hidden="true"
@@ -734,13 +739,10 @@ function renderCta() {
           <p class="font-pt-serif text-farol-text text-center leading-[1.4]
                     text-[20px] md:text-[24px] lg:text-[28px]
                     max-w-[746px] w-full"
-             data-i18n="cta.subtext">
-            Quando o objetivo é construir conteúdo que deixa marca,
-            <strong>estamos prontos para criar juntos.</strong>
-          </p>
+             data-i18n="cta.subtext">${md(ctaSubtext)}</p>
 
           <!-- CTA button: hangs below the card -->
-          <a href="${escapeHtml(contactUrl)}"
+          <a href="${escapeHtml(ctaBtnUrl)}"
              id="cta-contact-btn"
              class="absolute bottom-0 left-1/2 flex items-center gap-[24px]
                     bg-farol-red rounded-[99px]
@@ -753,7 +755,7 @@ function renderCta() {
                          whitespace-nowrap"
                   style="font-variation-settings:'wdth' 34;
                          letter-spacing:0.01em">
-              FALE COM O FAROL
+              ${escapeHtml(ctaBtnText)}
             </span>
             <!-- Arrow icon circle -->
             <span class="flex items-center justify-center rounded-full bg-transparent

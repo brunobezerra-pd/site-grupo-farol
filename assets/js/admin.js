@@ -96,13 +96,17 @@ function activateTab(tabId) {
 
 // ── Field builder helpers ───────────────────────────────────────────────────
 
-function fieldHTML({ id, label, type = 'text', value = '', placeholder = '' }) {
+function fieldHTML({ id, label, type = 'text', value = '', placeholder = '', markdown = false }) {
   const val = (value ?? '').replace(/"/g, '&quot;')
-  if (type === 'textarea') {
+  const hint = markdown
+    ? `<p class="mt-1 text-xs text-gray-400">Use <code>**negrito**</code>, <code>*itálico*</code> e <code>__sublinhado__</code> para formatar o texto.</p>`
+    : ''
+  if (type === 'textarea' || markdown) {
     return `
       <div class="admin-field">
         <label for="${id}">${label}</label>
         <textarea id="${id}" placeholder="${placeholder}">${val}</textarea>
+        ${hint}
       </div>`
   }
   return `
@@ -283,11 +287,11 @@ function initHeroTab() {
     <fieldset class="border border-gray-200 rounded-xl p-4">
       <legend class="text-sm font-semibold text-gray-700 px-1">Título principal</legend>
       <div class="space-y-4 mt-2">
-        ${fieldHTML({ id: 'hero_headline_line1', label: 'Linha 1 — texto menor (144px)', value: c.hero_headline_line1, placeholder: 'Ex: A maior agência de creators da' })}
-        ${fieldHTML({ id: 'hero_headline_line2', label: 'Linha 2 — texto maior (296px)', value: c.hero_headline_line2, placeholder: 'Ex: América Latina' })}
+        ${fieldHTML({ id: 'hero_headline_line1', label: 'Linha 1 — texto menor (144px)', value: c.hero_headline_line1, placeholder: 'Ex: A maior agência de creators da', markdown: true })}
+        ${fieldHTML({ id: 'hero_headline_line2', label: 'Linha 2 — texto maior (296px)', value: c.hero_headline_line2, placeholder: 'Ex: América Latina', markdown: true })}
       </div>
     </fieldset>
-    ${fieldHTML({ id: 'hero_subheadline',  label: 'Subtítulo',          value: c.hero_subheadline,  placeholder: 'Ex: Conectamos marcas e talentos...' })}
+    ${fieldHTML({ id: 'hero_subheadline',  label: 'Subtítulo',          value: c.hero_subheadline,  placeholder: 'Ex: Conectamos marcas e talentos...', markdown: true })}
     <fieldset class="border border-gray-200 rounded-xl p-4">
       <legend class="text-sm font-semibold text-gray-700 px-1">CTA 1</legend>
       <div class="space-y-4 mt-2">
@@ -328,7 +332,7 @@ function initHeroTab() {
 function initAboutTab() {
   const c = _contentData
   document.getElementById('about-fields').innerHTML = `
-    ${fieldHTML({ id: 'about_text', label: 'Texto institucional', type: 'textarea', value: c.about_text, placeholder: 'Escreva o texto da seção Sobre...' })}
+    ${fieldHTML({ id: 'about_text', label: 'Texto institucional', value: c.about_text, placeholder: 'Escreva o texto da seção Sobre...', markdown: true })}
     <fieldset class="border border-gray-200 rounded-xl p-4">
       <legend class="text-sm font-semibold text-gray-700 px-1">Números em destaque</legend>
       <div class="space-y-5 mt-2">
@@ -474,7 +478,7 @@ function initTalentsTab() {
 
         <div class="space-y-4">
           ${fieldHTML({ id: 'creator-name',     label: 'Nome *',     placeholder: 'Ex: Ana Lima' })}
-          ${fieldHTML({ id: 'creator-category', label: 'Categoria *', placeholder: 'Ex: Gastronomia' })}
+          ${fieldHTML({ id: 'creator-category', label: 'Categoria *', placeholder: 'Ex: Gastronomia', markdown: true })}
           ${fieldHTML({ id: 'creator-position', label: 'Posição (ordem de exibição) *', type: 'number', placeholder: '1' })}
           ${fieldHTML({ id: 'creator-instagram', label: 'Instagram URL', placeholder: 'https://instagram.com/...' })}
           ${fieldHTML({ id: 'creator-youtube',   label: 'YouTube URL',   placeholder: 'https://youtube.com/...' })}
@@ -835,8 +839,8 @@ function initPartnersTab() {
 function initCtaTab() {
   const c = _contentData
   document.getElementById('cta-fields').innerHTML = `
-    ${fieldHTML({ id: 'cta_final_text',     label: 'Título',            value: c.cta_final_text,     placeholder: 'Ex: Pronto para criar algo incrível?' })}
-    ${fieldHTML({ id: 'cta_final_subtext',  label: 'Subtítulo',         value: c.cta_final_subtext,  placeholder: 'Ex: Fale com o nosso time...' })}
+    ${fieldHTML({ id: 'cta_final_text',     label: 'Título',            value: c.cta_final_text,     placeholder: 'Ex: Pronto para criar algo incrível?', markdown: true })}
+    ${fieldHTML({ id: 'cta_final_subtext',  label: 'Subtítulo',         value: c.cta_final_subtext,  placeholder: 'Ex: Fale com o nosso time...', markdown: true })}
     <fieldset class="border border-gray-200 rounded-xl p-4">
       <legend class="text-sm font-semibold text-gray-700 px-1">Botão</legend>
       <div class="space-y-4 mt-2">
