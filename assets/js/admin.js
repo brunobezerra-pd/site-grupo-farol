@@ -280,7 +280,13 @@ function createImageSlot({ containerId, contentKey, label, bucket = 'content' })
 function initHeroTab() {
   const c = _contentData
   document.getElementById('hero-fields').innerHTML = `
-    ${fieldHTML({ id: 'hero_headline',     label: 'Título principal',   value: c.hero_headline,     placeholder: 'Ex: Somos a maior agência de creators da América Latina' })}
+    <fieldset class="border border-gray-200 rounded-xl p-4">
+      <legend class="text-sm font-semibold text-gray-700 px-1">Título principal</legend>
+      <div class="space-y-4 mt-2">
+        ${fieldHTML({ id: 'hero_headline_line1', label: 'Linha 1 — texto menor (144px)', value: c.hero_headline_line1, placeholder: 'Ex: A maior agência de creators da' })}
+        ${fieldHTML({ id: 'hero_headline_line2', label: 'Linha 2 — texto maior (296px)', value: c.hero_headline_line2, placeholder: 'Ex: América Latina' })}
+      </div>
+    </fieldset>
     ${fieldHTML({ id: 'hero_subheadline',  label: 'Subtítulo',          value: c.hero_subheadline,  placeholder: 'Ex: Conectamos marcas e talentos...' })}
     <fieldset class="border border-gray-200 rounded-xl p-4">
       <legend class="text-sm font-semibold text-gray-700 px-1">CTA 1</legend>
@@ -301,12 +307,13 @@ function initHeroTab() {
     setSaving('save-hero', true)
     try {
       await saveContent({
-        hero_headline:    val('hero_headline'),
-        hero_subheadline: val('hero_subheadline'),
-        hero_cta1_text:   val('hero_cta1_text'),
-        hero_cta1_url:    val('hero_cta1_url'),
-        hero_cta2_text:   val('hero_cta2_text'),
-        hero_cta2_url:    val('hero_cta2_url'),
+        hero_headline_line1: val('hero_headline_line1'),
+        hero_headline_line2: val('hero_headline_line2'),
+        hero_subheadline:    val('hero_subheadline'),
+        hero_cta1_text:      val('hero_cta1_text'),
+        hero_cta1_url:       val('hero_cta1_url'),
+        hero_cta2_text:      val('hero_cta2_text'),
+        hero_cta2_url:       val('hero_cta2_url'),
       })
       showToast('Hero salvo com sucesso.')
     } catch (err) {

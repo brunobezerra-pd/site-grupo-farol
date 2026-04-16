@@ -1,3 +1,9 @@
 <svg preserveAspectRatio="none" width="100%" height="100%" viewBox="0 0 1742 808" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M0 290.876L1742 0V808C1742 808 16.862 290.876 0 290.876Z" fill="#FFF2E7"/>
+  <!-- Apex at (0, 296): window-center y within the 808px beam height.
+       Figma: beam vector y=-90 from anchor div, height=808.
+       Window center in SVG viewBox y=296 → section y=72+296=368px.
+       Top-right (1742,0) and bottom-right (1742,808) are the base of the triangle.
+       preserveAspectRatio="none" lets the container stretch horizontally;
+       apex stays pinned at x=0 (the container left edge). -->
+  <path d="M0 296L1742 0V808Z" fill="#FFF2E7"/>
 </svg>

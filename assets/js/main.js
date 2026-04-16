@@ -141,22 +141,16 @@ function renderHero() {
   const contentEl = document.getElementById('hero-content')
   if (!skeleton || !contentEl) return
 
-  const headline    = _content.hero_headline    || 'A maior agência de creators da\nAmérica Latina'
+  // Figma Desktop: line1 text-[144px] leading-none, line2 text-[296px] leading-none
+  const line1       = escapeHtml(_content.hero_headline_line1 || 'A maior agência de creators da')
+  const line2       = escapeHtml(_content.hero_headline_line2 || 'América Latina')
   const subheadline = _content.hero_subheadline || 'No Farol, conectamos marcas a um ecossistema exclusivo com os principais talentos |para co-criar histórias que engajam e inspiram.'
   const cta1Text    = _content.hero_cta1_text   || 'ConHEçA NoSsos CReAToRs'
   const cta1Url     = _content.hero_cta1_url    || '#talentos'
   const cta2Text    = _content.hero_cta2_text   || 'FaLE com O FARoL'
   const cta2Url     = _content.hero_cta2_url    || '#contato'
 
-  // Headline: split on \n — line1 text-[144px], line2 text-[296px] (Figma Desktop exact)
-  const parts = headline.split('\n')
-  const line1 = escapeHtml(parts[0] || headline)
-  const line2 = parts.length > 1 ? escapeHtml(parts[1]) : ''
-
-  const headlineHtml = line2
-    ? `<span class="block leading-none text-[48px] md:text-[80px] lg:text-[144px]">${line1}</span>
-       <span class="block leading-none text-[88px] md:text-[176px] lg:text-[296px]">${line2}</span>`
-    : `<span class="block leading-none text-[60px] md:text-[100px] lg:text-[144px]">${line1}</span>`
+  const headlineHtml = `<span class="block leading-none text-[48px] md:text-[80px] lg:text-[144px]">${line1}</span><span class="block leading-none text-[88px] md:text-[176px] lg:text-[296px]">${line2}</span>`
 
   // Subheadline: split on | to separate regular italic from bold italic
   const subParts   = subheadline.split('|')
@@ -168,11 +162,15 @@ function renderHero() {
     : `<span class="font-pt-serif italic leading-[1.2]">${subRegular}</span>`
 
   contentEl.innerHTML = `
-    <!-- Beam: absolutely positioned relative to the section.
-         left:180px = section px-[120px] minus anchor left:-52px plus viewBox beam apex x=112.
-         right:0 stretches to the viewport right edge at any screen width.
-         The SVG uses preserveAspectRatio="none" so the triangle scales horizontally to fill. -->
-    <div class="hidden lg:block absolute z-0" style="top:72px;left:180px;right:0;height:1008px" aria-hidden="true">
+    <!-- Beam: absolutely positioned relative to section (section is position:relative).
+         Figma node 2185:840 — x=60 from anchor div, y=-90 from anchor div, w=1742, h=808.
+         left:  section-px(120) + beam-x-from-anchor(60) = 180px.
+         top:   anchor-div-section-y(162) + beam-y-from-anchor(-90) = 72px.
+         height: 808px matches Figma exactly (1008 is the full illustration height, not the beam).
+         right:0 stretches to viewport right edge at any screen width.
+         SVG apex is at (0, 296) = window-center y within the 808px container:
+           image-top-in-section(72) + window-center-in-SVG(296) = section-y 368px = window center. -->
+    <div class="hidden lg:block absolute z-0" style="top:72px;left:180px;right:0;height:808px" aria-hidden="true">
       <img src="/assets/images/hero-beam.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
     </div>
 
