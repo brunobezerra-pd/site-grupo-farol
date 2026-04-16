@@ -171,14 +171,14 @@ function renderHero() {
     <div class="flex items-start w-full">
 
       <!-- Lighthouse anchor: Figma container h-[113px] w-[113px], image overflows via absolute positioning -->
-      <div class="hidden lg:block relative shrink-0 h-[113px] w-[113px]" aria-hidden="true">
+      <div class="hidden lg:block relative z-0 shrink-0 h-[113px] w-[113px]" aria-hidden="true">
         <div class="absolute" style="top:-90px;left:-52px;width:1854px;height:1008px">
           <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
         </div>
       </div>
 
       <!-- Text column: flex-[1_0_0] items-end gap-[32px] pb-[72px] (Figma exact) -->
-      <div class="flex flex-[1_0_0] flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[72px]">
+      <div class="relative z-20 flex flex-[1_0_0] flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[72px]">
 
         <!-- Headline container: h-[474px] w-[1066px] flex-col justify-center (Figma exact) -->
         <div class="flex flex-col justify-center h-auto lg:h-[474px] w-full lg:w-[1066px]">
