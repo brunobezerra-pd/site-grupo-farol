@@ -269,7 +269,7 @@ function renderAbout() {
                  style="font-stretch:semi-condensed">SoMos o</p>
               <!-- Separator: hidden on mobile/tablet, flex-1 on desktop -->
               <div class="hidden lg:flex flex-1 items-center" aria-hidden="true"
-                   style="height:28px;position:relative;overflow:hidden;min-width:0">
+                   style="height:3px;position:relative;overflow:hidden;min-width:0">
                 <img src="/assets/images/about-separator.svg" alt="" role="presentation"
                      class="block w-full h-full" style="min-width:0" />
               </div>
