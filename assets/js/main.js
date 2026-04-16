@@ -251,10 +251,22 @@ function renderAbout() {
     .join('\n')
 
   contentEl.innerHTML = `
+    <style>
+      /* About section — proportional desktop scaling.
+         All vw values derived from Figma 1920px layout.
+         Mobile/tablet (< 1024px) are unaffected — Tailwind classes handle those. */
+      @media (min-width: 1024px) {
+        .about-row      { gap: clamp(48px, 5.47vw, 105px) !important; }
+        .about-right-col{ width: clamp(380px, 37.14vw, 713px) !important; flex-shrink: 0 !important; }
+        .about-stat-card{ height: clamp(160px, 14.01vw, 269px) !important; }
+        .about-stat-num { font-size: clamp(44px, 4.58vw, 88px) !important; }
+        .about-stat-label{ font-size: clamp(20px, 2.08vw, 40px) !important; }
+      }
+    </style>
     <div class="px-[30px] md:px-[64px] lg:px-[120px] py-[72px]">
 
       <!-- Desktop: two-column; Tablet/Mobile: single column -->
-      <div class="flex flex-col lg:flex-row gap-[40px] lg:gap-[105px] lg:h-[800px]">
+      <div class="about-row flex flex-col lg:flex-row gap-[40px] lg:gap-[105px] lg:h-[800px]">
 
         <!-- ── Left column: heading + body text ──────────────────────────── -->
         <div class="flex flex-col flex-1 gap-[32px] lg:gap-0 lg:justify-between">
@@ -293,7 +305,7 @@ function renderAbout() {
         </div>
 
         <!-- ── Right column: image + stats cards ─────────────────────────── -->
-        <div class="flex flex-col gap-[32px] w-full lg:w-[713px] lg:h-full lg:justify-between">
+        <div class="about-right-col flex flex-col gap-[32px] w-full lg:h-full lg:justify-between">
 
           <!-- Image slot: uploaded image or placeholder -->
           <div class="w-full h-[384px] bg-[#d9d9d9] overflow-hidden">
@@ -307,29 +319,29 @@ function renderAbout() {
           <div class="flex flex-col md:flex-row gap-[32px] md:gap-0 md:justify-between">
 
             <!-- Card 1 — green: creators no casting -->
-            <div class="bg-farol-green flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[126px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
+            <div class="about-stat-card bg-farol-green flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[126px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
               <div class="flex flex-row md:flex-col gap-[18px] md:gap-[25px] items-center justify-center text-farol-text text-center">
-                <p class="font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
+                <p class="about-stat-num font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
                    style="font-stretch:ultra-expanded">${escapeHtml(stat1Val)}</p>
-                <p class="font-foun leading-none text-[30px] lg:text-[40px]">creators<br>no casting</p>
+                <p class="about-stat-label font-foun leading-none text-[30px] lg:text-[40px]">creators<br>no casting</p>
               </div>
             </div>
 
             <!-- Card 2 — blue: projetos realizados -->
-            <div class="bg-farol-blue flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[150px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
+            <div class="about-stat-card bg-farol-blue flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[150px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
               <div class="flex flex-row md:flex-col gap-[18px] md:gap-[25px] items-center justify-center text-farol-text text-center">
-                <p class="font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
+                <p class="about-stat-num font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
                    style="font-stretch:ultra-expanded">${escapeHtml(stat2Val)}</p>
-                <p class="font-foun leading-none text-[30px] lg:text-[40px]">PrOjetos<br>realizados</p>
+                <p class="about-stat-label font-foun leading-none text-[30px] lg:text-[40px]">PrOjetos<br>realizados</p>
               </div>
             </div>
 
             <!-- Card 3 — red: clientes e parceiros -->
-            <div class="bg-farol-red flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[150px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
+            <div class="about-stat-card bg-farol-red flex items-center justify-center px-[12px] lg:px-[16px] py-[30px] lg:py-[40px] rounded-[24px] h-[150px] md:h-[201px] lg:h-[269px] w-full md:w-auto">
               <div class="flex flex-row md:flex-col gap-[18px] md:gap-[25px] items-center justify-center text-farol-text text-center">
-                <p class="font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
+                <p class="about-stat-num font-agharti font-black leading-none text-[90px] md:text-[66px] lg:text-[88px]"
                    style="font-stretch:ultra-expanded">${escapeHtml(stat3Val)}</p>
-                <p class="font-foun leading-none text-[30px] lg:text-[40px]">Clientes<br>E parceiros</p>
+                <p class="about-stat-label font-foun leading-none text-[30px] lg:text-[40px]">Clientes<br>E parceiros</p>
               </div>
             </div>
 
