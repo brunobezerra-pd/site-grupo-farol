@@ -129,28 +129,38 @@
     <!-- ── Hero — ISSUE 15/16 ── -->
     <section
       aria-labelledby="hero-heading"
-      class="bg-farol-yellow rounded-b-[48px] overflow-hidden relative lg:min-h-[800px] flex flex-col lg:pb-[144px] lg:px-[120px]"
+      class="bg-farol-yellow rounded-bl-[48px] rounded-br-[48px] overflow-hidden relative lg:min-h-[800px] px-[30px] md:px-[64px] lg:px-[120px] pb-[72px] lg:pb-[144px]"
     >
       <!-- Skeleton loader (visible during API fetch) -->
       <div id="hero-skeleton"
-           class="animate-pulse px-[30px] md:px-[64px] lg:px-0 pt-[72px] pb-[72px] lg:pb-0 flex-1 flex flex-col justify-center lg:flex-row lg:items-start lg:w-full"
+           class="animate-pulse pt-[72px] lg:pt-[162px]"
            aria-hidden="true">
-        <div class="flex items-start gap-6">
-          <div class="hidden lg:block w-[113px] shrink-0"></div>
-          <div class="flex-1 flex flex-col items-end gap-8">
-            <div class="h-40 lg:h-[474px] bg-farol-black/10 rounded-2xl w-full lg:max-w-[1066px]"></div>
-            <div class="h-8 lg:h-[52px] bg-farol-black/10 rounded-xl w-3/4"></div>
-            <div class="flex flex-col lg:flex-row gap-4 lg:gap-[56px] w-full lg:w-auto">
-              <div class="h-14 lg:h-[92px] w-full lg:w-[480px] bg-farol-black/10 rounded-full"></div>
-              <div class="h-14 lg:h-[92px] w-full lg:w-[360px] bg-farol-black/10 rounded-full"></div>
+        <!-- Desktop skeleton -->
+        <div class="hidden lg:flex items-start">
+          <div class="shrink-0 w-[113px] h-[113px]"></div>
+          <div class="flex flex-[1_0_0] flex-col items-end gap-[32px] pb-[72px]">
+            <div class="h-[474px] w-[1066px] bg-farol-black/10 rounded-2xl"></div>
+            <div class="h-[52px] w-full bg-farol-black/10 rounded-xl"></div>
+            <div class="flex gap-[56px]">
+              <div class="h-[92px] w-[450px] bg-farol-black/10 rounded-full"></div>
+              <div class="h-[92px] w-[350px] bg-farol-black/10 rounded-full"></div>
             </div>
+          </div>
+        </div>
+        <!-- Mobile/tablet skeleton -->
+        <div class="flex lg:hidden flex-col items-end gap-6">
+          <div class="h-36 w-full bg-farol-black/10 rounded-2xl"></div>
+          <div class="h-8 w-3/4 bg-farol-black/10 rounded-xl"></div>
+          <div class="flex flex-col gap-3 w-full">
+            <div class="h-14 w-full bg-farol-black/10 rounded-full"></div>
+            <div class="h-14 w-full bg-farol-black/10 rounded-full"></div>
           </div>
         </div>
       </div>
 
       <!-- Hero content — populated by renderHero() in main.js -->
       <div id="hero-content"
-           class="hidden px-[30px] md:px-[64px] lg:px-0 pt-[72px] pb-[72px] lg:pb-0 lg:w-full">
+           class="hidden pt-[72px] lg:pt-[162px]">
       </div>
     </section>
 

@@ -142,83 +142,72 @@ function renderHero() {
   if (!skeleton || !contentEl) return
 
   const headline    = _content.hero_headline    || 'A maior agência de creators da\nAmérica Latina'
-  const subheadline = _content.hero_subheadline || ''
-  const cta1Text    = _content.hero_cta1_text   || 'Conheça Nossos Creators'
+  const subheadline = _content.hero_subheadline || 'No Farol, conectamos marcas a um ecossistema exclusivo com os principais talentos |para co-criar histórias que engajam e inspiram.'
+  const cta1Text    = _content.hero_cta1_text   || 'ConHEçA NoSsos CReAToRs'
   const cta1Url     = _content.hero_cta1_url    || '#talentos'
-  const cta2Text    = _content.hero_cta2_text   || 'Fale com o Farol'
+  const cta2Text    = _content.hero_cta2_text   || 'FaLE com O FARoL'
   const cta2Url     = _content.hero_cta2_url    || '#contato'
 
-  // Headline: split on newline for two-size display (matches Figma two-line design)
-  // Sizes per breakpoint — Desktop: 144px / 296px | Tablet: 80px / 176px | Mobile: 48px / 96px
+  // Headline: split on \n — line1 text-[144px], line2 text-[296px] (Figma Desktop exact)
   const parts = headline.split('\n')
   const line1 = escapeHtml(parts[0] || headline)
   const line2 = parts.length > 1 ? escapeHtml(parts[1]) : ''
 
   const headlineHtml = line2
-    ? `<span class="block leading-none text-[48px] md:text-[64px] lg:text-[144px]">${line1}</span>
-       <span class="block leading-none text-[96px] md:text-[176px] lg:text-[296px]">${line2}</span>`
-    : `<span class="block leading-none text-[60px] md:text-[90px] lg:text-[144px]">${line1}</span>`
+    ? `<span class="block leading-none text-[48px] md:text-[80px] lg:text-[144px]">${line1}</span>
+       <span class="block leading-none text-[88px] md:text-[176px] lg:text-[296px]">${line2}</span>`
+    : `<span class="block leading-none text-[60px] md:text-[100px] lg:text-[144px]">${line1}</span>`
+
+  // Subheadline: split on | to separate regular italic from bold italic
+  const subParts   = subheadline.split('|')
+  const subRegular = escapeHtml(subParts[0] || subheadline)
+  const subBold    = subParts.length > 1 ? escapeHtml(subParts[1]) : ''
+
+  const subheadlineHtml = subBold
+    ? `<span class="font-pt-serif italic leading-[1.2]">${subRegular}</span><span class="font-pt-serif italic font-bold leading-[1.2]">${subBold}</span>`
+    : `<span class="font-pt-serif italic leading-[1.2]">${subRegular}</span>`
 
   contentEl.innerHTML = `
-    <div class="flex items-start relative lg:w-full">
+    <div class="flex items-start w-full">
 
-      <!-- ── Desktop anchor: per Figma flex layout (lg+) ──────────────────── -->
-      <div class="hidden lg:block relative shrink-0 w-[113px] h-[113px]" aria-hidden="true">
+      <!-- Lighthouse anchor: Figma container h-[113px] w-[113px], image overflows via absolute positioning -->
+      <div class="hidden lg:block relative shrink-0 h-[113px] w-[113px]" aria-hidden="true">
         <div class="absolute" style="top:-90px;left:-52px;width:1854px;height:1008px">
           <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
         </div>
       </div>
 
-      <!-- ── Tablet anchor: absolute, out of flex flow (md–lg) ──────────────── -->
-      <div class="hidden md:block lg:hidden absolute w-[113px] h-[113px]"
-           style="left:0;top:72px" aria-hidden="true">
-        <div class="absolute" style="top:-120px;left:-217px;width:923px;height:1022px">
-          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
-        </div>
-      </div>
+      <!-- Text column: flex-[1_0_0] items-end gap-[32px] pb-[72px] (Figma exact) -->
+      <div class="flex flex-[1_0_0] flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[72px]">
 
-      <!-- ── Mobile anchor: absolute, smallest size (< md) ──────────────────── -->
-      <div class="md:hidden absolute w-[113px] h-[113px]"
-           style="left:30px;top:42px" aria-hidden="true">
-        <div class="absolute" style="top:-48px;left:-217px;width:637px;height:1000px">
-          <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
-        </div>
-      </div>
-
-      <!-- ── Mobile sparkle: separate element near CTA area (< md only) ──────── -->
-      <div class="md:hidden absolute" style="left:358px;top:450px;width:80px;height:80px" aria-hidden="true">
-        <img src="/assets/images/hero-sparkle.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
-      </div>
-
-      <!-- ── Text column: right-aligned on desktop ──────── -->
-      <div class="relative z-10 flex flex-[1_0_0] min-w-0 flex-col items-center lg:items-end gap-[32px] text-farol-text text-center lg:text-right pb-[48px] md:pb-[64px] lg:pb-[72px] lg:w-[1066px]">
-
-        <div class="w-full lg:w-[1066px] flex flex-col justify-center h-auto lg:h-[474px]">
+        <!-- Headline container: h-[474px] w-[1066px] flex-col justify-center (Figma exact) -->
+        <div class="flex flex-col justify-center h-auto lg:h-[474px] w-full lg:w-[1066px]">
           <h1
             id="hero-heading"
-            class="font-agharti font-semibold uppercase text-farol-text"
-            style="font-stretch:semi-condensed"
+            class="font-agharti uppercase text-farol-text"
+            style="font-stretch:semi-condensed;font-weight:600"
           >${headlineHtml}</h1>
         </div>
 
+        <!-- Subheadline: min-w-full w-[min-content] text-[32px] leading-[1.2] (Figma exact) -->
         <div class="min-w-full lg:w-[min-content]">
-          <p class="font-pt-serif italic text-farol-text leading-[1.2] text-[18px] lg:text-[32px] w-full">
-            ${escapeHtml(subheadline)}
+          <p class="text-farol-text text-[18px] md:text-[24px] lg:text-[32px]">
+            ${subheadlineHtml}
           </p>
         </div>
 
-        <!-- Buttons: exact sizing from Figma on desktop -->
-        <div class="flex flex-col md:flex-row gap-[16px] md:gap-[56px] items-center w-full md:w-auto">
+        <!-- Buttons: gap-[56px] items-center (Figma exact) -->
+        <div class="flex flex-col md:flex-row items-center gap-[16px] md:gap-[56px]">
           <a
             href="${escapeHtml(cta1Url)}"
-            class="inline-flex items-center justify-center bg-farol-burning-red rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[43.1px] lg:pt-[10.7px] lg:pb-[16.1px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[60.94px] lg:leading-none lg:tracking-[0.6px] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
-            style="font-stretch:semi-condensed"
+            class="inline-flex items-center justify-center bg-farol-burning-red rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[43.102px] lg:pt-[10.776px] lg:pb-[16.163px] font-agharti uppercase text-farol-text text-[36px] lg:text-[60.94px] leading-none lg:tracking-[0.6094px] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+            style="font-stretch:semi-condensed;font-weight:600"
             data-i18n="hero.cta1"
           >${escapeHtml(cta1Text)}</a>
           <a
             href="${escapeHtml(cta2Url)}"
-            class="inline-flex items-center justify-center bg-farol-blue rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[43.1px] lg:pt-[10.7px] lg:pb-[16.1px] font-agharti font-semibold uppercase text-farol-text text-[39px] lg:text-[60.94px] lg:leading-none lg:tracking-[0.6px] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
-            style="font-stretch:semi-condensed"
+            class="inline-flex items-center justify-center bg-farol-blue rounded-[99px] px-[27px] pt-[7px] pb-[10px] lg:px-[43.102px] lg:pt-[10.776px] lg:pb-[16.163px] font-agharti uppercase text-farol-text text-[36px] lg:text-[60.94px] leading-none lg:tracking-[0.6094px] whitespace-nowrap btn-cta-hover focus:outline-none focus:ring-2 focus:ring-farol-text/50"
+            style="font-stretch:semi-condensed;font-weight:600"
             data-i18n="hero.cta2"
           >${escapeHtml(cta2Text)}</a>
         </div>
@@ -229,8 +218,6 @@ function renderHero() {
 
   skeleton.classList.add('hidden')
   contentEl.classList.remove('hidden')
-  // Re-apply desktop flow config
-  contentEl.classList.add('lg:flex', 'lg:items-start')
 }
 function renderAbout() {
   const skeleton  = document.getElementById('about-skeleton')
