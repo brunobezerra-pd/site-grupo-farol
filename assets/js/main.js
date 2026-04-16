@@ -259,26 +259,34 @@ function renderAbout() {
         <!-- ── Left column: heading + body text ──────────────────────────── -->
         <div class="flex flex-col flex-1 gap-[32px] lg:gap-0 lg:justify-between">
 
-          <!-- Heading block (relative for separator positioning) -->
-          <div class="relative">
-            <div class="text-farol-text">
-              <p class="font-agharti font-light leading-none text-[48px] md:text-[80px] lg:text-[144px]"
+          <!-- Heading block -->
+          <div class="text-farol-text">
+
+            <!-- "SoMos o" + separator line in a single flex row (desktop only) -->
+            <!-- whitespace-nowrap keeps "SoMos o" on one line; flex-1 line shrinks with viewport -->
+            <div class="flex items-center gap-[16px] lg:gap-[24px]">
+              <p class="font-agharti font-light leading-none text-[48px] md:text-[80px] lg:text-[144px] whitespace-nowrap"
                  style="font-stretch:semi-condensed">SoMos o</p>
-              <p class="font-agharti font-bold leading-none text-[116px] md:text-[180px] lg:text-[264px]"
-                 style="font-stretch:condensed">GRUPO FAROL</p>
-            </div>
-            <!-- Separator line (right-aligned, vertically centred on the first heading line) -->
-            <div class="absolute h-0 right-0 top-[29px] md:top-[48px] lg:top-[66px] w-[318px] md:w-[481px] lg:w-[580px]"
-                 aria-hidden="true">
-              <div class="absolute" style="inset:-3px 0 0 0">
+              <!-- Separator: hidden on mobile/tablet, flex-1 on desktop -->
+              <div class="hidden lg:flex flex-1 items-center" aria-hidden="true"
+                   style="height:28px;position:relative;overflow:hidden;min-width:0">
                 <img src="/assets/images/about-separator.svg" alt="" role="presentation"
-                     class="block w-full h-full" />
+                     class="block w-full h-full" style="min-width:0" />
               </div>
             </div>
+
+            <!-- "GRUPO FAROL": clamp() so it scales from 1280px → 1920px without ever wrapping -->
+            <p class="font-agharti font-bold leading-none whitespace-nowrap
+                      text-[116px] md:text-[180px]"
+               style="font-stretch:condensed;
+                      font-size:clamp(3rem, 13.75vw, 264px)" >
+              GRUPO FAROL
+            </p>
+
           </div>
 
-          <!-- Body text paragraphs -->
-          <div class="flex flex-col gap-[12px]">
+          <!-- Body text paragraphs: constrained width so it doesn't stretch at 1920px -->
+          <div class="flex flex-col gap-[12px] lg:max-w-[560px]">
             ${bodyHtml}
           </div>
 
