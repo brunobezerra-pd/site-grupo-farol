@@ -399,10 +399,10 @@ function renderCreators() {
                Tablet/Mobile: stacked. -->
           <div class="flex flex-col lg:flex-row lg:gap-[10px] lg:items-end w-full text-farol-text">
             <h2 id="creators-heading"
-                class="font-agharti text-[140px] md:text-[200px] lg:text-[296px]"
+                class="font-agharti text-[140px] md:text-[200px] lg:text-[clamp(80px,11vw,296px)] lg:whitespace-nowrap"
                 style="line-height:0.94;font-variation-settings:'wdth' 50"
                 data-i18n="creators.callout200">200 CREATORS.</h2>
-            <span class="font-agharti text-[72px] md:text-[108px] lg:text-[176px] uppercase"
+            <span class="font-agharti text-[72px] md:text-[108px] lg:text-[clamp(48px,6.5vw,176px)] lg:whitespace-nowrap uppercase"
                   style="line-height:0.94;font-variation-settings:'wdth' 34;font-weight:100"
                   data-i18n="creators.calloutCentenas">Centenas de comunidades.</span>
           </div>
