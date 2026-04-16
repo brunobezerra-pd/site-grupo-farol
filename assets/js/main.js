@@ -168,10 +168,19 @@ function renderHero() {
     : `<span class="font-pt-serif italic leading-[1.2]">${subRegular}</span>`
 
   contentEl.innerHTML = `
+    <!-- Beam: absolutely positioned relative to the section.
+         left:180px = section px-[120px] minus anchor left:-52px plus viewBox beam apex x=112.
+         right:0 stretches to the viewport right edge at any screen width.
+         The SVG uses preserveAspectRatio="none" so the triangle scales horizontally to fill. -->
+    <div class="hidden lg:block absolute z-0" style="top:72px;left:180px;right:0;height:1008px" aria-hidden="true">
+      <img src="/assets/images/hero-beam.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
+    </div>
+
     <div class="flex items-start w-full">
 
-      <!-- Lighthouse anchor: Figma container h-[113px] w-[113px], image overflows via absolute positioning -->
-      <div class="hidden lg:block relative z-0 shrink-0 h-[113px] w-[113px]" aria-hidden="true">
+      <!-- Lighthouse anchor: Figma container h-[113px] w-[113px], image overflows via absolute positioning.
+           Contains lighthouse body + sparkle only (beam is now the separate element above). -->
+      <div class="hidden lg:block relative z-10 shrink-0 h-[113px] w-[113px]" aria-hidden="true">
         <div class="absolute" style="top:-90px;left:-52px;width:1854px;height:1008px">
           <img src="/assets/images/hero-illustration.svg" alt="" role="presentation" class="block w-full h-full max-w-none" onerror="this.style.display='none'" />
         </div>
